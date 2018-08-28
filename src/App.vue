@@ -1,13 +1,18 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
     <router-view/>
   </div>
 </template>
 
 <script>
+import axios from './service'
 export default {
-  name: 'App'
+  name: 'App',
+  created () {
+    axios.get('auth').then(r => {
+      window.user = r.data
+    })
+  }
 }
 </script>
 
