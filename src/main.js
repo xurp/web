@@ -9,6 +9,8 @@ import 'ant-design-vue/dist/antd.css'
 Vue.config.productionTip = false
 Vue.use(Antd)
 
+Vue.window = Vue.prototype.window = window
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
