@@ -38,6 +38,11 @@ export default new Router({
       name: 'Layout',
       component: Layout,
       children: routes
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: () => import('@/components/login/register')
     }
   ]
 })
