@@ -2,25 +2,27 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Layout from '@/components/Layout'
 
+const EmptyLayout = {
+  template: '<router-view/>'
+}
+
 Vue.use(Router)
 
 export const routes = [
   {
-    path: '/',
+    path: '',
     name: 'Home',
     component: () => import('@/components/Home/Home')
   },
   {
-    path: '/b',
-    name: 'b',
+    path: 'position',
+    name: 'Position',
+    component: EmptyLayout,
     children: [
       {
-        path: '/c',
-        name: 'c'
-      },
-      {
-        path: '/d',
-        name: 'd'
+        path: 'list',
+        name: 'Position List',
+        component: () => import('@/components/position/index')
       }
     ]
   }
