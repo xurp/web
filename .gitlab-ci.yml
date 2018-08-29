@@ -8,6 +8,9 @@ image: node:latest
 cache:
   paths:
   - node_modules/
+  
+tags:
+  - maven
 
 build:
   script:
