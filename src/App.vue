@@ -9,6 +9,7 @@ import axios from './service'
 export default {
   name: 'App',
   created () {
+    window.user = {}
     axios.get('auth').then(r => {
       window.user = r.data
     })
@@ -17,12 +18,4 @@ export default {
 </script>
 
 <style lang="less">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
 </style>
