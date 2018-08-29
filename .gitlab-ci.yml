@@ -9,10 +9,9 @@ cache:
   paths:
   - node_modules/
   
-tags:
-  - maven
-
 build:
+  tags:
+    - maven
   script:
    - npm install
    - npm run build
