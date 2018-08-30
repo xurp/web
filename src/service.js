@@ -1,7 +1,7 @@
 import axios from 'axios'
 import router from './router'
 // import Antd from 'ant-design-vue'
-axios.defaults.baseURL = '/api'
+axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '/jobhere-api' : '/api'
 
 axios.interceptors.request.use(config => {
   config.headers['Api-Token'] = localStorage.getItem('token')
