@@ -49,7 +49,13 @@ export default{
       console.log(this.loginForm)
       axios.post('auth', this.loginForm).then(tr => {
         localStorage.setItem('token', tr.data.token)
-        this.$router.push('/')
+        axios.get('auth', tr.data.token).then(r => {
+          if (r.data.role === 'hr-n') {
+            this.$router.push('/black')
+          } else {
+            this.$router.push('/')
+          }
+        })
       }, err => {
         console.log(err)
       })
