@@ -5,14 +5,11 @@
 </template>
 
 <script>
-import axios from './service'
 export default {
   name: 'App',
   created () {
     window.user = {}
-    axios.get('auth', localStorage.getItem('token')).then(r => {
-      window.user = r.data
-    })
+    this.$fetchUser()
   }
 }
 </script>

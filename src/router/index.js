@@ -32,6 +32,18 @@ export const routes = [
         component: () => import('@/components/resume/index')
       }
     ]
+  },
+  {
+    path: 'review',
+    name: 'Review',
+    component: EmptyLayout,
+    children: [
+      {
+        path: 'list',
+        name: 'Review List',
+        component: () => import('@/components/review/index')
+      }
+    ]
   }
 ]
 

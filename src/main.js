@@ -5,11 +5,18 @@ import App from './App'
 import router from './router'
 import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
+import axios from './service'
 
 Vue.config.productionTip = false
 Vue.use(Antd)
 
 Vue.window = Vue.prototype.window = window
+
+window.user = {}
+Vue.$fetchUser = Vue.prototype.$fetchUser = () => axios.get('auth').then(r => {
+  window.user = r.data
+  return r
+})
 
 /* eslint-disable no-new */
 new Vue({

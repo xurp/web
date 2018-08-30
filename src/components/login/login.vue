@@ -18,7 +18,7 @@
       <a-button type="primary" class="login-form-button" htmlType="submit">
         Log in
       </a-button>
-      Or <a href="">register now!</a>
+      Or <router-link to="/register">register now!</router-link>
     </a-form-item>
   </a-form>
 </template>
@@ -46,10 +46,9 @@ export default{
   methods: {
     handleLogin (e) {
       e.preventDefault()
-      console.log(this.loginForm)
       axios.post('auth', this.loginForm).then(tr => {
         localStorage.setItem('token', tr.data.token)
-        axios.get('auth', tr.data.token).then(r => {
+        this.$fetchUser().then(r => {
           if (r.data.role === 'hr-n') {
             this.$router.push('/black')
           } else {
