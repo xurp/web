@@ -1,6 +1,7 @@
 <template>
   <a-layout class="layout">
     <a-layout-header class="header">
+      <div class="logo" @click="$router.push('/')">Job Here</div>
       <a-menu
         theme="dark"
         mode="horizontal"
@@ -15,19 +16,23 @@
       <a-layout-sider width="200" style="background: #fff">
         <a-menu
           mode="inline"
-          :defaultSelectedKeys="['1']"
-          :defaultOpenKeys="['sub1']"
+          :selectedKeys="[$route.path]"
+          :defaultOpenKeys="routes.map(o => o.path)"
           :style="{ height: '100%', borderRight: 0 }"
+          @click="handleRoute"
         >
           <template v-for="route in routes">
             <template v-if="route.children">
               <a-sub-menu :key="route.path">
                 <span slot="title">{{route.name}}</span>
-                <a-menu-item v-for="sub in route.children" :key="sub.path">{{sub.name}}</a-menu-item>
+                <a-menu-item
+                  v-for="sub in route.children"
+                  :key="`/${route.path}/${sub.path}`"
+                >{{sub.name}}</a-menu-item>
               </a-sub-menu>
             </template>
             <template v-else>
-              <a-menu-item :key="route.path">{{route.name}}</a-menu-item>
+              <a-menu-item :key="'/' + route.path">{{route.name}}</a-menu-item>
             </template>
           </template>
         </a-menu>
@@ -55,6 +60,12 @@ export default {
     }
   },
   created () {
+    console.log(this.$route)
+  },
+  methods: {
+    handleRoute (e) {
+      this.$router.push(e.key)
+    }
   }
 }
 </script>
@@ -62,5 +73,14 @@ export default {
 <style lang="less">
   .layout {
     height: 100vh;
+    .logo {
+      color: white;
+      display: inline-block;
+      width: 200px;
+      line-height: 64px;
+      margin-left: -50px;
+      text-align: center;
+      cursor: pointer;
+    }
   }
 </style>
