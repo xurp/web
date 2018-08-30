@@ -10,11 +10,6 @@ Vue.use(Router)
 
 export const routes = [
   {
-    path: '',
-    name: 'Home',
-    component: () => import('@/components/Home/Home')
-  },
-  {
     path: 'position',
     name: 'Position',
     component: EmptyLayout,
@@ -51,7 +46,14 @@ export default new Router({
       path: '/',
       name: 'Layout',
       component: Layout,
-      children: routes
+      children: [
+        {
+          path: '',
+          name: 'Home',
+          component: () => import('@/components/Home/Home')
+        },
+        ...routes
+      ]
     },
     {
       path: '/register',
