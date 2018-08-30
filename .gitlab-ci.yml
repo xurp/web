@@ -14,11 +14,11 @@ build:
     - maven
   stage: build
   script:
-   - npm install
-   - npm run build
- artifacts:
-   paths:
-   - dist/
+  - npm install
+  - npm run build
+  artifacts:
+    paths:
+    - dist/
 
 docker-build:
   image: docker:latest
