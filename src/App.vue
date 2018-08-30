@@ -10,7 +10,7 @@ export default {
   name: 'App',
   created () {
     window.user = {}
-    axios.get('auth').then(r => {
+    axios.get('auth', localStorage.getItem('token')).then(r => {
       window.user = r.data
     })
   }

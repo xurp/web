@@ -7,8 +7,8 @@
           <a-form-item label="Name" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
             <a-input v-model="basicInfomation.name" placeholder="Name"/>
           </a-form-item>
-          <a-form-item label="Sex" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
-            <a-radio-group v-model="basicInfomation.sex">
+          <a-form-item label="Gender" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
+            <a-radio-group v-model="basicInfomation.gender">
               <a-radio :style="radioStyle" value="male">Male</a-radio>
               <a-radio :style="radioStyle" value="female">Female</a-radio>
             </a-radio-group>
@@ -19,8 +19,8 @@
           <a-form-item label="Email" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
             <a-input v-model="basicInfomation.email" placeholder="Email"></a-input>
           </a-form-item>
-          <a-form-item label="Education" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
-            <a-input v-model="basicInfomation.education" placeholder="Education"></a-input>
+          <a-form-item label="School" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
+            <a-input v-model="basicInfomation.school" placeholder="School"></a-input>
           </a-form-item>
           <a-form-item label="Major" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
             <a-input v-model="basicInfomation.major" placeholder="Major"></a-input>
@@ -32,7 +32,7 @@
             <a-switch v-model="basicInfomation.open" size="large"/>
           </a-form-item>
           <a-form-item>
-            <a-button key="submit" class="submit-button" type="primary" >Save</a-button>
+            <a-button key="submit" class="submit-button" type="primary" v-on:click="handleSubmit">Save</a-button>
           </a-form-item>
         </a-form>
       </div>
@@ -75,34 +75,26 @@ export default{
   },
   methods: {
     toggleCard (e) {
-      console.log(this)
       this.toggleState = !this.toggleState
     },
     fetchData () {
       this.infloading = true
-      axios.request('resume', {resumeid: window.user.resumeid}).then(response => {
+      axios.request('resume/' + window.user.id).then(response => {
         this.basicInfomation = Object.assign({}, response.data)
         this.infloading = false
       }, error => {
         console.log(error)
-        // this.basicInfomation = {
-        //   name: '张 三 丰',
-        //   sex: 'male',
-        //   education: '东南大学',
-        //   intro: '太极拳创始人',
-        //   major: '物理系',
-        //   age: '103',
-        //   email: 'roleTai@gmail.com',
-        //   open: true
-        // }
         this.infloading = false
       })
     },
     handleSubmit (e) {
+      console.log(e)
       this.infloading = true
       e.preventDefault()
-      axios.put('resume', this.basicInfomation).then(response => {
+      axios.put('resume/' + window.user.id, this.basicInfomation).then(response => {
         this.infloading = false
+        this.$message.success('update success')
+        this.fetchData()
       }, error => {
         console.log(error)
         this.infloading = false
