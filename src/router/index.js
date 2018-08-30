@@ -25,6 +25,18 @@ export const routes = [
         component: () => import('@/components/position/index')
       }
     ]
+  },
+  {
+    path: 'resume',
+    name: 'Resume',
+    component: EmptyLayout,
+    children: [
+      {
+        path: 'edit',
+        name: 'Resume edit',
+        component: () => import('@/components/resume/index')
+      }
+    ]
   }
 ]
 
