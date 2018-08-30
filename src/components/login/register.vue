@@ -110,17 +110,17 @@
                        :labelCol="formLabelCol"
                        :wrapperCol="formWrapCol"
                        label="CompanyName"
-                       fieldDecoratorId="companyname"
+                       fieldDecoratorId="companyName"
                        :fieldDecoratorOptions="{rules:[{required:true, message: 'please input your company name(must consistent with your law paper)!'}]}">
-            <a-input v-model="hrRegForm.companyname"></a-input>
+            <a-input v-model="hrRegForm.companyName"></a-input>
           </a-form-item>
           <a-form-item layout="horizontal"
                        :labelCol="formLabelCol"
                        :wrapperCol="formWrapCol"
                        label="LegalPerson"
-                       fieldDecoratorId="legalperson"
+                       fieldDecoratorId="legalPerson"
                        :fieldDecoratorOptions="{rules:[{required:true, message: 'please input your company legal person name!'}]}">
-            <a-input v-model="hrRegForm.legalperson"></a-input>
+            <a-input v-model="hrRegForm.legalPerson"></a-input>
           </a-form-item>
           <a-form-item>
             <a-button type="primary" class="register-button" htmlType="submit">
@@ -157,8 +157,8 @@ export default{
         password: '',
         role: 'hr',
         email: '',
-        companyname: '',
-        legalperson: ''
+        companyName: '',
+        legalPerson: ''
       }
     }
   },
@@ -220,8 +220,8 @@ export default{
           this.$set(data, 'email', this.hrRegForm.email)
           this.$set(data, 'username', this.hrRegForm.username)
           this.$set(data, 'password', this.hrRegForm.password)
-          this.$set(data, 'companyname', this.hrRegForm.companyname)
-          this.$set(data, 'legalperson', this.hrRegForm.legalperson)
+          this.$set(data, 'companyName', this.hrRegForm.companyName)
+          this.$set(data, 'legalPerson', this.hrRegForm.legalPerson)
           break
       }
       axios.post('auth/register', data).then(tr => {
