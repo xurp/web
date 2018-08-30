@@ -47,8 +47,8 @@ export default{
     handleLogin (e) {
       e.preventDefault()
       console.log(this.loginForm)
-      axios.post('auth', this.form).then(tr => {
-        localStorage.setItem('token', tr.token)
+      axios.post('auth', this.loginForm).then(tr => {
+        localStorage.setItem('token', tr.data.token)
         this.$router.push('/')
       }, err => {
         console.log(err)
