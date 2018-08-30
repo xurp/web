@@ -106,6 +106,22 @@
                        :fieldDecoratorOptions="{rules:[{required:true, message: 'please input your E-mail!'}]}">
             <a-input v-model="hrRegForm.email"></a-input>
           </a-form-item>
+          <a-form-item layout="horizontal"
+                       :labelCol="formLabelCol"
+                       :wrapperCol="formWrapCol"
+                       label="CompanyName"
+                       fieldDecoratorId="companyName"
+                       :fieldDecoratorOptions="{rules:[{required:true, message: 'please input your company name(must consistent with your law paper)!'}]}">
+            <a-input v-model="hrRegForm.companyName"></a-input>
+          </a-form-item>
+          <a-form-item layout="horizontal"
+                       :labelCol="formLabelCol"
+                       :wrapperCol="formWrapCol"
+                       label="LegalPerson"
+                       fieldDecoratorId="legalPerson"
+                       :fieldDecoratorOptions="{rules:[{required:true, message: 'please input your company legal person name!'}]}">
+            <a-input v-model="hrRegForm.legalPerson"></a-input>
+          </a-form-item>
           <a-form-item>
             <a-button type="primary" class="register-button" htmlType="submit">
               Register
@@ -140,7 +156,9 @@ export default{
         username: '',
         password: '',
         role: 'hr',
-        email: ''
+        email: '',
+        companyName: '',
+        legalPerson: ''
       }
     }
   },
@@ -188,23 +206,28 @@ export default{
     handleRegister (e) {
       e.preventDefault()
       const data = {}
+      let direct = '/'
       switch (this.tabKey) {
         case 'person':
           this.$set(data, 'role', 'hr')
-          this.$set(data, 'email', this.hrRegForm.email)
-          this.$set(data, 'username', this.hrRegForm.username)
-          this.$set(data, 'password', this.hrRegForm.password)
-          break
-        case 'hr':
-          this.$set(data, 'role', 'candidate')
           this.$set(data, 'email', this.personRegForm.email)
           this.$set(data, 'username', this.personRegForm.username)
           this.$set(data, 'password', this.personRegForm.password)
           break
+        case 'hr':
+          direct = '/black'
+          this.$set(data, 'role', 'hr-n')
+          this.$set(data, 'email', this.hrRegForm.email)
+          this.$set(data, 'username', this.hrRegForm.username)
+          this.$set(data, 'password', this.hrRegForm.password)
+          this.$set(data, 'companyName', this.hrRegForm.companyName)
+          this.$set(data, 'legalPerson', this.hrRegForm.legalPerson)
+          break
       }
       axios.post('auth/register', data).then(tr => {
         localStorage.setItem('token', tr.token)
-        this.$router.push('/')
+        this.$message.success('register success, redirecting...')
+        this.$router.push(direct)
       }, error => {
         this.$message.error(error)
       })

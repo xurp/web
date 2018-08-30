@@ -59,6 +59,11 @@ export default new Router({
       path: '/register',
       name: 'Register',
       component: () => import('@/components/login/register')
+    },
+    {
+      path: '/black',
+      name: 'Black Page',
+      component: () => import('@/components/login/blackpage')
     }
   ]
 })
