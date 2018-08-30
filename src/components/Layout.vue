@@ -5,11 +5,11 @@
       <a-menu
         theme="dark"
         mode="horizontal"
-        :defaultSelectedKeys="['2']"
+        :selectedKeys="[]"
         :style="{ lineHeight: '64px', float: 'right' }"
       >
         <a-menu-item key="1">Hello, {{window.user.username}}</a-menu-item>
-        <a-menu-item key="2">Exit</a-menu-item>
+        <a-menu-item key="2"><a href="javascript:void(0)" v-on:click="logout"> Exit</a></a-menu-item>
       </a-menu>
     </a-layout-header>
     <a-layout>
@@ -71,6 +71,11 @@ export default {
         if (tr.length > 0) this.breads.push(tr)
       })
       this.$router.push(e.key)
+    },
+    logout () {
+      localStorage.removeItem('token')
+      window.user = {}
+      this.$router.push('/login')
     }
   }
 }

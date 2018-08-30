@@ -15,11 +15,14 @@ axios.interceptors.response.use(response => {
 }, error => {
   const code = error.response.status
   const message = error.response.data.message
-  // TODO 错误统一提示
   if (code === 401) {
+    router.push('/login')
+  } else if (code === 404) {
+    router.app.$message.error('Page Not Found.')
     router.push('/')
+  } else {
+    router.app.$message.error(message)
   }
-  router.app.$message.error(message)
   return Promise.reject(error)
 })
 

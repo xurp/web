@@ -143,7 +143,7 @@ export default{
       confirmPersonDirty: false,
       confirmHRDirty: false,
       confirmDirty: false,
-      curTabKey: 'person',
+      tabKey: 'person',
       formLabelCol: {xs: { span: 24 }, sm: { span: 8 }},
       formWrapCol: {xs: { span: 24 }, sm: { span: 16 }},
       personRegForm: {
@@ -205,29 +205,27 @@ export default{
     },
     handleRegister (e) {
       e.preventDefault()
-      const data = {}
+      let data = {}
       let direct = '/'
       switch (this.tabKey) {
         case 'person':
-          this.$set(data, 'role', 'hr')
-          this.$set(data, 'email', this.personRegForm.email)
-          this.$set(data, 'username', this.personRegForm.username)
-          this.$set(data, 'password', this.personRegForm.password)
+          data = {
+            ...this.personRegForm,
+            role: 'candidate'
+          }
           break
         case 'hr':
           direct = '/black'
-          this.$set(data, 'role', 'hr-n')
-          this.$set(data, 'email', this.hrRegForm.email)
-          this.$set(data, 'username', this.hrRegForm.username)
-          this.$set(data, 'password', this.hrRegForm.password)
-          this.$set(data, 'companyName', this.hrRegForm.companyName)
-          this.$set(data, 'legalPerson', this.hrRegForm.legalPerson)
+          Object.assign(data, this.hrRegForm)
+          data.role = 'hr-n'
           break
       }
       axios.post('auth/register', data).then(tr => {
-        localStorage.setItem('token', tr.token)
-        this.$message.success('register success, redirecting...')
-        this.$router.push(direct)
+        localStorage.setItem('token', tr.data.token)
+        this.$fetchUser().then(r => {
+          this.$message.success('register success, redirecting...')
+          this.$router.push(direct)
+        })
       }, error => {
         this.$message.error(error)
       })
