@@ -8,10 +8,28 @@ image: node:latest
 cache:
   paths:
   - node_modules/
-  
+
 build:
   tags:
     - maven
+  stage: build
   script:
    - npm install
    - npm run build
+ artifacts:
+   paths:
+   - dist/
+
+docker-build:
+  image: docker:latest
+  variables:
+    DOCKER_DRIVER: overlay
+  services:
+  - docker:dind
+  tags:
+  - maven
+  stage: deploy
+  script:
+  - echo "Building docker image"
+  - docker build -t registry.paas.workslan/jobhere/jobhere .
+  - docker images
