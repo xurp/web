@@ -189,7 +189,6 @@ export default{
           this.confirmHRDirty = this.confirmHRDirty || !!value
           break
       }
-      console.log(this)
     },
     getCurrentForm () {
       switch (this.tabKey) {
@@ -238,8 +237,6 @@ export default{
           this.$message.success('register success, redirecting...')
           this.$router.push(direct)
         })
-      }, error => {
-        this.$message.error(error)
       })
     }
   }
