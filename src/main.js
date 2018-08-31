@@ -18,7 +18,7 @@ Vue.$fetchUser = Vue.prototype.$fetchUser = () => axios.get('auth').then(r => {
   return r
 })
 Vue.$roleMap = Vue.prototype.$roleMap = {
-  'hr': ['Position'],
+  'hr': ['Position', 'Review'],
   'candidate': ['Resume'],
   'admin': ['Review']
 }
