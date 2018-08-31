@@ -12,21 +12,31 @@ Vue.use(Antd)
 
 Vue.window = Vue.prototype.window = window
 
-window.user = {}
-Vue.$fetchUser = Vue.prototype.$fetchUser = () => axios.get('auth').then(r => {
+const fetchUser = () => axios.get('auth').then(r => {
   window.user = r.data
   return r
 })
+
+window.user = {}
+Vue.$fetchUser = Vue.prototype.$fetchUser = fetchUser
+
 Vue.$roleMap = Vue.prototype.$roleMap = {
   'hr': ['Position', 'Review'],
   'candidate': ['Resume'],
   'admin': ['Review']
 }
 
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  router,
-  components: { App },
-  template: '<App/>'
-})
+const loadApp = async () => {
+  try {
+    await fetchUser()
+  } catch (e) { }
+  /* eslint-disable no-new */
+  new Vue({
+    el: '#app',
+    router,
+    components: { App },
+    template: '<App/>'
+  })
+}
+
+loadApp()
