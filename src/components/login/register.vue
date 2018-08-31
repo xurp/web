@@ -56,6 +56,7 @@
               </a-button>
             </a-form-item>
           </a-form>
+          <div class="router-div">If you have an account, Please <router-link to="/login">log in</router-link></div>
         </template>
       </a-tab-pane>
       <a-tab-pane key="hr">
@@ -123,10 +124,13 @@
             <a-input v-model="hrRegForm.legalPerson"></a-input>
           </a-form-item>
           <a-form-item>
-            <a-button type="primary" class="register-button" htmlType="submit">
-              Register
-            </a-button>
+            <div>
+              <a-button type="primary" class="register-button" htmlType="submit">
+                Register
+              </a-button>
+            </div>
           </a-form-item>
+          <div class="router-div">If you have an account, Please <router-link to="/login">log in</router-link></div>
         </a-form>
       </a-tab-pane>
     </a-tabs>
@@ -261,6 +265,9 @@ export default{
   }
   .ant-tabs-nav-scroll{
     text-align: center;
+  }
+  .router-div{
+    padding-left: 120px;
   }
 }
 </style>

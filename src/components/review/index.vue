@@ -79,13 +79,13 @@ export default {
       this.modalVisible = true
     },
     acceptHR (e) {
-      axios.post('review/' + this.editVal.id, { pass: true }).then(response => {
+      axios.post('review/' + this.editVal.id, 'true').then(response => {
         this.modalVisible = false
         this.fetchData()
       })
     },
     declineHR () {
-      axios.post('review/' + this.editVal.id, { pass: false }).then(response => {
+      axios.post('review/' + this.editVal.id, 'false').then(response => {
         this.modalVisible = false
         this.fetchData()
       })
