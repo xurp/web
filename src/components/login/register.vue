@@ -8,7 +8,7 @@
         </span>
         <template>
           <a-form layout="horizontal" class="register-form"
-                  v-on:submit="handleRegister" :autoFormCreate="(form)=>{this.form=form}">
+                  v-on:submit="handleRegister" :autoFormCreate="(form)=>{this.candidateForm=form}">
             <h3 class="title">Please Fill In Your Information</h3>
             <a-form-item layout="horizontal"
                          :labelCol="formLabelCol"
@@ -65,7 +65,7 @@
           HR Register
         </span>
         <a-form layout="horizontal" class="register-form"
-                v-on:submit="handleRegister" :autoFormCreate="(form)=>{this.form=form}">
+                v-on:submit="handleRegister" :autoFormCreate="(form)=>{this.hrForm=form}">
           <h3 class="title">Please Fill In Your Information</h3>
           <a-form-item layout="horizontal"
                        :labelCol="formLabelCol"
@@ -191,8 +191,16 @@ export default{
       }
       console.log(this)
     },
+    getCurrentForm () {
+      switch (this.tabKey) {
+        case 'person':
+          return this.candidateForm
+        case 'hr':
+          return this.hrForm
+      }
+    },
     compareToFirstPassword (rule, value, callback) {
-      const form = this.form
+      const form = this.getCurrentForm()
       if (value && value !== form.getFieldValue('password')) {
         const msg = 'Two passwords that you enter is inconsistent!'
         callback(msg)
@@ -201,7 +209,7 @@ export default{
       }
     },
     validateToNextPassword (rule, value, callback) {
-      const form = this.form
+      const form = this.getCurrentForm()
       if (value && this.confirmDirty) {
         form.validateFields(['confirm'], { force: true })
       }
