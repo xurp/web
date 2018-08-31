@@ -59,7 +59,7 @@ export default{
       },
       formLabelCol: {xs: { span: 24 }, sm: { span: 5 }},
       formWrapCol: {xs: { span: 24 }, sm: { span: 18 }},
-      toggleState: true,
+      toggleState: false,
       cardBodyStyle: {
         padding: 0
       }

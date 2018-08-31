@@ -67,12 +67,9 @@ export default{
 </script>
 <style lang="less">
   .login-form{
-    position: absolute;
-    left: 0;
-    right: 0;
     width: 520px;
-    padding: 35px 35px 15px 35px;
-    margin: 120px auto;
+    padding: 35px 35px 15px 35px !important;
+    margin: 120px auto !important;
     .a-form-item{
       border: 1px solid rgba(255, 255, 255, 0.1);
       background: rgba(0, 0, 0, 0.1);

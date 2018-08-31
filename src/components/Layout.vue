@@ -21,7 +21,7 @@
           :style="{ height: '100%', borderRight: 0 }"
           @click="handleRoute"
         >
-          <template v-for="route in routes">
+          <template v-for="route in routes" v-if="$roleMap[window.user.role].indexOf(route.name) !== -1">
             <template v-if="route.children">
               <a-sub-menu :key="route.path">
                 <span slot="title">{{route.name}}</span>
@@ -55,7 +55,8 @@ export default {
   data () {
     return {
       routes,
-      breads: []
+      breads: [],
+      menus: []
     }
   },
   created () {
