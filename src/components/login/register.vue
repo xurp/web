@@ -240,12 +240,9 @@ export default{
 </script>
 <style lang="less">
 .tabs-container{
-  position: absolute;
-  left: 0;
-  right: 0;
   width: 680px;
-  padding: 35px 35px 15px 35px;
-  margin: 120px auto;
+  padding: 35px 35px 15px 35px !important;
+  margin: 120px auto !important;
   .register-form{
     width: 100%;
   }
