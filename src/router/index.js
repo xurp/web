@@ -18,6 +18,12 @@ export const routes = [
         path: 'list',
         name: 'Position List',
         component: () => import('@/components/position/index')
+      },
+      {
+        path: 'detail/:id',
+        name: 'Position Detail',
+        component: () => import('@/components/position/detail'),
+        hidden: true
       }
     ]
   },
