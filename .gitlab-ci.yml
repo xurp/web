@@ -23,8 +23,10 @@ docker-build:
   services:
   - docker:dind
   stage: deploy
+  only:
+  - tags
   variables:
-    DOCKER_IMAGE_NAME: registry.paas.workslan/jobhere/jobhere:$CI_COMMIT_REF_NAME
+    DOCKER_IMAGE_NAME: registry.paas.workslan/jobhere/jobhere:$CI_COMMIT_TAG
   script:
   - echo "Building docker image $DOCKER_IMAGE_NAME"
 #  - docker build -t $DOCKER_IMAGE_NAME .
