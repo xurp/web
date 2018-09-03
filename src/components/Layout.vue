@@ -28,6 +28,7 @@
                 <a-menu-item
                   v-for="sub in route.children"
                   :key="`/${route.path}/${sub.path}`"
+                  v-if="sub.hidden !== true"
                 >{{sub.name}}</a-menu-item>
               </a-sub-menu>
             </template>
@@ -64,7 +65,7 @@ export default {
     this.$route.path.split('/').forEach(tr => {
       if (tr.length > 0) this.breads.push(tr)
     })
-    // this.$fetchUser()
+    this.$fetchUser()
   },
   methods: {
     handleRoute (e) {
@@ -80,6 +81,9 @@ export default {
       this.$router.push('/login')
     },
     checkVisible (route) {
+      if (route.hidden === true) {
+        return false
+      }
       if (window.user === undefined || window.user.role === undefined) {
         return false
       }
