@@ -7,7 +7,7 @@
              :pagination="false"
              :loading="listLoading">
       <span slot="action" slot-scope="text, record">
-        <router-link :to="'/position/detail/' + record.id">DETAIL</router-link>
+        <router-link :to="'/position/applicationlist/' + record.id">DETAIL</router-link>
         <a-button v-on:click="detailPosition(record)">Detail</a-button>
         <a-divider type="vertical" />
         <a-button v-on:click="modifyPosition(record)">Modify</a-button>
@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from '../../service'
 import moment from 'moment'
 export default {
   data () {

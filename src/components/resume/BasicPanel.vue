@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from '../../service'
 export default{
   name: 'basicpanel',
   data () {

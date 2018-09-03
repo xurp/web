@@ -49,7 +49,7 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+import axios from '../../service'
 import moment from 'moment'
 
 export default{
@@ -101,7 +101,6 @@ export default{
       this.curData = {
         ...record
       }
-      console.log(record.applied)
       this.popVisible = true
       this.popTitle = 'Position Detail - ' + record.name
     },
