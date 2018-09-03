@@ -10,8 +10,6 @@ cache:
   - node_modules/
 
 build:
-  tags:
-    - maven
   stage: build
   script:
   - npm install
@@ -20,16 +18,19 @@ build:
     paths:
     - dist/
 
-#docker-build:
-#  image: docker:latest
-#  variables:
-#    DOCKER_DRIVER: overlay
-#  services:
-#  - docker:dind
-#  tags:
-#  - maven
-#  stage: deploy
-#  script:
-#  - echo "Building docker image"
-#  - docker build -t registry.paas.workslan/jobhere/jobhere .
-#  - docker images
+docker-build:
+  image: docker:latest
+  services:
+  - docker:dind
+  stage: deploy
+  only:
+  - tags
+  variables:
+    DOCKER_IMAGE_NAME: registry.paas.workslan/jobhere/jobhere:$CI_COMMIT_TAG
+  script:
+  - echo "Building docker image $DOCKER_IMAGE_NAME"
+  - docker build -t $DOCKER_IMAGE_NAME .
+  - docker login --username $DOCKER_HARBOR_USERNAME --password $DOCKER_HARBOR_PASSWORD
+  - docker push $DOCKER_IMAGE_NAME
+  - yosolo login --username $DOCKER_HARBOR_USERNAME --password $DOCKER_HARBOR_PASSWORD
+  - yosolo deploy update -a=jobhere -e=sh-stm --image=$DOCKER_IMAGE_NAME
