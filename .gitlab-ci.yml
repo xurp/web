@@ -24,7 +24,7 @@ docker-build:
   - docker:dind
   stage: deploy
   script:
-  - ls -al
+  - echo $CI_COMMIT_REF_NAME
   - echo "Building docker image"
   - docker build -t registry.paas.workslan/jobhere/jobhere .
   - docker images
