@@ -5,6 +5,7 @@
       <a-table-column title="Count" key="count" dataIndex="count"></a-table-column>
       <a-table-column title="Department" key="department" dataIndex="department"></a-table-column>
       <a-table-column title="Company" key="company" dataIndex="company"></a-table-column>
+      <a-table-column title="Status" key="status" dataIndex="status"></a-table-column>
       <a-table-column title="Action" key="action">
         <a v-on:click="detailPosition(record)" slot-scope="text, record">Detail/Apply</a>
       </a-table-column>
@@ -38,9 +39,10 @@
         </a-form-item>
       </a-form>
       <template slot="footer" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
-        <a-button type="secondary" key="back" @click="handlePopCancel">Cancel</a-button>
-        <a-button key="submit" type="primary" :loading="btnLoading" @click="handleApply">
-          Apply
+        <a-button type="dashed" key="back" @click="handlePopCancel">Cancel</a-button>
+        <a-button key="submit" type="primary" :loading="btnLoading" @click="handleApply" v-bind:disabled="curData.applied==true">
+          <span v-if="curData.applied==true">Already Applied</span>
+          <span v-else>Apply</span>
         </a-button>
       </template>
     </a-modal>
@@ -86,10 +88,10 @@ export default{
           Object.assign(as, {updateTime: moment(new Date(tr.updateTime).getTime()).format('YYYY-MM-DD HH:mm:ss')})
           Object.assign(as, {createTime: moment(new Date(tr.createTime).getTime()).format('YYYY-MM-DD HH:mm:ss')})
           Object.assign(as, {company: tr.company.companyName})
+          Object.assign(as, {status: tr.applied ? 'applied' : 'not applied'})
           return as
         })
         this.listLoading = false
-        console.log(this.list)
       }, error => {
         this.listLoading = false
         console.log(error)
@@ -99,7 +101,7 @@ export default{
       this.curData = {
         ...record
       }
-      console.log(record)
+      console.log(record.applied)
       this.popVisible = true
       this.popTitle = 'Position Detail - ' + record.name
     },
@@ -109,12 +111,13 @@ export default{
     },
     handleApply () {
       this.btnLoading = true
-      axios.post('application', {job_id: this.curData.id}).then(response => {
+      axios.post('application', this.curData.id).then(response => {
         this.btnLoading = false
         this.$message.success('apply successfully!')
         this.popVisible = false
+        this.fetchData()
       }, error => {
-        this.$message.error(error)
+        // this.$message.error(error)
         this.btnLoading = false
         console.log(error)
       })
