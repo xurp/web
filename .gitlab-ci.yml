@@ -20,16 +20,15 @@ build:
     paths:
     - dist/
 
-#docker-build:
-#  image: docker:latest
-#  variables:
-#    DOCKER_DRIVER: overlay
-#  services:
-#  - docker:dind
-#  tags:
-#  - maven
-#  stage: deploy
-#  script:
-#  - echo "Building docker image"
-#  - docker build -t registry.paas.workslan/jobhere/jobhere .
-#  - docker images
+docker-build:
+  image: docker:latest
+  services:
+  - docker:dind
+  tags:
+  - maven
+  stage: deploy
+  script:
+  - ls -al
+  - echo "Building docker image"
+  - docker build -t registry.paas.workslan/jobhere/jobhere .
+  - docker images
