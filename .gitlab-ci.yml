@@ -22,12 +22,12 @@ docker-build:
   image: docker:latest
   services:
   - docker:dind
-    command: ["--insecure-registry=registry.paas.workslan"]
   stage: deploy
   only:
   - tags
   variables:
     DOCKER_IMAGE_NAME: registry.paas.workslan/jobhere/jobhere:$CI_COMMIT_TAG
+    DIND_INSECURE_REGISTRIES: registry.paas.workslan
   script:
   - echo "Building docker image $DOCKER_IMAGE_NAME"
   - docker build -t $DOCKER_IMAGE_NAME .
