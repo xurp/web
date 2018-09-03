@@ -21,7 +21,7 @@
           :style="{ height: '100%', borderRight: 0 }"
           @click="handleRoute"
         >
-          <template v-for="route in routes" v-if="$roleMap[window.user.role].indexOf(route.name) !== -1">
+          <template v-for="route in routes" v-if="checkVisible(route)">
             <template v-if="route.children">
               <a-sub-menu :key="route.path">
                 <span slot="title">{{route.name}}</span>
@@ -64,6 +64,7 @@ export default {
     this.$route.path.split('/').forEach(tr => {
       if (tr.length > 0) this.breads.push(tr)
     })
+    // this.$fetchUser()
   },
   methods: {
     handleRoute (e) {
@@ -77,6 +78,12 @@ export default {
       localStorage.removeItem('token')
       window.user = {}
       this.$router.push('/login')
+    },
+    checkVisible (route) {
+      if (window.user === undefined || window.user.role === undefined) {
+        return false
+      }
+      return this.$roleMap[window.user.role].indexOf(route.name) !== -1
     }
   }
 }
