@@ -12,9 +12,12 @@ Vue.use(Antd)
 
 Vue.window = Vue.prototype.window = window
 
-const fetchUser = () => axios.get('auth').then(r => {
+export const fetchUser = () => axios.get('auth').then(r => {
   window.user = r.data
   return r
+}).catch(error => {
+  router.push('/login')
+  console.log(error)
 })
 
 window.user = {}
@@ -22,7 +25,7 @@ Vue.$fetchUser = Vue.prototype.$fetchUser = fetchUser
 
 Vue.$roleMap = Vue.prototype.$roleMap = {
   'hr': ['Position', 'Review'],
-  'candidate': ['Resume'],
+  'candidate': ['Resume', 'Apply'],
   'admin': ['Review']
 }
 
