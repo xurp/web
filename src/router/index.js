@@ -15,9 +15,15 @@ export const routes = [
     component: EmptyLayout,
     children: [
       {
-        path: 'list',
+        path: '',
         name: 'Position List',
         component: () => import('@/components/position/index')
+      },
+      {
+        path: ':id',
+        name: 'Position Detail',
+        component: () => import('@/components/position/detail'),
+        hidden: true
       }
     ]
   },
@@ -39,7 +45,7 @@ export const routes = [
     component: EmptyLayout,
     children: [
       {
-        path: 'list',
+        path: '',
         name: 'Review List',
         component: () => import('@/components/review/index')
       }
@@ -51,7 +57,7 @@ export const routes = [
     component: EmptyLayout,
     children: [
       {
-        path: 'list',
+        path: '',
         name: 'Application List',
         component: () => import('@/components/apply/list')
       }

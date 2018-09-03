@@ -6,11 +6,7 @@
 
 <script>
 export default {
-  name: 'App',
-  created () {
-    window.user = {}
-    this.$fetchUser()
-  }
+  name: 'App'
 }
 </script>
 

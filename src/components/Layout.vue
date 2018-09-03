@@ -28,6 +28,7 @@
                 <a-menu-item
                   v-for="sub in route.children"
                   :key="`/${route.path}/${sub.path}`"
+                  v-if="sub.hidden !== true"
                 >{{sub.name}}</a-menu-item>
               </a-sub-menu>
             </template>
@@ -39,7 +40,9 @@
       </a-layout-sider>
       <a-layout style="padding: 0 24px 24px">
         <a-breadcrumb style="margin: 16px 0">
-          <a-breadcrumb-item v-bind:key="bread" v-for="bread in breads">{{bread}}</a-breadcrumb-item>
+          <a-breadcrumb-item v-for="(bread, idx) in breads" :key="idx">
+            <router-link :to="bread.to">{{bread.name}}</router-link>
+          </a-breadcrumb-item>
         </a-breadcrumb>
         <a-layout-content :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }">
           <router-view/>
@@ -55,16 +58,35 @@ export default {
   data () {
     return {
       routes,
-      breads: [],
       menus: []
     }
   },
+  computed: {
+    breads () {
+      const matcher = this.$router.matcher.match
+      let path = ''
+      return [
+        {name: 'Home', to: '/'},
+        ...this.$route.path.split('/').map(o => {
+          if (!o) {
+            return null
+          }
+          path += '/' + o
+          const match = matcher(path)
+          if (match && match.name) {
+            return {
+              name: match.name,
+              to: match.path
+            }
+          } else {
+            return null
+          }
+        }).filter(o => o !== null)
+      ]
+    }
+  },
   created () {
-    this.breads.splice(0, this.breads.length)
-    this.$route.path.split('/').forEach(tr => {
-      if (tr.length > 0) this.breads.push(tr)
-    })
-    // this.$fetchUser()
+    this.$fetchUser()
   },
   methods: {
     handleRoute (e) {
@@ -80,6 +102,9 @@ export default {
       this.$router.push('/login')
     },
     checkVisible (route) {
+      if (route.hidden === true) {
+        return false
+      }
       if (window.user === undefined || window.user.role === undefined) {
         return false
       }
