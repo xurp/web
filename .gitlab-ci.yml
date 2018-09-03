@@ -29,8 +29,8 @@ docker-build:
     DOCKER_IMAGE_NAME: registry.paas.workslan/jobhere/jobhere:$CI_COMMIT_TAG
   script:
   - echo "Building docker image $DOCKER_IMAGE_NAME"
-#  - docker build -t $DOCKER_IMAGE_NAME .
-#  - docker login --username $DOCKER_HARBOR_USERNAME --password $DOCKER_HARBOR_PASSWORD
-#  - docker push $DOCKER_IMAGE_NAME
-#  - yosolo login --username $DOCKER_HARBOR_USERNAME --password $DOCKER_HARBOR_PASSWORD
-#  - yosolo deploy update -a=jobhere -e=sh-stm --image=$DOCKER_IMAGE_NAME
+  - docker build -t $DOCKER_IMAGE_NAME .
+  - docker login --username $DOCKER_HARBOR_USERNAME --password $DOCKER_HARBOR_PASSWORD
+  - docker push $DOCKER_IMAGE_NAME
+  - yosolo login --username $DOCKER_HARBOR_USERNAME --password $DOCKER_HARBOR_PASSWORD
+  - yosolo deploy update -a=jobhere -e=sh-stm --image=$DOCKER_IMAGE_NAME
