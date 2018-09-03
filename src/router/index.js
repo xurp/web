@@ -44,6 +44,18 @@ export const routes = [
         component: () => import('@/components/review/index')
       }
     ]
+  },
+  {
+    path: 'apply',
+    name: 'Apply',
+    component: EmptyLayout,
+    children: [
+      {
+        path: 'list',
+        name: 'Application List',
+        component: () => import('@/components/apply/list')
+      }
+    ]
   }
 ]
 
@@ -56,7 +68,6 @@ export default new Router({
     },
     {
       path: '/',
-      name: 'Layout',
       component: Layout,
       children: [
         {

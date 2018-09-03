@@ -16,8 +16,10 @@ axios.interceptors.response.use(response => {
   const code = error.response.status
   const message = error.response.data.message
   if (code === 401) {
-    router.app.$message.error(message)
-    router.push('/login')
+    if (!router.history.current.path.contains('login') && !router.history.current.path.contains('register')) {
+      router.app.$message.error(message)
+      router.push('/login')
+    }
   } else if (code === 404) {
     router.app.$message.error('Page Not Found.')
     router.push('/')
