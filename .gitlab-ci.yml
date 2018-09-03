@@ -10,8 +10,6 @@ cache:
   - node_modules/
 
 build:
-  tags:
-    - maven
   stage: build
   script:
   - npm install
@@ -24,8 +22,6 @@ docker-build:
   image: docker:latest
   services:
   - docker:dind
-  tags:
-  - maven
   stage: deploy
   script:
   - ls -al
