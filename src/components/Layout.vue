@@ -64,7 +64,7 @@ export default {
     this.$route.path.split('/').forEach(tr => {
       if (tr.length > 0) this.breads.push(tr)
     })
-    // this.$fetchUser()
+    this.$fetchUser()
   },
   methods: {
     handleRoute (e) {

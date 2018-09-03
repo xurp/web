@@ -15,9 +15,9 @@ Vue.window = Vue.prototype.window = window
 export const fetchUser = () => axios.get('auth').then(r => {
   window.user = r.data
   return r
-}).catch(error => {
+}).catch(e => {
   router.push('/login')
-  console.log(error)
+  return e
 })
 
 window.user = {}
