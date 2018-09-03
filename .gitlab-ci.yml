@@ -23,8 +23,12 @@ docker-build:
   services:
   - docker:dind
   stage: deploy
+  variables:
+    DOCKER_IMAGE_NAME: registry.paas.workslan/jobhere/jobhere:$CI_COMMIT_REF_NAME
   script:
-  - echo $CI_COMMIT_REF_NAME
-  - echo "Building docker image"
-  - docker build -t registry.paas.workslan/jobhere/jobhere .
-  - docker images
+  - echo "Building docker image $DOCKER_IMAGE_NAME"
+#  - docker build -t $DOCKER_IMAGE_NAME .
+#  - docker login --username $DOCKER_HARBOR_USERNAME --password $DOCKER_HARBOR_PASSWORD
+#  - docker push $DOCKER_IMAGE_NAME
+#  - yosolo login --username $DOCKER_HARBOR_USERNAME --password $DOCKER_HARBOR_PASSWORD
+#  - yosolo deploy update -a=jobhere -e=sh-stm --image=$DOCKER_IMAGE_NAME
