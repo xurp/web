@@ -22,10 +22,10 @@ docker-build:
   image: docker:latest
   services:
   - name: docker:dind
-    command:
-    - /bin/sh
-    - -c
-    - wget https://docs.paas.workslan/_downloads/paas.crt -O /usr/local/share/ca-certificates/paas.crt && update-ca-certificates && dockerd-entrypoint.sh || exit
+#    command:
+#    - /bin/sh
+#    - -c
+#    - wget https://docs.paas.workslan/_downloads/paas.crt -O /usr/local/share/ca-certificates/paas.crt && update-ca-certificates && dockerd-entrypoint.sh || exit
   stage: deploy
 #  only:
 #  - tags
