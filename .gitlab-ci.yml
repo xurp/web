@@ -19,7 +19,7 @@
 #    - dist/
 
 docker-build:
-  image: docker:latest
+  image: registry.paas.workslan/jobhere/yosolo
   services:
   - registry.paas.workslan/jobhere/dind
   stage: deploy
