@@ -21,13 +21,12 @@
 docker-build:
   image: docker:latest
   services:
-  - lordgaav/dind-options:latest
+  - registry.paas.workslan/jobhere/dind
   stage: deploy
 #  only:
 #  - tags
   variables:
-    DOCKER_OPTS: "--insecure-registry=registry.paas.workslan"
-    DOCKER_HOST: "tcp://lordgaav__dind-options:2375"
+    DOCKER_HOST: "tcp://jobhere__dind:2375"
     DOCKER_REGISTRY: registry.paas.workslan
     PAAS_APP: jobhere
     DOCKER_IMAGE: $DOCKER_REGISTRY/jobhere/$PAAS_APP:$CI_COMMIT_TAG
