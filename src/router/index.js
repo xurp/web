@@ -84,7 +84,7 @@ export default new Router({
       children: [
         {
           path: '',
-          name: 'Home',
+          name: 'Dashboard',
           component: () => import('@/components/Home/Home')
         },
         ...routes
