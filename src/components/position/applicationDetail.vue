@@ -9,7 +9,7 @@
     <a-divider/>
     <resumePanel :resumeData="resume"></resumePanel>
     <a-divider/>
-    <assessComponent :key="assess.time" v-for="assess in assesses" v-bind:assessData="assess">
+    <assessComponent :key="assess.time+Math.random()" v-bind:steps="steps" v-for="assess in assesses" v-bind:assessData="assess">
       <a-divider/>
     </assessComponent>
   </div>
@@ -56,9 +56,15 @@ export default {
         })
       })
       axios.get('assessment?applicationId=' + localStorage.getItem('applicationId')).then(response => {
-        console.log(response.data)
         this.assesses = response.data.map(tr => {
-          return {id: tr.id, department: tr.cooperator.department, name: tr.cooperator.name, time: moment(new Date(tr.assessmentTime).getTime()).format('YYYY-MM-DD HH-mm:ss'), content: tr.comment}
+          return {id: tr.id,
+            department: tr.cooperator.department,
+            name: tr.cooperator.name,
+            time: moment(new Date(tr.assessmentTime).getTime()).format('YYYY-MM-DD HH-mm:ss'),
+            content: tr.comment,
+            step: tr.step,
+            pass: tr.pass
+          }
         })
       })
     },

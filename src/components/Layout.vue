@@ -87,7 +87,6 @@ export default {
       })
     },
     pageHistories () {
-      console.log('page history changed')
       localStorage.setItem('page-history', JSON.stringify(this.pageHistories))
     }
   },

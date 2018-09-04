@@ -1,10 +1,14 @@
 <template>
   <div class="assess-container">
-    <div class="assess-header">
+    <div class="assess-header" style="position:relative">
       <div class="assess-person">
         <span class="assess-depart">{{assessData.department}}</span>
         /
         <span class="assess-name">{{assessData.name}}</span>
+      </div>
+      <div class="assess-result">
+        <div class="assess-stepname">{{stepName}}</div>
+        <div class="assess-pass"><a-tag v-bind:color="getTagColor()">{{assessData.pass}}</a-tag></div>
       </div>
       <div class="assess-time">
         {{assessData.time}}
@@ -20,8 +24,30 @@
 <script>
 export default {
   name: 'assessComponent',
+  data () {
+    return {
+      stepName: ''
+    }
+  },
   props: {
-    assessData: {}
+    assessData: {},
+    steps: {
+      type: Array
+    }
+  },
+  created () {
+    const curStep = this.steps.find(tr => tr.index === parseFloat(this.assessData.step))
+    this.stepName = curStep === undefined ? '' : curStep.name
+  },
+  methods: {
+    getTagColor () {
+      const mp = {
+        assessing: 'pink',
+        fail: 'red',
+        pass: 'green'
+      }
+      return mp[this.assessData.pass]
+    }
   }
 }
 </script>
@@ -44,10 +70,27 @@ export default {
           font-weight: bold;
         }
       }
+
+      .assess-result{
+        position: absolute;
+        left: 0;
+        right: 0;
+        width: 35%;
+        margin: auto;
+        height: 35px;
+        text-align:center;
+
+        .assess-stepname{
+          font-size: 18px;
+          font-family: 微软雅黑;
+          font-weight: bold;
+          float: left;
+        }
+      }
+
       .assess-time{
         float: right;
         font-size: 12px;
-        padding-right: 10px;
         color: #8c8c8c;
       }
     }
