@@ -26,6 +26,7 @@ docker-build:
 #  only:
 #  - tags
   variables:
+    DOCKER_OPTS: "--insecure-registry=registry.paas.workslan"
     DOCKER_HOST: "tcp://jobhere__dind:2375"
     DOCKER_REGISTRY: registry.paas.workslan
     PAAS_APP: jobhere
