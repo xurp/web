@@ -20,6 +20,7 @@ module.exports = {
       '/api': {
         target: cc.apiHost,
         changeOrigin: true,
+        secure: false,
         pathRewrite: {
           '^/api': cc.apiPrefix
         }
