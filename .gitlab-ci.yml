@@ -5,26 +5,26 @@
 
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
-#cache:
-#  paths:
-#  - node_modules/
+cache:
+  paths:
+  - node_modules/
 
-#build:
-#  stage: build
-#  script:
-#  - npm install
-#  - npm run build
-#  artifacts:
-#    paths:
-#    - dist/
+build:
+  stage: build
+  script:
+  - npm install
+  - npm run build
+  artifacts:
+    paths:
+    - dist/
 
 docker-build:
   image: registry.paas.workslan/jobhere/yosolo
   services:
   - registry.paas.workslan/jobhere/dind
   stage: deploy
-#  only:
-#  - tags
+  only:
+  - tags
   variables:
     DOCKER_HOST: "tcp://registry.paas.workslan__jobhere__dind:2375"
     DOCKER_REGISTRY: registry.paas.workslan
@@ -35,7 +35,8 @@ docker-build:
   - yosolo login --username $DOCKER_HARBOR_USERNAME --password $DOCKER_HARBOR_PASSWORD
   script:
   - echo "Building docker image $DOCKER_IMAGE"
-#  - docker build -t $DOCKER_IMAGE .
-#  - docker push $DOCKER_IMAGE
-  - echo "Deploying $PAAS_APP to paas"
-#  - yosolo deploy update -a=$PAAS_APP -e=sh-stm --image=$DOCKER_IMAGE
+  - docker build -t $DOCKER_IMAGE .
+  - echo "Pushing docker image $DOCKER_IMAGE"
+  - docker push $DOCKER_IMAGE
+  - echo "Deploying PaaS app $PAAS_APP"
+  - yosolo deploy update -a=$PAAS_APP -e=sh-stm --image=$DOCKER_IMAGE
