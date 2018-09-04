@@ -7,7 +7,7 @@
              :pagination="false"
              :loading="listLoading">
       <span slot="action" slot-scope="text, record">
-        <router-link :to="{name: 'Application List', params: { id: record.id } }">DETAIL</router-link>
+        <!--<router-link :to="{name: 'Application List', params: { id: record.id } }">DETAIL</router-link>-->
         <a-button v-on:click="detailPosition(record)">Detail</a-button>
         <a-divider type="vertical" />
         <a-button v-on:click="modifyPosition(record)">Modify</a-button>
@@ -137,19 +137,21 @@ export default {
       })
     },
     detailPosition (record) {
-      this.popVisible = true
-      this.viewMode = true
-      this.popTitle = 'Detail ' + record.name
-      this.tmpData = {
-        id: record.id,
-        name: record.name,
-        detail: record.detail,
-        createTime: record.createTime,
-        updateTime: record.updateTime,
-        count: record.count,
-        department: record.department,
-        remark: record.remark
-      }
+      localStorage.setItem('positionId', record.id)
+      this.$router.push({name: 'Application List'})
+      // this.popVisible = true
+      // this.viewMode = true
+      // this.popTitle = 'Detail ' + record.name
+      // this.tmpData = {
+      //   id: record.id,
+      //   name: record.name,
+      //   detail: record.detail,
+      //   createTime: record.createTime,
+      //   updateTime: record.updateTime,
+      //   count: record.count,
+      //   department: record.department,
+      //   remark: record.remark
+      // }
     },
     modifyPosition (record) {
       this.popTitle = 'Modify ' + record.name

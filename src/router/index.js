@@ -20,13 +20,13 @@ export const routes = [
         component: () => import('@/components/position/index')
       },
       {
-        path: ':id',
+        path: 'applicationlist',
         name: 'Application List',
         component: () => import('@/components/position/applicationList'),
         hidden: true
       },
       {
-        path: 'application/:id',
+        path: 'application',
         name: 'Application Detail',
         component: () => import('@/components/position/applicationDetail'),
         hidden: true

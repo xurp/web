@@ -21,8 +21,9 @@ axios.interceptors.response.use(response => {
       router.push('/login')
     }
   } else if (code === 404) {
-    router.app.$message.error('Page Not Found.')
-    router.push('/')
+    // router.app.$message.error('Page Not Found.')
+    // router.push('/')
+    router.app.$message.error(message === 'No message available' ? 'Backend api not found' : message)
   } else {
     router.app.$message.error(message)
   }
