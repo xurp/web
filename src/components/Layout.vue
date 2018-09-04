@@ -1,7 +1,7 @@
 <template>
   <a-layout class="layout">
     <a-layout-header class="header">
-      <div class="logo" @click="$router.push('/')">Job Here</div>
+      <div class="logo" @click="handleNavRoute({key: '/'})">Job Here</div>
       <a-menu
         theme="dark"
         mode="horizontal"
@@ -19,7 +19,7 @@
           :selectedKeys="[$route.path]"
           :defaultOpenKeys="routes.map(o => o.path)"
           :style="{ height: '100%', borderRight: 0 }"
-          @click="handleRoute"
+          @click="handleNavRoute"
         >
           <template v-for="route in routes" v-if="checkVisible(route)">
             <template v-if="route.children">
@@ -41,7 +41,7 @@
       <a-layout style="padding: 0 24px 24px">
         <a-breadcrumb style="margin: 16px 0">
           <a-breadcrumb-item v-for="(bread, idx) in breads" :key="idx">
-            <router-link :to="bread.to">{{bread.name}}</router-link>
+            <a @click="handleBreadRoute(idx)">{{bread.name}}</a>
           </a-breadcrumb-item>
         </a-breadcrumb>
         <a-layout-content :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }">
@@ -56,45 +56,61 @@
 import { routes } from '../router'
 export default {
   data () {
+    let pageHistories = localStorage.getItem('page-history')
+    try {
+      pageHistories = JSON.parse(pageHistories)
+      if (!(pageHistories instanceof Array)) {
+        pageHistories = []
+      }
+    } catch (e) {
+      pageHistories = []
+    }
     return {
       routes,
-      menus: []
+      menus: [],
+      pageHistories
     }
   },
   computed: {
     breads () {
-      const matcher = this.$router.matcher.match
-      let path = ''
       return [
         {name: 'Home', to: '/'},
-        ...this.$route.path.split('/').map(o => {
-          if (!o) {
-            return null
-          }
-          path += '/' + o
-          const match = matcher(path)
-          if (match && match.name) {
-            return {
-              name: match.name,
-              to: match.path
-            }
-          } else {
-            return null
-          }
-        }).filter(o => o !== null)
+        ...this.pageHistories
       ]
+    }
+  },
+  watch: {
+    $route () {
+      this.pageHistories.push({
+        name: this.$route.name,
+        to: this.$route.path
+      })
+    },
+    pageHistories () {
+      console.log('page history changed')
+      localStorage.setItem('page-history', JSON.stringify(this.pageHistories))
     }
   },
   created () {
     this.$fetchUser()
   },
   methods: {
-    handleRoute (e) {
-      this.breads.splice(0, this.breads.length)
-      e.key.split('/').forEach(tr => {
-        if (tr.length > 0) this.breads.push(tr)
-      })
+    handleNavRoute (e) {
+      if (this.$route.path !== e.key) {
+        this.pageHistories = []
+      }
       this.$router.push(e.key)
+    },
+    handleBreadRoute (idx) {
+      if (idx === 0) { // Home
+        this.pageHistories = []
+        this.$router.push('/')
+      } else if (idx === this.pageHistories.length) { // current
+      } else {
+        const route = this.pageHistories[idx - 1]
+        this.pageHistories = this.pageHistories.slice(0, idx - 1)
+        this.$router.push(route.to)
+      }
     },
     logout () {
       localStorage.removeItem('token')

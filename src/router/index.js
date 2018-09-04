@@ -21,8 +21,14 @@ export const routes = [
       },
       {
         path: ':id',
-        name: 'Position Detail',
-        component: () => import('@/components/position/detail'),
+        name: 'Application List',
+        component: () => import('@/components/position/applicationList'),
+        hidden: true
+      },
+      {
+        path: 'application/:id',
+        name: 'Application Detail',
+        component: () => import('@/components/position/applicationDetail'),
         hidden: true
       }
     ]
@@ -52,14 +58,14 @@ export const routes = [
     ]
   },
   {
-    path: 'apply',
-    name: 'Apply',
+    path: 'job',
+    name: 'Job',
     component: EmptyLayout,
     children: [
       {
         path: '',
-        name: 'Application List',
-        component: () => import('@/components/apply/list')
+        name: 'Job List',
+        component: () => import('@/components/job/list')
       }
     ]
   }
@@ -78,7 +84,7 @@ export default new Router({
       children: [
         {
           path: '',
-          name: 'Home',
+          name: 'Dashboard',
           component: () => import('@/components/Home/Home')
         },
         ...routes
