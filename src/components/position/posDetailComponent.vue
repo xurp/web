@@ -1,7 +1,7 @@
 <template>
   <div class="posdetail-container">
     <a-form>
-      <a-col :span="8" class="firstcol">
+      <a-col :span="8">
         <a-form-item label="Name" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
           <a-input v-bind:disabled="disableEdit" v-model="curPosition.name"></a-input>
         </a-form-item>
@@ -11,7 +11,7 @@
           <a-input v-bind:disabled="disableEdit" v-model="curPosition.department"></a-input>
         </a-form-item>
       </a-col>
-      <a-col :span="8" class="firstcol">
+      <a-col :span="8">
         <a-form-item label="createTime" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
           <a-input v-bind:disabled="disableEdit" v-model="curPosition.createTime"></a-input>
         </a-form-item>
@@ -21,7 +21,7 @@
           <a-input v-bind:disabled="disableEdit" v-model="curPosition.updateTime"></a-input>
         </a-form-item>
       </a-col>
-      <a-col :span="8" class="firstcol">
+      <a-col :span="8">
         <a-form-item label="Count" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
           <a-input v-bind:disabled="disableEdit" v-model="curPosition.count"></a-input>
         </a-form-item>
@@ -31,7 +31,7 @@
           <a-input v-bind:disabled="disableEdit" v-model="curPosition.remark"></a-input>
         </a-form-item>
       </a-col>
-      <a-col :span="20" class="firstcol">
+      <a-col :span="20">
         <a-form-item label="Detail" :labelCol="{span: 2}" :wrapperCol="{span: 22}">
           <a-textarea v-bind:disabled="disableEdit" v-model="curPosition.detail" :autosize="{ minRows: 2, maxRows: 6 }"></a-textarea>
       </a-form-item>

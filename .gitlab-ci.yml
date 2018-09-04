@@ -21,16 +21,20 @@ build:
 docker-build:
   image: docker:latest
   services:
-  - docker:dind
+  - name: docker:dind
+    command:
+    - /bin/sh
+    - -c
+    - wget https://docs.paas.workslan/_downloads/paas.crt -O /usr/local/share/ca-certificates/paas.crt && update-ca-certificates && dockerd-entrypoint.sh || exit
   stage: deploy
-  only:
-  - tags
+#   only:
+#   - tags
   variables:
     DOCKER_IMAGE_NAME: registry.paas.workslan/jobhere/jobhere:$CI_COMMIT_TAG
   script:
   - echo "Building docker image $DOCKER_IMAGE_NAME"
   - docker build -t $DOCKER_IMAGE_NAME .
-  - docker login --username $DOCKER_HARBOR_USERNAME --password $DOCKER_HARBOR_PASSWORD
+  - docker login registry.paas.workslan --username $DOCKER_HARBOR_USERNAME --password $DOCKER_HARBOR_PASSWORD
   - docker push $DOCKER_IMAGE_NAME
   - yosolo login --username $DOCKER_HARBOR_USERNAME --password $DOCKER_HARBOR_PASSWORD
   - yosolo deploy update -a=jobhere -e=sh-stm --image=$DOCKER_IMAGE_NAME

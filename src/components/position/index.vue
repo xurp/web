@@ -7,7 +7,7 @@
              :pagination="false"
              :loading="listLoading">
       <span slot="action" slot-scope="text, record">
-        <router-link :to="'/position/applicationlist/' + record.id">DETAIL</router-link>
+        <router-link :to="{name: 'Application List', params: { id: record.id } }">DETAIL</router-link>
         <a-button v-on:click="detailPosition(record)">Detail</a-button>
         <a-divider type="vertical" />
         <a-button v-on:click="modifyPosition(record)">Modify</a-button>
@@ -202,7 +202,6 @@ export default {
       this.popTitle = 'Create New Position'
       this.createMode = true
       this.tmpData = {}
-      console.log('aaa')
       this.viewMode = false
       this.popVisible = true
     }
