@@ -12,6 +12,12 @@
     <assessComponent :key="assess.time+Math.random()" v-bind:steps="steps" v-for="assess in assesses" v-bind:assessData="assess">
       <a-divider/>
     </assessComponent>
+    <div slot="footer">
+      <a-button v-on:click="handleOperation">Operation</a-button>
+    </div>
+    <a-modal :confirmLoading="false" :title="'哈哈哈哈中'" :visible="popVisible" v-on:cancel="handleOperationCancel" :onOk="handleOperationOk" :maskClosable="false" :closable="true">
+      <div>sdfsdfsdfs</div>
+    </a-modal>
   </div>
 </template>
 
@@ -32,7 +38,8 @@ export default {
       steps: [],
       stepIndex: 0,
       resume: {},
-      assesses: []
+      assesses: [],
+      popVisible: false
     }
   },
   created () {
@@ -91,6 +98,16 @@ export default {
       } else {
         return false
       }
+    },
+    handleOperation () {
+      this.popVisible = true
+    },
+    handleOperationOk () {
+      this.popVisible = false
+    },
+    handleOperationCancel () {
+      this.popVisible = false
+      console.log(this.popVisible)
     }
   }
 }
