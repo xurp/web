@@ -9,12 +9,10 @@
     <a-divider/>
     <resumePanel :resumeData="resume"></resumePanel>
     <a-divider/>
-    <assessComponent :key="assess.time+Math.random()" v-bind:steps="steps" v-for="assess in assesses" v-bind:assessData="assess">
-      <a-divider/>
-    </assessComponent>
+    <assessComponent v-bind:steps="steps" v-bind:assesses="assesses"></assessComponent>
     <div class="bottom-container" slot="footer">
-      <a-button :disabled="!(assesses.length > 0 && assesses[assesses.length - 1]==='fail')" class="fail-btn" type="danger" v-on:click="handleDecline">Decline</a-button>
-      <a-button :disabled="!(assesses.length > 0 && assesses[assesses.length - 1]==='pass')" class="next-btn" type="primary" v-on:click="handleNextStep">Next</a-button>
+      <a-button :disabled="!(assesses.length > 0 && assesses[assesses.length - 1].pass==='fail' || stepIndex ==0)" class="fail-btn" type="danger" v-on:click="handleDecline">Decline</a-button>
+      <a-button :disabled="!(assesses.length > 0 && assesses[assesses.length - 1].pass==='pass' || stepIndex ==0)" class="next-btn" type="primary" v-on:click="handleNextStep">Next</a-button>
     </div>
     <a-modal class="mail-modal" :confirmLoading="mailConfirmLoading" width="680px" okText="Send" :title="'operation for ' + resume.name" :visible="popMailVisible" v-on:cancel="handleMailCancel" @ok="handleMailSend" :maskClosable="false" :closable="true">
       <div class="mail-form-container">
@@ -136,6 +134,7 @@ export default {
             pass: tr.pass
           }
         })
+        console.log(this.assesses)
       })
     },
     getStepStatus (curStep) {
