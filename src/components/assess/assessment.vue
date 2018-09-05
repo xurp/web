@@ -47,9 +47,6 @@ export default {
         this.assesses = response.data.assessments
         this.steps = response.data.stepList
         this.applicationId = response.data.applicationId
-        if (this.assesses === undefined || this.assesses.length === 0) {
-          this.finished = true
-        }
       }, error => {
         console.log(error)
         this.finished = true

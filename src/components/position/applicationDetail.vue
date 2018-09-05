@@ -163,7 +163,7 @@ export default {
     },
     handleNextStep () {
       this.assessId = uuid('http://localhost:4000/assessment/?', uuid.URL)
-      let url = location.origin + '/' + location.pathname + '/#/assessment/'
+      let url = location.origin + '/' + location.pathname + '/#/assess/'
       url = url.replace(/([^(http:)])\/{2,}/gi, '$1/')
       this.mail.content = this.baseMailContent + url + this.assessId
       this.mail.subject = this.baseMailSubject + this.resume.name
