@@ -99,6 +99,11 @@ export default new Router({
       path: '/black',
       name: 'Black Page',
       component: () => import('@/components/login/blackpage')
+    },
+    {
+      path: '/assess/:id',
+      name: 'Assess',
+      component: () => import('@/components/assess/assessment')
     }
   ]
 })

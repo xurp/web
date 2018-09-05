@@ -1,23 +1,27 @@
 <template>
   <div class="assess-container">
-    <div class="assess-header" style="position:relative">
-      <div class="assess-person">
-        <span class="assess-depart">{{assessData.department}}</span>
-        /
-        <span class="assess-name">{{assessData.name}}</span>
+    <template v-for="assessData in assesses">
+      <div :key="assessData.step + Math.random()">
+        <div class="assess-header" style="position:relative">
+          <div class="assess-person">
+            <span class="assess-depart">{{assessData.department}}</span>
+            /
+            <span class="assess-name">{{assessData.name}}</span>
+          </div>
+          <div class="assess-result">
+            <div class="assess-stepname">{{getStepName(assessData)}}</div>
+            <div class="assess-pass"><a-tag v-bind:color="getTagColor(assessData)">{{assessData.pass}}</a-tag></div>
+          </div>
+          <div class="assess-time">
+            {{assessData.time}}
+          </div>
+        </div>
+        <div :key="assessData.step + Math.random()" class="assess-content">
+          {{assessData.content}}
+        </div>
+        <a-divider/>
       </div>
-      <div class="assess-result">
-        <div class="assess-stepname">{{stepName}}</div>
-        <div class="assess-pass"><a-tag v-bind:color="getTagColor()">{{assessData.pass}}</a-tag></div>
-      </div>
-      <div class="assess-time">
-        {{assessData.time}}
-      </div>
-    </div>
-    <div class="assess-content">
-      {{assessData.content}}
-    </div>
-    <slot></slot>
+    </template>
   </div>
 </template>
 
@@ -26,27 +30,32 @@ export default {
   name: 'assessComponent',
   data () {
     return {
-      stepName: ''
     }
   },
   props: {
-    assessData: {},
+    assesses: {
+      type: Array
+    },
     steps: {
       type: Array
     }
   },
   created () {
-    const curStep = this.steps.find(tr => tr.index === parseFloat(this.assessData.step))
-    this.stepName = curStep === undefined ? '' : curStep.name
+    // const curStep = this.steps.find(tr => tr.index === parseFloat(this.assessData.step))
+    // this.stepName = curStep === undefined ? '' : curStep.name
   },
   methods: {
-    getTagColor () {
+    getTagColor (assessData) {
       const mp = {
         assessing: 'pink',
         fail: 'red',
         pass: 'green'
       }
-      return mp[this.assessData.pass]
+      return mp[assessData.pass]
+    },
+    getStepName (assessData) {
+      const curStep = this.steps.find(tr => tr.index === parseFloat(assessData.step))
+      return curStep === undefined ? '' : curStep.name
     }
   }
 }
@@ -99,9 +108,16 @@ export default {
       margin-top: 10px;
       word-break: break-all;
       word-wrap: break-word;
-      font-size: 14px;
+      /*font-size: 14px;*/
       line-height: 24px;
-      color: #282828;
+      /*color: #282828;*/
+
+      font-family: 微软雅黑;
+      color: #777777;
+      font-size: 15px;
+      letter-spacing: 1.5px;
+      word-spacing: 3px;
+      line-break: loose;
     }
   }
 
