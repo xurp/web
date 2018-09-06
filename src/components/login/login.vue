@@ -49,7 +49,7 @@ export default{
       axios.post('auth', this.loginForm).then(tr => {
         localStorage.setItem('token', tr.data.token)
         this.$fetchUser().then(r => {
-          if (r.data.role === 'hr-n') {
+          if (r.data.role === 'statistics-n') {
             this.$router.push('/black')
           } else {
             this.$router.push('/')

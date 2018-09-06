@@ -6,9 +6,12 @@ import router from './router'
 import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
 import axios from './service'
+import VCharts from 'v-charts'
 
 Vue.config.productionTip = false
 Vue.use(Antd)
+
+Vue.use(VCharts)
 
 Vue.window = Vue.prototype.window = window
 
@@ -24,9 +27,9 @@ window.user = {}
 Vue.$fetchUser = Vue.prototype.$fetchUser = fetchUser
 
 Vue.$roleMap = Vue.prototype.$roleMap = {
-  'hr': ['Position', 'Review', 'Offer'],
-  'candidate': ['Resume', 'Job'],
-  'admin': ['Review']
+  'hr': ['Dashboard', 'Position', 'Review', 'Offer'],
+  'candidate': ['Dashboard', 'Resume', 'Job'],
+  'admin': ['Dashboard', 'Review']
 }
 
 const loadApp = async () => {

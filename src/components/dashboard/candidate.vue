@@ -1,12 +1,13 @@
 <template>
-  <div>Home page works</div>
+  <div>candidate dashboard</div>
 </template>
 
 <script>
 export default {
-  name: 'Home'
+  name: 'candidate-dashboard'
 }
 </script>
 
 <style scoped>
+
 </style>

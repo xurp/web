@@ -228,7 +228,7 @@ export default{
         case 'hr':
           direct = '/black'
           Object.assign(data, this.hrRegForm)
-          data.role = 'hr-n'
+          data.role = 'statistics-n'
           break
       }
       axios.post('auth/register', data).then(tr => {
