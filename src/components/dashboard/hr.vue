@@ -4,9 +4,9 @@
 
 <script>
 export default {
+  name: 'hr-dashboard'
 }
 </script>
 
 <style scoped>
-
 </style>
