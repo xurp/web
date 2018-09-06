@@ -24,9 +24,9 @@ window.user = {}
 Vue.$fetchUser = Vue.prototype.$fetchUser = fetchUser
 
 Vue.$roleMap = Vue.prototype.$roleMap = {
-  'hr': ['Position', 'Review'],
-  'candidate': ['Resume', 'Job'],
-  'admin': ['Review']
+  'hr': ['Dashboard', 'Position', 'Review'],
+  'candidate': ['Dashboard', 'Resume', 'Job'],
+  'admin': ['Dashboard', 'Review']
 }
 
 const loadApp = async () => {

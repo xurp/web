@@ -10,6 +10,11 @@ Vue.use(Router)
 
 export const routes = [
   {
+    path: '',
+    name: 'Dashboard',
+    component: () => import('@/components/dashboard/dashboard')
+  },
+  {
     path: 'position',
     name: 'Position',
     component: EmptyLayout,
@@ -81,14 +86,7 @@ export default new Router({
     {
       path: '/',
       component: Layout,
-      children: [
-        {
-          path: '',
-          name: 'Dashboard',
-          component: () => import('@/components/Home/Home')
-        },
-        ...routes
-      ]
+      children: routes
     },
     {
       path: '/register',
