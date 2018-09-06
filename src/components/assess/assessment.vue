@@ -62,7 +62,7 @@ export default {
         this.applicationId = response.data.applicationId
         console.log(this.assesses)
       }, error => {
-        console.log(error)
+        console.error(error)
         this.finished = true
       })
     },

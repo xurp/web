@@ -94,7 +94,7 @@ export default{
         this.listLoading = false
       }, error => {
         this.listLoading = false
-        console.log(error)
+        console.error(error)
       })
     },
     detailPosition (record) {
@@ -118,7 +118,7 @@ export default{
       }, error => {
         // this.$message.error(error)
         this.btnLoading = false
-        console.log(error)
+        console.error(error)
       })
     }
   }

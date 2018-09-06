@@ -65,4 +65,11 @@ export default {
 
 <style scoped lang="less">
 
+  .ant-input-disabled{
+    background-color: #fefefe;
+    color: #101010;
+    opacity: 1;
+    cursor: not-allowed;
+    border-style: dotted;
+  }
 </style>
