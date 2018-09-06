@@ -75,6 +75,8 @@ export default {
             id: tr.id
           }
         })
+      }, error => {
+        console.error(error)
       })
     },
     detailApplication (record) {

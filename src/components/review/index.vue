@@ -71,7 +71,7 @@ export default {
         this.list = response.data
         this.listLoading = false
       }, error => {
-        console.log(error)
+        console.error(error)
       })
     },
     showDetail (record) {

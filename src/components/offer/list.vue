@@ -1,18 +1,32 @@
 <template>
     <div class="offer-form">
-      <a-table :dataSource="list">
+      <a-table :loading="listLoading" :dataSource="list">
         <a-table-column title="Name" dataIndex="name"></a-table-column>
         <a-table-column title="Department" dataIndex="department"></a-table-column>
         <a-table-column title="Position" dataIndex="position"></a-table-column>
         <a-table-column title="Result" dataIndex="result"></a-table-column>
-        <a-table-column title="Action" key="action" slot-scope="text,record">
-          <span v-if="record.sendStatus!=='sent'"><a @click="openSendOfferModal" @cancel="closeSendOfferModal">Send Offer</a></span>
-          <span v-else>Offer Sent!</span>
+        <a-table-column title="Action" key="action">
+          <span slot-scope="text,record">
+            <span v-if="record.sendStatus!=='1'"><a @click="openSendOfferModal(record)">Send Offer</a></span>
+            <span v-else>Offer Sent!</span>
+          </span>
         </a-table-column>
       </a-table>
 
-      <a-modal :visible="mailModalVisible" :maskClosable="false" :closable="true" @ok="startSendOffer" cancleText="Cancel" okText="Send">
-
+      <a-modal width="680px" :visible="mailModalVisible" :confirmLoading="mailSendLoading" :maskClosable="false" :closable="false" @ok="startSendOffer" @cancel="closeSendOfferModal" cancleText="Cancel" okText="Send">
+        <div class="mail-form-container">
+          <a-form>
+            <a-form-item label="MailTo" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
+              <a-input v-model="mail.email"></a-input>
+            </a-form-item>
+            <a-form-item label="Subject" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
+              <a-input v-model="mail.subject"></a-input>
+            </a-form-item>
+            <a-form-item :labelCol="formLabelCol">
+              <a-textarea v-model="mail.content" :autosize="{maxRows: 12, minRows: 8}"></a-textarea>
+            </a-form-item>
+          </a-form>
+        </div>
       </a-modal>
     </div>
 </template>
@@ -23,8 +37,22 @@ export default {
   name: 'offer-list',
   data () {
     return {
+      listLoading: false,
       list: [],
-      mailModalVisible: false
+      mailModalVisible: false,
+      formLabelCol: {
+        span: 3
+      },
+      formWrapperCol: {
+        span: 20
+      },
+      mail: {
+        email: '',
+        subject: 'you pass',
+        content: 'Congratulations'
+      },
+      curData: {},
+      mailSendLoading: false
     }
   },
   created () {
@@ -32,16 +60,40 @@ export default {
   },
   methods: {
     fetchList () {
+      this.listLoading = true
       axios.get('offer').then(response => {
-        console.log(response.data)
-        this.list = response.data
+        this.list = response.data.map(tr => {
+          return {
+            id: tr.id,
+            name: tr.applicationDTO.resume.name,
+            email: tr.applicationDTO.resume.email,
+            department: tr.applicationDTO.job.department,
+            position: tr.applicationDTO.job.name,
+            result: tr.result,
+            sendStatus: tr.sendStatus
+          }
+        })
+        this.listLoading = false
+      }, error => {
+        console.error(error)
+        this.listLoading = false
       })
     },
-    openSendOfferModal () {
+    openSendOfferModal (record) {
+      this.mail.email = record.email
+      this.curData = Object.assign({}, record)
       this.mailModalVisible = true
     },
     startSendOffer () {
-
+      this.mailSendLoading = true
+      axios.put('offer', {offerId: this.curData.id, receiver: this.mail.email, subject: this.mail.subject, content: this.mail.content}).then(response => {
+        this.mailSendLoading = false
+        this.mailModalVisible = false
+        this.fetchList()
+      }, error => {
+        this.mailSendLoading = false
+        console.error(error)
+      })
     },
     closeSendOfferModal () {
       this.mailModalVisible = false

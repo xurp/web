@@ -133,7 +133,7 @@ export default {
         })
         this.listLoading = false
       }, error => {
-        console.log(error)
+        console.error(error)
       })
     },
     detailPosition (record) {
@@ -187,7 +187,7 @@ export default {
           this.fetchData()
         }, error => {
           this.popLoading = false
-          console.log(error)
+          console.error(error)
         })
       } else {
         axios.put('job/' + this.tmpData.id, postData).then(response => {
@@ -196,7 +196,7 @@ export default {
           this.fetchData()
         }, error => {
           this.popLoading = false
-          console.log(error)
+          console.error(error)
         })
       }
     },

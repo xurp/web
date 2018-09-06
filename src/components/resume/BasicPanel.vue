@@ -83,7 +83,7 @@ export default{
         this.basicInfomation = Object.assign({}, response.data)
         this.infloading = false
       }, error => {
-        console.log(error)
+        console.error(error)
         this.infloading = false
       })
     },
@@ -96,7 +96,7 @@ export default{
         this.$message.success('update success')
         this.fetchData()
       }, error => {
-        console.log(error)
+        console.error(error)
         this.infloading = false
       })
     }

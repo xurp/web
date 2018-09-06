@@ -11,9 +11,10 @@
     <a-divider/>
     <assessComponent v-bind:steps="steps" v-bind:assesses="assesses"></assessComponent>
     <a-divider/>
-    <div v-if="step.indexOf('+')===-1 && step.indexOf('-')===-1 && assesses.length > 0">
+    <div v-if="step.indexOf('+')===-1 && step.indexOf('-')===-1 && assesses.length > 0 && stepIndex!==steps.length-1">
       <a target="_blank" :href="(window.location.origin + '/' + window.location.pathname + '/#/assess/'+assesses[assesses.length-1].id).replace(/([^(http:)])\/{2,}/gi, '$1/')">last assessment url</a>
     </div>
+    <router-link v-if="stepIndex===steps.length-1" :to="{name: 'Offer List'}">Candidate has passed all assessment process, Click to go to offer management.</router-link>
     <div class="bottom-container" slot="footer">
       <a-button :disabled="!(assesses.length > 0 && assesses[assesses.length - 1].pass==='fail' || stepIndex ==0) || step.indexOf('--')>-1" class="fail-btn" type="danger" v-on:click="handleDecline">Decline</a-button>
       <a-button :disabled="!(assesses.length > 0 && assesses[assesses.length - 1].pass==='pass' || stepIndex ==0 && step.indexOf('-')===-1) || stepIndex===steps.length-1" :confirmLoading="nextBtnConfirmLoading" class="next-btn" type="primary" v-on:click="handleNextStep">Next</a-button>
@@ -218,7 +219,7 @@ export default {
         }, error => {
           this.popMailVisible = false
           this.mailConfirmLoading = false
-          console.log(error)
+          console.error(error)
         })
       }
     },
@@ -235,7 +236,7 @@ export default {
         // TODO 重新获取协作者列表
       }, error => {
         this.coopConfirmLoading = false
-        console.log(error)
+        console.error(error)
       })
     },
     /**
