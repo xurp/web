@@ -4,7 +4,7 @@
     <div v-else>
       <resumePanel :resumeData="resume"></resumePanel>
       <a-divider/>
-      <assessPanel v-bind:assesses="assesses" v-bind:steps="steps"></assessPanel>
+      <assessComponent v-bind:steps="steps" v-bind:assesses="assesses"></assessComponent>
       <a-form>
         <a-form-item>
           <a-textarea v-model="assessData.comment" :autosize="{minRows: 3, maxRows: 12}" placeholder="please input your assessment about the job seeker."></a-textarea>
@@ -20,11 +20,12 @@
 
 <script>
 import resumePanel from '../position/resumePanel'
-import assessPanel from '../position/assessComponent'
+import assessComponent from '../position/assessComponent'
 import axios from '../../service'
+import moment from 'moment'
 export default {
   name: 'assessment',
-  components: {resumePanel, assessPanel},
+  components: {resumePanel, assessComponent},
   data () {
     return {
       resume: {},
@@ -33,7 +34,8 @@ export default {
       assessData: {},
       assessId: '',
       finished: false,
-      applicationId: ''
+      applicationId: '',
+      step: ''
     }
   },
   created () {
@@ -43,22 +45,34 @@ export default {
   methods: {
     getData () {
       axios.get('assessment/' + this.assessId).then(response => {
+        console.log(response.data)
         this.resume = response.data.resume
-        this.assesses = response.data.assessments
+        this.assesses = response.data.assessments.map(tr => {
+          return {
+            department: tr.cooperator.department,
+            name: tr.cooperator.name,
+            time: moment(new Date(tr.assessmentTime).getTime()).format('YYYY-MM-DD HH-mm:ss'),
+            content: tr.comment,
+            step: tr.step,
+            pass: tr.pass
+          }
+        })
         this.steps = response.data.stepList
+        this.step = response.data.step
         this.applicationId = response.data.applicationId
+        console.log(this.assesses)
       }, error => {
         console.log(error)
         this.finished = true
       })
     },
     handleAccept () {
-      axios.put('assessment/' + this.assessId, {...this.assessData, id: this.assessId, pass: 'pass', applicationId: this.applicationId}).then(response => {
+      axios.put('assessment/' + this.assessId, {...this.assessData, id: this.assessId, pass: 'pass', applicationId: this.applicationId, step: this.step}).then(response => {
         this.finished = true
       })
     },
     handleDecline () {
-      axios.put('assessment/' + this.assessId, {...this.assessData, id: this.assessId, pass: 'fail', applicationId: this.applicationId}).then(response => {
+      axios.put('assessment/' + this.assessId, {...this.assessData, id: this.assessId, pass: 'fail', applicationId: this.applicationId, step: this.step}).then(response => {
         this.finished = true
       })
     }

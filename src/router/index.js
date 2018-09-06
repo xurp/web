@@ -68,6 +68,18 @@ export const routes = [
         component: () => import('@/components/job/list')
       }
     ]
+  },
+  {
+    path: 'offer',
+    name: 'Offer',
+    component: EmptyLayout,
+    children: [
+      {
+        path: '',
+        name: 'Offer List',
+        component: () => import('@/components/offer/list')
+      }
+    ]
   }
 ]
 
