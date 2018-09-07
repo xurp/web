@@ -110,8 +110,13 @@ export default {
     this.fetchData()
     this.receivers.push({
       id: 1,
-      name: 'ZhangZhe',
-      department: 'develop',
+      name: 'Staff',
+      department: 'Delivery',
+      email: '896028602@qq.com'
+    },{
+      id:2,
+      name: 'Manager',
+      department: 'Delivery',
       email: '896028602@qq.com'
     })
   },
