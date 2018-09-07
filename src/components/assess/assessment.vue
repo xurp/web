@@ -19,8 +19,8 @@
 </template>
 
 <script>
-import resumePanel from '../position/resumePanel'
-import assessComponent from '../position/assessComponent'
+import resumePanel from '../application/resumePanel'
+import assessComponent from '../application/assessComponent'
 import axios from '../../service'
 import moment from 'moment'
 export default {

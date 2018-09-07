@@ -15,6 +15,18 @@ export const routes = [
     component: () => import('@/components/dashboard/dashboard')
   },
   {
+    path: 'audit',
+    name: 'Audit',
+    component: EmptyLayout,
+    children: [
+      {
+        path: '',
+        name: 'HR Audit',
+        component: () => import('@/components/review/index')
+      }
+    ]
+  },
+  {
     path: 'position',
     name: 'Position',
     component: EmptyLayout,
@@ -23,17 +35,29 @@ export const routes = [
         path: '',
         name: 'Position List',
         component: () => import('@/components/position/index')
+      }
+    ]
+  },
+  {
+    path: 'application',
+    name: 'Application',
+    component: EmptyLayout,
+    children: [
+      {
+        path: '',
+        name: 'Job List',
+        component: () => import('@/components/application/jobList')
       },
       {
         path: 'applicationlist',
         name: 'Application List',
-        component: () => import('@/components/position/applicationList'),
+        component: () => import('@/components/application/applicationList'),
         hidden: true
       },
       {
         path: 'application',
         name: 'Application Detail',
-        component: () => import('@/components/position/applicationDetail'),
+        component: () => import('@/components/application/applicationDetail'),
         hidden: true
       }
     ]
@@ -47,18 +71,6 @@ export const routes = [
         path: 'edit',
         name: 'Resume edit',
         component: () => import('@/components/resume/index')
-      }
-    ]
-  },
-  {
-    path: 'review',
-    name: 'Review',
-    component: EmptyLayout,
-    children: [
-      {
-        path: '',
-        name: 'Review List',
-        component: () => import('@/components/review/index')
       }
     ]
   },

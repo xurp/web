@@ -113,8 +113,8 @@ export default {
       name: 'Staff',
       department: 'Delivery',
       email: '896028602@qq.com'
-    },{
-      id:2,
+    }, {
+      id: 2,
       name: 'Manager',
       department: 'Delivery',
       email: '896028602@qq.com'

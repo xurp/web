@@ -137,21 +137,21 @@ export default {
       })
     },
     detailPosition (record) {
-      localStorage.setItem('positionId', record.id)
-      this.$router.push({name: 'Application List'})
-      // this.popVisible = true
-      // this.viewMode = true
-      // this.popTitle = 'Detail ' + record.name
-      // this.tmpData = {
-      //   id: record.id,
-      //   name: record.name,
-      //   detail: record.detail,
-      //   createTime: record.createTime,
-      //   updateTime: record.updateTime,
-      //   count: record.count,
-      //   department: record.department,
-      //   remark: record.remark
-      // }
+      // localStorage.setItem('positionId', record.id)
+      // this.$router.push({name: 'Application List'})
+      this.popVisible = true
+      this.viewMode = true
+      this.popTitle = 'Detail ' + record.name
+      this.tmpData = {
+        id: record.id,
+        name: record.name,
+        detail: record.detail,
+        createTime: record.createTime,
+        updateTime: record.updateTime,
+        count: record.count,
+        department: record.department,
+        remark: record.remark
+      }
     },
     modifyPosition (record) {
       this.popTitle = 'Modify ' + record.name
