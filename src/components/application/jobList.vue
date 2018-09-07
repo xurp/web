@@ -7,52 +7,9 @@
              :pagination="false"
              :loading="listLoading">
       <span slot="action" slot-scope="text, record">
-        <!--<router-link :to="{name: 'Application List', params: { id: record.id } }">DETAIL</router-link>-->
-        <a-button v-on:click="detailPosition(record)">Detail</a-button>
-        <a-divider type="vertical" />
-        <a-button v-on:click="modifyPosition(record)">Modify</a-button>
-        <!--<a-divider type="vertical" />-->
-        <!--<a-popconfirm-->
-          <!--title="Sure to delete?"-->
-          <!--@confirm="() => deletePosition(record.key)">-->
-          <!--<a-button v-on:click="deletePosition">Delete</a-button>-->
-        <!--</a-popconfirm>-->
-
+        <a v-on:click="detailPosition(record)">Application Management</a>
     </span>
     </a-table>
-
-    <a-modal v-model="popVisible" :title="popTitle" onOk="handleOk" class="pop-model" :maskClosable="false">
-      <a-form>
-        <a-form-item label="Name" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
-          <a-input v-model="tmpData.name" v-bind:disabled="viewMode" placeholder="Position name"></a-input>
-        </a-form-item>
-        <a-form-item label="Detail" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
-          <a-textarea v-model="tmpData.detail" v-bind:disabled="viewMode" placeholder="Position detail"></a-textarea>
-        </a-form-item>
-        <a-form-item label="Amount" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
-          <a-input-number class="detail-num" v-model="tmpData.count" v-bind:disabled="viewMode" placeholder="Recruitment count"></a-input-number>
-        </a-form-item>
-        <a-form-item label="Department" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
-          <a-input v-model="tmpData.department" v-bind:disabled="viewMode" placeholder="Recruitment department"></a-input>
-        </a-form-item>
-        <a-form-item label="Remark" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
-          <a-input v-model="tmpData.remark" v-bind:disabled="viewMode" placeholder="remark"></a-input>
-        </a-form-item>
-        <a-form-item label="CreateAt" :labelCol="formLabelCol" :wrapperCol="formWrapCol" v-if="viewMode">
-            <a-input v-model="tmpData.createTime" v-bind:disabled="viewMode" placeholder="createAt"></a-input>
-        </a-form-item>
-        <a-form-item label="UpdateAt" :labelCol="formLabelCol" :wrapperCol="formWrapCol" v-if="viewMode">
-          <a-input v-model="tmpData.updateTime" v-bind:disabled="viewMode" placeholder="updateAt"></a-input>
-        </a-form-item>
-      </a-form>
-      <template slot="footer" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
-        <a-button key="back" @click="handlePopCancel">Cancel</a-button>
-        <a-button key="submit" type="primary"  v-if="!viewMode" :loading="popLoading" @click="handlePopOK">
-          OK
-        </a-button>
-      </template>
-    </a-modal>
-    <a-button class="position-create" v-on:click="handleCreate">Create New Position</a-button>
   </div>
 </template>
 
@@ -70,16 +27,10 @@ export default {
       popLoading: false,
       viewMode: true,
       popTitle: '',
-      createMode: false,
       formLabelCol: {xs: { span: 24 }, sm: { span: 5 }},
       formWrapCol: {xs: { span: 24 }, sm: { span: 18 }},
       columns: [
-        /* {
-          title: 'Id',
-          dataIndex: 'id',
-          key: 'id',
-          visible: false
-        }, */ {
+        {
           title: 'Name',
           dataIndex: 'name',
           key: 'name'
@@ -91,11 +42,7 @@ export default {
           title: 'UpdateAt',
           dataIndex: 'updateTime',
           key: 'updateTime'
-        }, /* {
-          title: 'Detail',
-          dataIndex: 'detail',
-          key: 'detail'
-        }, */ {
+        }, {
           title: 'Amount',
           dataIndex: 'count',
           key: 'count'
@@ -137,75 +84,8 @@ export default {
       })
     },
     detailPosition (record) {
-      // localStorage.setItem('positionId', record.id)
-      // this.$router.push({name: 'Application List'})
-      this.popVisible = true
-      this.viewMode = true
-      this.popTitle = 'Detail ' + record.name
-      this.tmpData = {
-        id: record.id,
-        name: record.name,
-        detail: record.detail,
-        createTime: record.createTime,
-        updateTime: record.updateTime,
-        count: record.count,
-        department: record.department,
-        remark: record.remark
-      }
-    },
-    modifyPosition (record) {
-      this.popTitle = 'Modify ' + record.name
-      this.tmpData = {
-        id: record.id,
-        name: record.name,
-        detail: record.detail,
-        createTime: record.createTime,
-        updateTime: record.updateTime,
-        count: record.count,
-        department: record.department,
-        remark: record.remark
-      }
-      this.createMode = false
-      this.popVisible = true
-      this.viewMode = false
-    },
-    deletePosition (record) {
-    },
-    handlePopCancel (record) {
-      this.popVisible = false
-    },
-    handlePopOK (record) {
-      this.popLoading = true
-      const postData = {}
-      Object.assign(postData, this.tmpData)
-      this.$set(postData, 'updateTime', new Date().getTime())
-      this.$set(postData, 'createTime', new Date().getTime())
-      if (this.createMode) {
-        axios.post('job', postData).then(response => {
-          this.popLoading = false
-          this.popVisible = false
-          this.fetchData()
-        }, error => {
-          this.popLoading = false
-          console.error(error)
-        })
-      } else {
-        axios.put('job/' + this.tmpData.id, postData).then(response => {
-          this.popLoading = false
-          this.popVisible = false
-          this.fetchData()
-        }, error => {
-          this.popLoading = false
-          console.error(error)
-        })
-      }
-    },
-    handleCreate () {
-      this.popTitle = 'Create New Position'
-      this.createMode = true
-      this.tmpData = {}
-      this.viewMode = false
-      this.popVisible = true
+      localStorage.setItem('positionId', record.id)
+      this.$router.push({name: 'Application List'})
     }
   }
 }
