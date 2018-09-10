@@ -3,76 +3,99 @@
     <h1 align="center">Interview Schedule</h1>
     <a-table
       :columns="columns"
-      :dataSource="dataSource"
+      :dataSource="timePeriods.map(o => ({ time: o }))"
       :pagination="false"
     >
-      <span slot="checkboxTitle">{{chosenTimes.length}} / {{numberOfTime}}</span>
-      <span slot="checkbox" slot-scope="record">
+      <div
+        v-for="day in days" :key="day"
+        :slot="'checkbox-' + day" slot-scope="text, record"
+      >
         <template v-if="numberOfTime > 1">
           <a-checkbox
-            :checked="isChecked(record)"
-            @change="handleTimeChoose(record)"
+            :checked="isChecked(day, record.time)"
+            @change="handleTimeChoose(day, record.time)"
           />
         </template>
         <template v-else>
           <a-radio
-            :checked="isChecked(record)"
-            @change="handleTimeChooseSingle(record)"
+            :checked="isChecked(day, record.time)"
+            @change="handleTimeChooseSingle(day, record.time)"
           />
         </template>
-      </span>
+      </div>
     </a-table>
     <a-button type="primary" @click="submit">Submit</a-button>
   </div>
 </template>
 
 <script>
+import moment from 'moment'
 export default {
   name: 'schedule',
   data () {
     return {
-      columns: [{
-        key: '#',
-        slots: { title: 'checkboxTitle' },
-        scopedSlots: { customRender: 'checkbox' }
-      }, {
-        key: 'time',
-        title: 'Time',
-        dataIndex: 'time'
-      }],
-      dataSource: [
-        {time: '2018-09-10 09:00 - 10:00'},
-        {time: '2018-09-10 10:00 - 11:00'},
-        {time: '2018-09-10 11:00 - 12:00'},
-        {time: '2018-09-10 13:00 - 14:00'},
-        {time: '2018-09-10 14:00 - 15:00'},
-        {time: '2018-09-10 15:00 - 16:00'},
-        {time: '2018-09-10 16:00 - 17:00'},
-        {time: '2018-09-10 17:00 - 18:00'}
+      days: [
+        '2018-09-10',
+        '2018-09-11',
+        '2018-09-12',
+        '2018-09-13',
+        '2018-09-14',
+        '2018-09-15',
+        '2018-09-16',
+        '2018-09-17'
       ],
-      numberOfTime: 1,
+      timePeriods: [
+        '09:00 ~ 10:00',
+        '10:00 ~ 11:00',
+        '11:00 ~ 12:00',
+        '12:00 ~ 13:00',
+        '13:00 ~ 14:00',
+        '14:00 ~ 15:00',
+        '15:00 ~ 16:00',
+        '16:00 ~ 17:00',
+        '17:00 ~ 18:00'
+      ],
+      numberOfTime: 3,
       chosenTimes: []
     }
   },
+  computed: {
+    columns () {
+      return [{
+        dataIndex: 'time'
+      }, ...this.days.map(o => ({
+        title: o,
+        scopedSlots: { customRender: 'checkbox-' + o }
+      }))]
+    }
+  },
   methods: {
-    handleTimeChooseSingle (item) {
-      this.chosenTimes = [item]
+    fetchData () {
+      const range = [moment('2018-09-10'), moment('2018-09-17')]
+      // TODO: fetch range
+      const days = []
+      for (const day = range[0]; day.isSameOrBefore(range[1]); day.add(1, 'day')) {
+        days.push(day.format('YYYY-MM-DD'))
+      }
+      this.days = days
     },
-    handleTimeChoose (item) {
-      const idx = this.chosenTimes.findIndex(o => o.time === item.time)
+    handleTimeChooseSingle (day, time) {
+      this.chosenTimes = [{day, time}]
+    },
+    handleTimeChoose (day, time) {
+      const idx = this.chosenTimes.findIndex(o => o.day === day && o.time === time)
       if (idx === -1) {
         if (this.chosenTimes.length === this.numberOfTime) {
           this.$message.warning(`Only ${this.numberOfTime} time periods can be chosen`)
         } else {
-          this.chosenTimes.push(item)
+          this.chosenTimes.push({day, time})
         }
       } else {
         this.chosenTimes.splice(idx, 1)
       }
-      console.log(this.chosenTimes)
     },
-    isChecked (item) {
-      const idx = this.chosenTimes.findIndex(o => o.time === item.time)
+    isChecked (day, time) {
+      const idx = this.chosenTimes.findIndex(o => o.day === day && o.time === time)
       return idx !== -1
     },
     submit () {
@@ -80,8 +103,13 @@ export default {
         this.$message.warning(`Please choose ${this.numberOfTime} time periods`)
         return
       }
-      console.log('submit')
+      console.log(this.chosenTimes)
+      // TODO: update chosenTimes
+      // TODO: create assessment if candidate
     }
+  },
+  created () {
+    this.fetchData()
   }
 }
 </script>
