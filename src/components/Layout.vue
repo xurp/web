@@ -91,7 +91,11 @@ export default {
     }
   },
   created () {
-    this.$fetchUser()
+    this.$fetchUser().then(r => {
+      if (r.data.role === 'hr-n') {
+        this.$router.push('/black')
+      }
+    })
   },
   methods: {
     handleNavRoute (e) {
