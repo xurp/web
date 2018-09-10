@@ -128,8 +128,13 @@ export default new Router({
       component: () => import('@/components/assess/assessment')
     },
     {
-      path: '/schedule/:id',
-      name: 'Schedule',
+      path: '/schedule/interview/:operationId/:cooperatorId',
+      name: 'Schedule - Interviewer',
+      component: () => import('@/components/schedule/schedule')
+    },
+    {
+      path: '/schedule/candidate/:operationId/:candidateId',
+      name: 'Schedule - Candidate',
       component: () => import('@/components/schedule/schedule')
     }
   ]

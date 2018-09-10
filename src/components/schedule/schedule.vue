@@ -13,23 +13,32 @@
         <template v-if="numberOfTime > 1">
           <a-checkbox
             :checked="isChecked(day, record.time)"
+            :disabled="isDisabled(day, record.time)"
             @change="handleTimeChoose(day, record.time)"
           />
         </template>
         <template v-else>
           <a-radio
             :checked="isChecked(day, record.time)"
+            :disabled="isDisabled(day, record.time)"
             @change="handleTimeChooseSingle(day, record.time)"
           />
         </template>
       </div>
     </a-table>
-    <a-button type="primary" @click="submit">Submit</a-button>
+    <div style="margin-top: 16px; text-align: center">
+      <a-button
+        size="large" type="primary"
+        @click="submit"
+      >Submit</a-button>
+    </div>
   </div>
 </template>
 
 <script>
 import moment from 'moment'
+import uuid from 'uuid'
+import axios from '../../service'
 export default {
   name: 'schedule',
   data () {
@@ -55,11 +64,15 @@ export default {
         '16:00 ~ 17:00',
         '17:00 ~ 18:00'
       ],
-      numberOfTime: 3,
+      disabledTimes: [],
+      numberOfTime: 1,
       chosenTimes: []
     }
   },
   computed: {
+    isCurrentInterviewer () {
+      return this.$route.name.substr(11).toLowerCase() === 'interviewer'
+    },
     columns () {
       return [{
         dataIndex: 'time'
@@ -71,13 +84,31 @@ export default {
   },
   methods: {
     fetchData () {
+      axios.get(`operation/${this.$route.params.operationId}`).then(r => {
+        // TODO: fetch range
+      })
+      // convert range to days
       const range = [moment('2018-09-10'), moment('2018-09-17')]
-      // TODO: fetch range
       const days = []
       for (const day = range[0]; day.isSameOrBefore(range[1]); day.add(1, 'day')) {
         days.push(day.format('YYYY-MM-DD'))
       }
       this.days = days
+
+      if (this.isCurrentInterviewer) {
+        // TODO: fetch numberOfTime
+      } else {
+        this.numberOfTime = 1
+      }
+
+      if (!this.isCurrentInterviewer) { // candidate
+        axios.get('schedule', { params: this.$route.params }).then(r => {
+          // TODO: fetch disabledTimes
+        })
+        this.disabledTimes = [
+          {day: '2018-09-11', time: '10:00 ~ 11:00'}
+        ]
+      }
     },
     handleTimeChooseSingle (day, time) {
       this.chosenTimes = [{day, time}]
@@ -98,14 +129,23 @@ export default {
       const idx = this.chosenTimes.findIndex(o => o.day === day && o.time === time)
       return idx !== -1
     },
+    isDisabled (day, time) {
+      const idx = this.disabledTimes.findIndex(o => o.day === day && o.time === time)
+      return idx !== -1
+    },
     submit () {
       if (this.chosenTimes.length !== this.numberOfTime) {
         this.$message.warning(`Please choose ${this.numberOfTime} time periods`)
         return
       }
-      console.log(this.chosenTimes)
-      // TODO: update chosenTimes
-      // TODO: create assessment if candidate
+      if (this.isCurrentInterviewer) {
+        // TODO: update chosenTimes
+        axios.post('schedule', this.chosenTimes)
+      } else {
+        // TODO: create assessment
+        const url = `${window.location.origin}/#/assess/${uuid()}`
+        console.log(url)
+      }
     }
   },
   created () {
@@ -114,9 +154,10 @@ export default {
 }
 </script>
 
-<style scoped lang="less">
-  .schedule-container{
-    width: 70vw;
+<style lang="less" scoped>
+  .schedule-container {
+    width: 80vw;
     margin: 0 auto;
+    padding-top: 64px;
   }
 </style>
