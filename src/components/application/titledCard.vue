@@ -40,6 +40,9 @@ export default {
 </script>
 
 <style scoped lang="less">
+  .tcard-container{
+    margin-top: 5px;
+  }
   .card-title-float{
     width: 100%;
     right: 0;

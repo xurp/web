@@ -1,49 +1,52 @@
 <template>
-  <div class="posdetail-container">
-    <a-form>
-      <a-col :span="8">
-        <a-form-item label="Name" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
-          <a-input v-bind:disabled="disableEdit" v-model="curPosition.name"></a-input>
+  <titledCard v-bind:title="'Position detail for ' + curPosition.name">
+    <div class="posdetail-container">
+      <a-form>
+        <a-col :span="8">
+          <a-form-item label="Name" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
+            <a-input v-bind:disabled="disableEdit" v-model="curPosition.name"></a-input>
+          </a-form-item>
+        </a-col>
+        <a-col :span="8">
+          <a-form-item label="Department" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
+            <a-input v-bind:disabled="disableEdit" v-model="curPosition.department"></a-input>
+          </a-form-item>
+        </a-col>
+        <a-col :span="8">
+          <a-form-item label="createTime" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
+            <a-input v-bind:disabled="disableEdit" v-model="curPosition.createTime"></a-input>
+          </a-form-item>
+        </a-col>
+        <a-col :span="8">
+          <a-form-item label="updateTime" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
+            <a-input v-bind:disabled="disableEdit" v-model="curPosition.updateTime"></a-input>
+          </a-form-item>
+        </a-col>
+        <a-col :span="8">
+          <a-form-item label="Count" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
+            <a-input v-bind:disabled="disableEdit" v-model="curPosition.count"></a-input>
+          </a-form-item>
+        </a-col>
+        <a-col :span="8">
+          <a-form-item label="Remark" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
+            <a-input v-bind:disabled="disableEdit" v-model="curPosition.remark"></a-input>
+          </a-form-item>
+        </a-col>
+        <a-col :span="20">
+          <a-form-item label="Detail" :labelCol="{span: 2}" :wrapperCol="{span: 22}">
+            <a-textarea v-bind:disabled="disableEdit" v-model="curPosition.detail" :autosize="{ minRows: 2, maxRows: 6 }"></a-textarea>
         </a-form-item>
-      </a-col>
-      <a-col :span="8">
-        <a-form-item label="Department" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
-          <a-input v-bind:disabled="disableEdit" v-model="curPosition.department"></a-input>
-        </a-form-item>
-      </a-col>
-      <a-col :span="8">
-        <a-form-item label="createTime" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
-          <a-input v-bind:disabled="disableEdit" v-model="curPosition.createTime"></a-input>
-        </a-form-item>
-      </a-col>
-      <a-col :span="8">
-        <a-form-item label="updateTime" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
-          <a-input v-bind:disabled="disableEdit" v-model="curPosition.updateTime"></a-input>
-        </a-form-item>
-      </a-col>
-      <a-col :span="8">
-        <a-form-item label="Count" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
-          <a-input v-bind:disabled="disableEdit" v-model="curPosition.count"></a-input>
-        </a-form-item>
-      </a-col>
-      <a-col :span="8">
-        <a-form-item label="Remark" :labelCol="labelStyle" :wrapperCol="wrapperStyle">
-          <a-input v-bind:disabled="disableEdit" v-model="curPosition.remark"></a-input>
-        </a-form-item>
-      </a-col>
-      <a-col :span="20">
-        <a-form-item label="Detail" :labelCol="{span: 2}" :wrapperCol="{span: 22}">
-          <a-textarea v-bind:disabled="disableEdit" v-model="curPosition.detail" :autosize="{ minRows: 2, maxRows: 6 }"></a-textarea>
-      </a-form-item>
-      </a-col>
-    </a-form>
-  </div>
+        </a-col>
+      </a-form>
+    </div>
+  </titledCard>
 </template>
 
 <script>
-
+import titledCard from './titledCard'
 export default {
   name: 'position-detail',
+  components: {titledCard},
   data () {
     return {
       wrapperStyle: {
