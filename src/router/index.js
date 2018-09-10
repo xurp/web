@@ -126,6 +126,11 @@ export default new Router({
       path: '/assess/:id',
       name: 'Assess',
       component: () => import('@/components/assess/assessment')
+    },
+    {
+      path: '/schedule/:id',
+      name: 'Schedule',
+      component: () => import('@/components/schedule/schedule')
     }
   ]
 })
