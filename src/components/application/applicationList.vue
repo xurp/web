@@ -441,14 +441,14 @@ export default {
             axios.put('application/decline', {
               applicationId: tr.id,
               subject: this.mail.subject,
-              content: this.mail.content,
+              content: this.mail.content.replace('[candidate_name]', tr.name),
               receiver: tr.resume.email
             }).then(response => {
               totalSendCount--
               if (totalSendCount === 0) {
                 this.mailConfirmLoading = false
                 this.popMailVisible = false
-                this.fetchData()
+                this.fetchApplicationList()
               }
             })
           }

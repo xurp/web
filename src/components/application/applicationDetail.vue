@@ -142,8 +142,8 @@ export default {
       axios.get('assessment?applicationId=' + localStorage.getItem('applicationId')).then(response => {
         this.assesses = response.data.map(tr => {
           return {id: tr.id,
-            department: tr.cooperator.department,
-            name: tr.cooperator.name,
+            department: tr.cooperator === null ? '' : tr.cooperator.department,
+            name: tr.cooperator === null ? 'To be arranged' : tr.cooperator.name,
             time: moment(new Date(tr.assessmentTime).getTime()).format('YYYY-MM-DD HH-mm:ss'),
             content: tr.comment,
             step: tr.step,
