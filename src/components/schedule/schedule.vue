@@ -43,16 +43,7 @@ export default {
   name: 'schedule',
   data () {
     return {
-      days: [
-        '2018-09-10',
-        '2018-09-11',
-        '2018-09-12',
-        '2018-09-13',
-        '2018-09-14',
-        '2018-09-15',
-        '2018-09-16',
-        '2018-09-17'
-      ],
+      days: [],
       timePeriods: [
         '09:00 ~ 10:00',
         '10:00 ~ 11:00',
@@ -84,22 +75,21 @@ export default {
   },
   methods: {
     fetchData () {
-      axios.get(`operation/${this.$route.params.operationId}`).then(r => {
-        // TODO: fetch range
-      })
-      // convert range to days
-      const range = [moment('2018-09-10'), moment('2018-09-17')]
-      const days = []
-      for (const day = range[0]; day.isSameOrBefore(range[1]); day.add(1, 'day')) {
-        days.push(day.format('YYYY-MM-DD'))
-      }
-      this.days = days
+      axios.get('appointedTime', {params: this.$route.params}).then(r => {
+        const range = [moment(r.data.startDate), moment(r.data.endDate)]
+        console.log(range)
+        const days = []
+        for (const day = range[0]; day.isSameOrBefore(range[1]); day.add(1, 'day')) {
+          days.push(day.format('YYYY-MM-DD'))
+        }
+        this.days = days
 
-      if (this.isCurrentInterviewer) {
-        // TODO: fetch numberOfTime
-      } else {
-        this.numberOfTime = 1
-      }
+        if (this.isCurrentInterviewer) {
+          this.numberOfTime = r.data.number
+        } else {
+          this.numberOfTime = 1
+        }
+      })
 
       if (!this.isCurrentInterviewer) { // candidate
         axios.get('schedule', { params: this.$route.params }).then(r => {
