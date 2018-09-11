@@ -45,8 +45,8 @@ export const routes = [
     children: [
       {
         path: '',
-        name: 'Job List',
-        component: () => import('@/components/application/jobList')
+        name: 'Application List',
+        component: () => import('@/components/application/applicationList')
       },
       {
         path: 'applicationlist',
