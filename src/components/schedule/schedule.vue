@@ -1,41 +1,51 @@
 <template>
   <div class="schedule-container">
     <h1 align="center">Interview Schedule</h1>
-    <a-table
-      :columns="columns"
-      :dataSource="timePeriods.map(o => ({ time: o }))"
-      :pagination="false"
-    >
-      <div
-        v-for="day in days" :key="day"
-        :slot="'checkbox-' + day" slot-scope="text, record"
+    <template v-if="alreadyDone">
+      <a-alert
+        v-if="alreadyDone"
+        type="success" show-icon
+        message="Operation Done"
+        description="You have already done the schedule arrange"
+      />
+    </template>
+    <template v-else>
+      <a-table
+        :columns="columns"
+        :dataSource="timePeriods.map(o => ({ time: o }))"
+        :pagination="false"
       >
-        <template v-if="numberOfTime > 1">
-          <a-checkbox
-            :checked="isChecked(day, record.time)"
-            :disabled="isDisabled(day, record.time)"
-            @change="handleTimeChoose(day, record.time)"
-          />
-        </template>
-        <template v-else>
-          <a-radio
-            :checked="isChecked(day, record.time)"
-            :disabled="isDisabled(day, record.time)"
-            @change="handleTimeChooseSingle(day, record.time)"
-          />
-        </template>
+        <div
+          v-for="day in days" :key="day"
+          :slot="'checkbox-' + day" slot-scope="text, record"
+        >
+          <template v-if="numberOfTime > 1">
+            <a-checkbox
+              :checked="isChecked(day, record.time)"
+              :disabled="isDisabled(day, record.time)"
+              @change="handleTimeChoose(day, record.time)"
+            />
+          </template>
+          <template v-else>
+            <a-radio
+              :checked="isChecked(day, record.time)"
+              :disabled="isDisabled(day, record.time)"
+              @change="handleTimeChooseSingle(day, record.time)"
+            />
+          </template>
+        </div>
+      </a-table>
+      <div style="margin-top: 16px; text-align: center">
+        <a-button
+          size="large" type="primary"
+          @click="submit"
+          :disabled="numberOfTime !== chosenTimes.length"
+        >
+          <span v-if="numberOfTime === 1 || numberOfTime === chosenTimes.length">Submit</span>
+          <span v-else>{{chosenTimes.length}} / {{numberOfTime}}</span>
+        </a-button>
       </div>
-    </a-table>
-    <div style="margin-top: 16px; text-align: center">
-      <a-button
-        size="large" type="primary"
-        @click="submit"
-        :disabled="numberOfTime !== chosenTimes.length"
-      >
-        <span v-if="numberOfTime === 1 || numberOfTime === chosenTimes.length">Submit</span>
-        <span v-else>{{chosenTimes.length}} / {{numberOfTime}}</span>
-      </a-button>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -47,6 +57,7 @@ export default {
   name: 'schedule',
   data () {
     return {
+      alreadyDone: false,
       days: [],
       timePeriods: [
         '09:00 ~ 10:00',
@@ -93,6 +104,8 @@ export default {
         } else {
           this.numberOfTime = 1
         }
+      }).catch(e => {
+        this.alreadyDone = true
       })
 
       if (!this.isCurrentInterviewer) { // candidate
@@ -139,7 +152,7 @@ export default {
           startTimes: this.chosenTimes.map(o => `${o.day}T${o.time.substr(0, 5)}:00.000+0000`)
         }
         axios.put('appointedTime', data).then(r => {
-          this.$message.success('DONE')
+          this.alreadyDone = true
         })
       } else {
         // TODO: create assessment
