@@ -49,12 +49,6 @@ export const routes = [
         component: () => import('@/components/application/applicationList')
       },
       {
-        path: 'applicationlist',
-        name: 'Application List',
-        component: () => import('@/components/application/applicationList'),
-        hidden: true
-      },
-      {
         path: 'application',
         name: 'Application Detail',
         component: () => import('@/components/application/applicationDetail'),
