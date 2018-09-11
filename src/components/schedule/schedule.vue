@@ -51,7 +51,6 @@
 
 <script>
 import moment from 'moment'
-import uuid from 'uuid'
 import axios from '../../service'
 export default {
   name: 'schedule',
@@ -70,7 +69,7 @@ export default {
         '16:00 ~ 17:00',
         '17:00 ~ 18:00'
       ],
-      disabledTimes: [],
+      availableTimes: true,
       numberOfTime: 1,
       chosenTimes: []
     }
@@ -90,32 +89,47 @@ export default {
   },
   methods: {
     fetchData () {
-      axios.get('appointedTime', {params: this.$route.params}).then(r => {
-        const range = [moment(r.data.startDate), moment(r.data.endDate)]
-        console.log(range)
-        const days = []
-        for (const day = range[0]; day.isSameOrBefore(range[1]); day.add(1, 'day')) {
-          days.push(day.format('YYYY-MM-DD'))
-        }
-        this.days = days
-
-        if (this.isCurrentInterviewer) {
+      if (this.isCurrentInterviewer) {
+        axios.get('appointedTime', {params: this.$route.params}).then(r => {
+          this.processRange(moment(r.data.startDate), moment(r.data.endDate))
           this.numberOfTime = r.data.number
-        } else {
-          this.numberOfTime = 1
-        }
-      }).catch(e => {
-        this.alreadyDone = true
-      })
-
-      if (!this.isCurrentInterviewer) { // candidate
-        axios.get('schedule', { params: this.$route.params }).then(r => {
-          // TODO: fetch disabledTimes
+        }).catch(e => {
+          this.alreadyDone = true
         })
-        this.disabledTimes = [
-          {day: '2018-09-11', time: '10:00 ~ 11:00'}
-        ]
+      } else {
+        this.availableTimes = []
+        this.numberOfTime = 1
+        const params = {
+          operationId: this.$route.params.operationId
+        }
+        axios.get('appointedTime/schedule', { params }).then(r => {
+          let start, end
+          r.data.map(o => moment(o.startTime)).forEach(o => {
+            if (!start || o.isBefore(start)) {
+              start = o
+            }
+            if (!end || o.isAfter(end)) {
+              end = o
+            }
+            const daytime = {
+              day: o.format('YYYY-MM-DD'),
+              time: this.timePeriods.find(t => t.substr(0, 2) === o.format('HH'))
+            }
+            console.log(daytime)
+            this.availableTimes.push(daytime)
+          })
+          if (start && end) {
+            this.processRange(start, end)
+          }
+        })
       }
+    },
+    processRange (start, end) {
+      const days = []
+      for (const day = start; day.isSameOrBefore(end); day.add(1, 'day')) {
+        days.push(day.format('YYYY-MM-DD'))
+      }
+      this.days = days
     },
     handleTimeChooseSingle (day, time) {
       this.chosenTimes = [{day, time}]
@@ -137,8 +151,11 @@ export default {
       return idx !== -1
     },
     isDisabled (day, time) {
-      const idx = this.disabledTimes.findIndex(o => o.day === day && o.time === time)
-      return idx !== -1
+      if (this.availableTimes === true) {
+        return false
+      }
+      const idx = this.availableTimes.findIndex(o => o.day === day && o.time === time)
+      return idx === -1
     },
     submit () {
       if (this.chosenTimes.length !== this.numberOfTime) {
@@ -146,7 +163,6 @@ export default {
         return
       }
       if (this.isCurrentInterviewer) {
-        // TODO: update chosenTimes
         const data = {
           ...this.$route.params,
           startTimes: this.chosenTimes.map(o => `${o.day}T${o.time.substr(0, 5)}:00.000+0000`)

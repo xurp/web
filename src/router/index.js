@@ -133,7 +133,7 @@ export default new Router({
       component: () => import('@/components/schedule/schedule')
     },
     {
-      path: '/schedule/candidate/:operationId/:candidateId',
+      path: '/schedule/candidate/:operationId/:assessmentId',
       name: 'Schedule - Candidate',
       component: () => import('@/components/schedule/schedule')
     }
