@@ -134,7 +134,13 @@ export default {
       }
       if (this.isCurrentInterviewer) {
         // TODO: update chosenTimes
-        axios.post('schedule', this.chosenTimes)
+        const data = {
+          ...this.$route.params,
+          startTimes: this.chosenTimes.map(o => `${o.day}T${o.time.substr(0, 5)}:00.000+0000`)
+        }
+        axios.put('appointedTime', data).then(r => {
+          this.$message.success('DONE')
+        })
       } else {
         // TODO: create assessment
         const url = `${window.location.origin}/#/assess/${uuid()}`
