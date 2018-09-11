@@ -11,8 +11,13 @@
     <a-divider/>
     <assessComponent v-bind:steps="steps" v-bind:assesses="assesses"></assessComponent>
     <a-divider/>
-    <div v-if="step.indexOf('+')===-1 && step.indexOf('-')===-1 && assesses.length > 0 && stepIndex!==steps.length-1">
-      <a target="_blank" :href="(window.location.origin + '/' + window.location.pathname + '/#/assess/'+assesses[assesses.length-1].id).replace(/([^(http:)])\/{2,}/gi, '$1/')">last assessment url</a>
+    <!--<div v-if="step.indexOf('+')===-1 && step.indexOf('-')===-1 && assesses.length > 0 && stepIndex!==steps.length-1">-->
+    <div>
+      If assessors misoperated assessment result, please
+      <a @click="resetAssessment">Reset current assessment result and resend assess link.</a>
+      <br/>
+      Or, if assessors forgot to pick assess time, you can
+      <a @click="reArrange">Rearrange assessment.</a>
     </div>
     <router-link v-if="stepIndex===steps.length-1" :to="{name: 'Offer List'}">Candidate has passed all assessment process, Click to go to offer management.</router-link>
     <div class="bottom-container" slot="footer">
@@ -23,11 +28,11 @@
       <div class="mail-form-container">
         <a-form>
           <a-form-item label="Cooperator" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
-            <a-select v-if="bSendToAssess" v-model="mail.cooperatorId" mode="default" :tokenSeparators="[',']">
-              <a-select-option v-for="re in receivers" :key="re.id">{{re.department + '/' + re.name}}</a-select-option>
+            <a-select v-if="bSendToAssess" v-model="mail.cooperatorId" mode="default" :tokenSeparators="[',']" @change="handleCooperChange">
+              <a-select-option v-for="re in cooperatorList" :key="re.id">{{re.department + '/' + re.name}}</a-select-option>
             </a-select>
             <a-input v-else v-model="resume.email"></a-input>
-            <a style="position:absolute" @click="handleAddCooperatorClick"><a-icon type="plus-circle-o"></a-icon></a>
+            <a v-if="!bResend" style="position:absolute" @click="handleAddCooperatorClick"><a-icon type="plus-circle-o"></a-icon></a>
             <a-modal :confirmLoading="coopConfirmLoading" :visible="coopModalVisible" @ok="coopModalOk" @cancel="coopModalCancel" :maskCancel="true">
               <a-form>
                 <a-form-item label="Name">
@@ -44,6 +49,9 @@
           </a-form-item>
           <a-form-item label="MailSubject" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
             <a-input v-model="mail.subject"></a-input>
+          </a-form-item>
+          <a-form-item v-if="bSendToAssess&&!bResend" label="AssessDate" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
+            <a-range-picker v-model="mail.timerange"></a-range-picker>
           </a-form-item>
           <a-form-item :labelCol="formLabelCol">
             <a-textarea v-model="mail.content" :autosize="{maxRows: 12, minRows: 8}" :value="mailContent"></a-textarea>
@@ -77,7 +85,7 @@ export default {
       resume: {},
       assesses: [],
       popMailVisible: false,
-      receivers: [],
+      cooperatorList: [],
       formLabelCol: {
         span: 3
       },
@@ -94,7 +102,6 @@ export default {
         cooperatorId: ''
       },
       mailConfirmLoading: false,
-      assessId: '',
       baseMailContent: 'Dear Evaluator:\r\n \tPlease help to give assessment to this job seeker, detailed information about this person ' +
         'is listed in the link below. The assessment can only be make once, so please MADE YOUR DECISION CAUTIOUSLY! \r\n' +
         '\t\t\t\t',
@@ -103,22 +110,12 @@ export default {
        * 是否发送给面试官
        */
       bSendToAssess: true,
-      nextBtnConfirmLoading: false
+      nextBtnConfirmLoading: false,
+      bResend: false // 是否是重新发
     }
   },
   created () {
     this.fetchData()
-    this.receivers.push({
-      id: 1,
-      name: 'Staff',
-      department: 'Delivery',
-      email: '896028602@qq.com'
-    }, {
-      id: 2,
-      name: 'Manager',
-      department: 'Delivery',
-      email: '896028602@qq.com'
-    })
   },
   methods: {
     fetchData () {
@@ -140,7 +137,7 @@ export default {
         })
       })
       axios.get('assessment?applicationId=' + localStorage.getItem('applicationId')).then(response => {
-        this.assesses = response.data.map(tr => {
+        this.assesses = response.data.map(tr => { // TODO 这里不管有没有正在进行的任务，都需要新加重新发送链接（如果未分配，禁用）
           return {id: tr.id,
             department: tr.cooperator === null ? '' : tr.cooperator.department,
             name: tr.cooperator === null ? 'To be arranged' : tr.cooperator.name,
@@ -150,6 +147,12 @@ export default {
             pass: tr.pass
           }
         })
+      })
+      this.fetchCooperatorList()
+    },
+    fetchCooperatorList () {
+      axios.get('review/cooperator').then(response => {
+        this.cooperatorList = response.data
       })
     },
     getStepStatus (curStep) {
@@ -177,6 +180,7 @@ export default {
       }
     },
     handleNextStep () {
+      this.bResend = false
       this.bSendToAssess = true
       // TODOdone 最后一步offer不进入邮件列表，邮件单独提成新功能（保留进度条上的Offer字样，只更新进度）
       if (this.stepIndex === this.steps.length - 2) { // 最后一步
@@ -187,12 +191,14 @@ export default {
           this.$message.success('Job seeker moved to offer list.')
         })
       } else { // 打开发送邮件给面试官的界面
-        this.assessId = uuid('http://localhost:4000/assessment/?', uuid.URL)
-        let url = location.origin + '/' + location.pathname + '/#/assess/'
-        url = url.replace(/([^(http:)])\/{2,}/gi, '$1/')
-        this.mail.content = this.baseMailContent + url + this.assessId
-        this.mail.subject = this.baseMailSubject + this.resume.name
-        this.mail.cooperatorId = ''
+        this.mail = {
+          content: 'Dear [assessor_name]\r\n\tPlease select the time during which you will be available for the interview. ' +
+            'Attention please, once selected, the time table can not be changed! The time selection link is below: \r\n\t\t' +
+            (location.origin + '/' + location.pathname + '/#/schedule/interview/[operation_id]/[cooperation_id]').replace(/([^(http:)])\/{2,}/gi, '$1/') +
+            '\r\n\tBest Regards\r\n[company_name]',
+          subject: 'select interview time as an interviewer',
+          cooperators: []
+        }
         this.popMailVisible = true
       }
     },
@@ -202,20 +208,39 @@ export default {
     handleMailSend: function () {
       this.mailConfirmLoading = true
       if (this.bSendToAssess) {
-        axios.post('assessment', {
-          applicationId: this.curApplication.id,
-          ...this.mail,
-          assessId: this.assessId
-        }).then(response => {
-          this.mailConfirmLoading = false
-          this.popMailVisible = false
-          this.fetchData()
-          this.popMailVisible = false
-        }, error => {
-          this.mailConfirmLoading = false
-          this.popMailVisible = false
-          this.$message.error(error)
-        })
+        if (this.bResend) {
+          this.mailConfirmLoading = true
+          axios.put('assessment/reset', {assessId: this.assesses,
+            subject: this.mail.subject,
+            content: this.mail.content,
+            receiver: this.cooperatorList.find(tr => { return tr.id === this.mail.cooperatorId }).email
+          }).then(response => {
+            this.mailConfirmLoading = false
+            this.mailPopVisible = false
+            this.fetchData()
+          }, error => {
+            this.mailConfirmLoading = false
+            console.error(error)
+          })
+        } else {
+          axios.post('assessment', {
+            operationId: uuid('http://localhost:4000/assessment/?', uuid.URL),
+            applications: [this.curApplication.id],
+            ...this.mail,
+            startDate: this.mail.timerange[0].format('YYYY-MM-DD HH:mm:ss'),
+            endDate: this.mail.timerange[1].format('YYYY-MM-DD HH:mm:ss'),
+            cooperatorIds: [this.mail.cooperatorId]
+          }).then(response => {
+            this.mailConfirmLoading = false
+            this.popMailVisible = false
+            this.fetchData()
+            this.popMailVisible = false
+          }, error => {
+            this.mailConfirmLoading = false
+            this.popMailVisible = false
+            this.$message.error(error)
+          })
+        }
       } else {
         axios.put('application/decline', {applicationId: this.curApplication.id, subject: this.mail.subject, content: this.mail.content, receiver: this.resume.email}).then(response => {
           this.mailConfirmLoading = false
@@ -258,9 +283,24 @@ export default {
       this.toBeAddCoop = {}
     },
     /**
+     * 选择的面试官改变时触发
+     * @param value
+     */
+    handleCooperChange (value, all) {
+      this.mail.content = this.mail.content.replace('[assessor_name]', this.cooperatorList.find(tr => {
+        return (tr.id === value)
+      }).name)
+      this.mail.content = this.mail.content.substring(0, 5) + this.cooperatorList.find(tr => {
+        return (tr.id === value)
+      }).name + this.mail.content.substring(this.mail.content.indexOf('\n'), this.mail.content.length)
+
+      this.mail = Object.assign({}, this.mail)
+    },
+    /**
      * 点拒绝按钮
      */
     handleDecline () {
+      this.bResend = false
       this.bSendToAssess = false
       this.mail.subject = 'Fail asessment notification.'
       this.mail.content = 'Dear ' + this.resume.name + ':\n' +
@@ -269,6 +309,49 @@ export default {
         'We thanks you for the time you invested in applying for the shipping coordinator position. We encourage you to apply for future openings for which you qualify.\n' +
         '\n' +
         'Best wishes for a successful job search. Thank you, again, for your interest in our company.'
+      this.popMailVisible = true
+    },
+    /**
+     * 面试官填错了面试结果时操作
+     */
+    resetAssessment () { // TODO 这里需要判断，如果是没有安排的，不给点，此时的cooperator是空
+      const lastAssess = this.assesses[this.assesses.length - 1]
+      if (lastAssess === undefined || lastAssess.name === 'To be arranged') {
+        this.$message.warn('assessment not arranged yet', 0.5)
+        return
+      }
+      const curCooperator = this.cooperatorList.find(tr => {
+        return tr.department === lastAssess.department && tr.name === lastAssess.name
+      })
+      this.mail.cooperatorId = curCooperator.id
+      this.mail.content = 'Dear ' + curCooperator.name + '\n\tThis is your re-assessing url:\r\n\t\t' +
+        (location.origin + '/' + location.pathname + '/#/assess/' + lastAssess.id).replace(/([^(http:)])\/{2,}/gi, '$1/') +
+        '\r\n\tBest Regards,\r\n[company_name]'
+      this.mail.subject = 're-assess response'
+      this.bResend = true
+      this.bSendToAssess = true
+      this.popMailVisible = true
+    },
+    /**
+     * 面试官没选时间，并且选时间的链接丢失时操作
+     */
+    reArrange () {
+      const lastAssess = this.assesses[this.assesses.length - 1]
+      console.log(lastAssess)
+      if (lastAssess === undefined || lastAssess.name === 'To be arranged') {
+        this.$message.warn('assessment not arranged yet', 0.5)
+        return
+      }
+      const curCooperator = this.cooperatorList.find(tr => {
+        return tr.department === lastAssess.department && tr.name === lastAssess.name
+      })
+      this.mail.cooperatorId = curCooperator.id
+      this.mail.content = 'Dear ' + curCooperator.name + '\n\tThis is your re-picking time url:\r\n\t\t' +
+        (location.origin + '/' + location.pathname + '/#/schedule/interview/[operation_id]/[cooperation_id]').replace(/([^(http:)])\/{2,}/gi, '$1/') +
+        '\r\n\tBest Regards,\r\n[company_name]'
+      this.mail.subject = 're-picking time response'
+      this.bResend = true
+      this.bSendToAssess = true
       this.popMailVisible = true
     }
   }
