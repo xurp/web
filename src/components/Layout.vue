@@ -22,15 +22,22 @@
           @click="handleNavRoute"
         >
           <template v-for="route in routes" v-if="checkVisible(route)">
-            <template v-if="route.children">
-              <a-sub-menu :key="route.path">
-                <span slot="title">{{route.name}}</span>
+            <template v-if="route.children && route.children.filter(o => !o.hidden).length > 0">
+              <template v-if="route.children.filter(o => !o.hidden).length === 1">
                 <a-menu-item
-                  v-for="sub in route.children"
+                  v-for="sub in route.children.filter(o => !o.hidden)"
                   :key="`/${route.path}/${sub.path}`"
-                  v-if="sub.hidden !== true"
                 >{{sub.name}}</a-menu-item>
-              </a-sub-menu>
+              </template>
+              <template v-else>
+                <a-sub-menu :key="route.path">
+                  <span slot="title">{{route.name}}</span>
+                  <a-menu-item
+                    v-for="sub in route.children.filter(o => !o.hidden)"
+                    :key="`/${route.path}/${sub.path}`"
+                  >{{sub.name}}</a-menu-item>
+                </a-sub-menu>
+              </template>
             </template>
             <template v-else>
               <a-menu-item :key="'/' + route.path">{{route.name}}</a-menu-item>
