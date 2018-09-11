@@ -30,7 +30,11 @@
       <a-button
         size="large" type="primary"
         @click="submit"
-      >Submit</a-button>
+        :disabled="numberOfTime !== chosenTimes.length"
+      >
+        <span v-if="numberOfTime === 1 || numberOfTime === chosenTimes.length">Submit</span>
+        <span v-else>{{chosenTimes.length}} / {{numberOfTime}}</span>
+      </a-button>
     </div>
   </div>
 </template>
