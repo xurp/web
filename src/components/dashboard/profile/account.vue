@@ -5,14 +5,21 @@
     <div align="center">{{window.user.email}}</div>
     <a-divider/>
     <div align="center">
-      <a-button type="danger">Safely Sign Out</a-button>
+      <a-button type="danger" @click="logout">Safely Sign Out</a-button>
     </div>
   </a-card>
 </template>
 
 <script>
 export default {
-  name: 'account-profile'
+  name: 'account-profile',
+  methods: {
+    logout () {
+      localStorage.removeItem('token')
+      window.user = {}
+      this.$router.push('/login')
+    }
+  }
 }
 </script>
 
