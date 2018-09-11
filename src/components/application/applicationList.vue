@@ -22,7 +22,7 @@
         <!--<a-checkbox slot="title" :indeterminate="checkIndeterminate" @change="totalCheckChange" :checked="totalChecked"></a-checkbox>-->
         <a-dropdown slot="title" :placement="'bottomCenter'">
           <a class="ant-dropdown-link" href="#">
-            Filter <a-icon type="down" />
+            Selection <a-icon type="down" />
           </a>
           <a-menu slot="overlay">
             <a-menu-item>
@@ -62,9 +62,9 @@
       <div class="mail-form-container">
         <a-form>
           <a-form-item label="Cooperator" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
-            <a-select v-model="mail.cooperators" mode="tags" :tokenSeparators="[',']">
+            <a-select v-model="mail.cooperators" mode="tags" :tokenSeparators="[',']" @change="handleReceiverChange">
               <a-select-option v-if="bBatchNextStep" v-for="re in cooperatorList" :key="re.id">{{re.department + '/' + re.name}}</a-select-option>
-              <a-select-option v-else v-for="re in selectedRows" :key="re.id">{{re.id}}</a-select-option>
+              <a-select-option v-if="!bBatchNextStep" v-for="re in selectedRows" :key="re.id">{{re.name}}</a-select-option>
             </a-select>
             <a style="position:absolute" @click="handleAddCooperatorClick"><a-icon type="plus-circle-o"></a-icon></a>
             <a-modal :confirmLoading="coopConfirmLoading" :visible="coopModalVisible" @ok="coopModalOk" @cancel="coopModalCancel" :maskCancel="true">
@@ -127,7 +127,8 @@ export default {
         span: 20
       },
       toBeAddCoop: {},
-      bBatchNextStep: true
+      bBatchNextStep: true,
+      selectedRows: []
     }
   },
   created () {
@@ -160,12 +161,6 @@ export default {
         return tr.checkStatus
       }).length
       return !(checkNum === 0 || checkNum === totalNum)
-    },
-    selectedRows () {
-      const selectedRows = this.applicationList.filter(tr => {
-        return tr.checkStatus
-      })
-      return selectedRows
     },
     totalChecked () {
       const totalNum = this.applicationList.length
@@ -207,6 +202,15 @@ export default {
   },
   methods: {
     /**
+     * 获取当前被选择的行数据
+     */
+    getSelectedRows () {
+      const selection = this.applicationList.filter(tr => {
+        return tr.checkStatus
+      })
+      return selection
+    },
+    /**
      * 根据状态显示颜色
      */
     getStatusColor (status) {
@@ -225,23 +229,27 @@ export default {
      * 选择所有通过的行
      */
     selectAllPassed () {
+      this.selectedRows.splice(0, this.selectedRows.length)
       this.applicationList = this.applicationList.map(tr => {
         return {
           ...tr,
           checkStatus: tr.step.indexOf('+') > -1
         }
       })
+      this.selectedRows = this.getSelectedRows()
     },
     /**
      * 选择所有未通过但未发拒信的行
      */
     selectAllFailed () {
+      this.selectedRows.splice(0, this.selectedRows.length)
       this.applicationList = this.applicationList.map(tr => {
         return {
           ...tr,
           checkStatus: tr.step.indexOf('-') > 0 && tr.step.indexOf('--') === -1
         }
       })
+      this.selectedRows = this.getSelectedRows()
     },
     clearSelection () {
       this.applicationList = this.applicationList.map(tr => {
@@ -250,20 +258,24 @@ export default {
           checkStatus: false
         }
       })
+      this.selectedRows.splice(0, this.selectedRows.length)
     },
     selectAllAssessing () {
+      this.selectedRows.splice(0, this.selectedRows.length)
       this.applicationList = this.applicationList.map(tr => {
         return {
           ...tr,
           checkStatus: tr.step.indexOf('-') === -1 && tr.step.indexOf('+') === -1
         }
       })
+      this.selectedRows = this.getSelectedRows()
     },
     /**
      * 单行选择改变时触发
      */
     singleCheckChange (val) {
       val.checkStatus = !val.checkStatus
+      this.selectedRows = this.getSelectedRows()
     },
     /**
      * 职位改变时触发
@@ -335,7 +347,8 @@ export default {
             disableStatus: tr.step.indexOf('--') > -1
           }
         })
-        console.log(this.applicationList)
+        // 下面这行为了列表白底的动态增加
+        document.getElementsByClassName('ant-layout-content')[0].style.removeProperty('min-height')
       }, error => {
         console.error(error)
       })
@@ -382,7 +395,9 @@ export default {
       this.bBatchNextStep = true
       this.mail = {
         content: 'Dear [assessor_name]\r\n\tPlease select the time during which you will be available for the interview. ' +
-          'Attention please, once selected, the time table can not be changed!\r\n\tBest Regards\r\n[company_name]',
+          'Attention please, once selected, the time table can not be changed! The time selection link is below: \r\n\t\t' +
+          (location.origin + '/' + location.pathname + '/#/schedule/interview/[operation_id]/[cooperation_id]').replace(/([^(http:)])\/{2,}/gi, '$1/') +
+          '\r\n\tBest Regards\r\n[company_name]',
         subject: 'select interview time as an interviewer',
         cooperators: []
       }
@@ -420,14 +435,23 @@ export default {
           this.$message.error(error)
         })
       } else {
-        axios.put('application/decline', {applicationId: this.curApplication.id, subject: this.mail.subject, content: this.mail.content, receiver: this.resume.email}).then(response => {
-          this.mailConfirmLoading = false
-          this.popMailVisible = false
-          this.fetchData()
-        }, error => {
-          this.popMailVisible = false
-          this.mailConfirmLoading = false
-          console.error(error)
+        let totalSendCount = this.selectedRows.length
+        this.selectedRows.forEach(tr => {
+          if (tr.checkStatus) {
+            axios.put('application/decline', {
+              applicationId: tr.id,
+              subject: this.mail.subject,
+              content: this.mail.content,
+              receiver: tr.resume.email
+            }).then(response => {
+              totalSendCount--
+              if (totalSendCount === 0) {
+                this.mailConfirmLoading = false
+                this.popMailVisible = false
+                this.fetchData()
+              }
+            })
+          }
         })
       }
     },
@@ -462,6 +486,9 @@ export default {
     },
     handleDecline () {
       this.bBatchNextStep = false
+      this.mail.cooperators = this.selectedRows.map(tr => {
+        return tr.id
+      })
       this.mail.subject = 'Fail asessment notification.'
       this.mail.content = 'Dear [candidate_name]:\n' +
         '\tThank you for your application for the position. As you can imagine, we received a large number of applications. I am sorry to inform you that you have not passed this position.\n' +
@@ -470,6 +497,24 @@ export default {
         '\n' +
         'Best wishes for a successful job search. Thank you, again, for your interest in our company.'
       this.popMailVisible = true
+    },
+    handleReceiverChange (value) {
+      if (this.bBatchNextStep) {
+        return false
+      }
+      this.mail.cooperators = value
+      // 触发修改
+      this.mail = Object.assign({}, this.mail)
+      this.applicationList = this.applicationList.map(tr => {
+        const newTr = Object.assign({}, tr)
+        if (this.mail.cooperators.indexOf(tr.id) === -1) {
+          newTr.checkStatus = false
+        } else {
+          newTr.checkStatus = true
+        }
+        return newTr
+      })
+      this.selectedRows = this.getSelectedRows()
     }
   }
 }
