@@ -91,6 +91,18 @@ export const routes = [
         component: () => import('@/components/offer/list')
       }
     ]
+  },
+  {
+    path: 'progress',
+    name: 'Progress',
+    component: EmptyLayout,
+    children: [
+      {
+        path: '',
+        name: 'My Progress',
+        component: () => import('@/components/progress/list')
+      }
+    ]
   }
 ]
 

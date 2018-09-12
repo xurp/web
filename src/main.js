@@ -28,7 +28,7 @@ Vue.$fetchUser = Vue.prototype.$fetchUser = fetchUser
 
 Vue.$roleMap = Vue.prototype.$roleMap = {
   'hr': ['Dashboard', 'Position', 'Audit', 'Offer', 'Application'],
-  'candidate': ['Dashboard', 'Resume', 'Job'],
+  'candidate': ['Dashboard', 'Resume', 'Job', 'Progress'],
   'admin': ['Dashboard', 'Audit']
 }
 
