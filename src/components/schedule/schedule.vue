@@ -91,7 +91,12 @@ export default {
     fetchData () {
       if (this.isCurrentInterviewer) {
         axios.get('appointedTime', {params: this.$route.params}).then(r => {
-          this.processRange(moment(r.data.startDate), moment(r.data.endDate))
+          const range = [moment(r.data.startDate), moment(r.data.endDate)]
+          const days = []
+          for (const day = range[0]; day.isSameOrBefore(range[1]); day.add(1, 'day')) {
+            days.push(day.format('YYYY-MM-DD'))
+          }
+          this.days = days
           this.numberOfTime = r.data.number
         }).catch(e => {
           this.alreadyDone = true
@@ -103,33 +108,22 @@ export default {
           operationId: this.$route.params.operationId
         }
         axios.get('appointedTime/schedule', { params }).then(r => {
-          let start, end
-          r.data.map(o => moment(o.startTime)).forEach(o => {
-            if (!start || o.isBefore(start)) {
-              start = o
-            }
-            if (!end || o.isAfter(end)) {
-              end = o
-            }
+          const days = []
+          r.data.map(o => o.startTime).forEach(o => {
+            const day = o.substr(0, 10)
+            const hour = o.substr(11, 2)
             const daytime = {
-              day: o.format('YYYY-MM-DD'),
-              time: this.timePeriods.find(t => t.substr(0, 2) === o.format('HH'))
+              day,
+              time: this.timePeriods.find(o => o.substr(0, 2) === hour)
             }
-            console.log(daytime)
             this.availableTimes.push(daytime)
+            if (days.findIndex(o => o === day) === -1) {
+              days.push(day)
+            }
           })
-          if (start && end) {
-            this.processRange(start, end)
-          }
+          this.days = days.sort()
         })
       }
-    },
-    processRange (start, end) {
-      const days = []
-      for (const day = start; day.isSameOrBefore(end); day.add(1, 'day')) {
-        days.push(day.format('YYYY-MM-DD'))
-      }
-      this.days = days
     },
     handleTimeChooseSingle (day, time) {
       this.chosenTimes = [{day, time}]
@@ -171,9 +165,12 @@ export default {
           this.alreadyDone = true
         })
       } else {
-        // TODO: create assessment
-        const url = `${window.location.origin}/#/assess/${uuid()}`
-        console.log(url)
+        const data = {
+          interviewTime: this.chosenTimes.map(o => `${o.day}T${o.time.substr(0, 5)}:00.000+0000`)[0]
+        }
+        axios.put(`assessment/${this.$route.params.assessmentId}/schedule`, data).then(r => {
+          this.alreadyDone = true
+        })
       }
     }
   },
