@@ -139,14 +139,23 @@ export default {
       })
       axios.get('assessment?applicationId=' + localStorage.getItem('applicationId')).then(response => {
         this.assesses = response.data.map(tr => { // TODO 这里不管有没有正在进行的任务，都需要新加重新发送链接（如果未分配，禁用）
-          return {id: tr.id,
+          console.log(response.data)
+          console.log(moment(new Date(response.data[0].interviewTime).getTime()).format('YYYY-MM-DD hh:mm:ss'))
+          const newTr = {id: tr.id,
             department: tr.cooperator === null ? '' : tr.cooperator.department,
             name: tr.cooperator === null ? 'To be arranged' : tr.cooperator.name,
             time: moment(new Date(tr.assessmentTime).getTime()).format('YYYY-MM-DD HH-mm:ss'),
             content: tr.comment,
             step: tr.step,
-            pass: tr.pass
+            pass: tr.pass,
+            reviewTime: tr.interviewTime === null ? '' : moment(new Date(tr.interviewTime).getTime()).format('YYYY-MM-DD HH-mm:ss')
           }
+          if (newTr.reviewTime === '') {
+            newTr.time = 'interview time to be determined'
+          } else {
+            newTr.time = 'interview time: ' + newTr.reviewTime
+          }
+          return newTr
         })
       })
       this.fetchCooperatorList()
@@ -215,7 +224,7 @@ export default {
           // 旧安排不需要清除，如果旧安排不存在，需要新建一条空安排
           // 如果已经评估，直接抛错
           this.mailConfirmLoading = true
-          axios.post('assess/rearrange', {assessId: this.assesses[this.assesses.length - 1].id,
+          axios.put('assessment/rearrange', {assessId: this.assesses[this.assesses.length - 1].id,
             applicationId: this.curApplication.id,
             subject: this.mail.subject,
             content: this.mail.content,
@@ -232,6 +241,7 @@ export default {
             this.mailConfirmLoading = false
             console.error(error)
           })
+          return
         }
         if (this.bResetAsessResult) {
           // 重置已经填好的面试结果
@@ -239,7 +249,8 @@ export default {
           axios.put('assessment/reset', {assessId: this.assesses[this.assesses.length - 1].id,
             subject: this.mail.subject,
             content: this.mail.content,
-            receiver: this.cooperatorList.find(tr => { return tr.id === this.mail.cooperatorId }).email
+            receiver: this.cooperatorList.find(tr => { return tr.id === this.mail.cooperatorId }).email,
+            cooperatorId: this.mail.cooperatorId
           }).then(response => {
             this.mailConfirmLoading = false
             this.popMailVisible = false
@@ -365,7 +376,6 @@ export default {
      */
     reArrange () {
       const lastAssess = this.assesses[this.assesses.length - 1]
-      console.log(lastAssess)
       if (lastAssess === undefined || lastAssess.name === 'To be arranged') {
         this.$message.warn('assessment not arranged yet', 0.5)
         return

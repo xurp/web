@@ -55,7 +55,7 @@
     </a-table>
     <div class="operation-div">
       <a-button class="decline-btn" type="danger" :disabled="!declineEnable" @click="handleDecline">Decline</a-button>
-      <a-button class="accept-btn" type="primary" :disabled="!nextStepEnable" @click="openMailModal">Next Step</a-button>
+      <a-button class="accept-btn" type="primary" :loading="nextButtonConfirmLoading" :disabled="!nextStepEnable" @click="handleNextStep">Next Step</a-button>
     </div>
 
     <a-modal class="mail-modal" :confirmLoading="mailConfirmLoading" width="680px" okText="Send" title="batch assessment arrangement" :visible="popMailVisible" v-on:cancel="handleMailCancel" @ok="handleMailSend" :maskClosable="false" :closable="true">
@@ -108,7 +108,7 @@ export default {
   data () {
     return {
       curPosition: {},
-      step: 'ALL',
+      step: 'ALL', // step表示当前是第几步（自定义的步，例如1.0, 1.5等）
       applicationList: [],
       steps: [],
       statuses: [],
@@ -128,7 +128,8 @@ export default {
       },
       toBeAddCoop: {},
       bBatchNextStep: true,
-      selectedRows: []
+      selectedRows: [],
+      nextButtonConfirmLoading: false // 下一步按钮是否在忙
     }
   },
   created () {
@@ -298,9 +299,22 @@ export default {
           Object.assign(as, tr)
           return as
         })
+        // 下面这段加载从position的detail里过来的路由
+        const aid = localStorage.getItem('Position2ApplicationId')
+        localStorage.setItem('Position2ApplicationId', '')
+        localStorage.removeItem('Position2ApplicationId')
+        let index = 0
+        if (aid !== undefined) {
+          index = this.jobList.findIndex(tr => {
+            return tr.id === aid
+          })
+        }
+        if (index === -1) {
+          index = 0
+        }
         // 加载完选择第一个
         if (this.jobList.length > 0) {
-          this.handleJobChange(this.jobList[0].id)
+          this.handleJobChange(this.jobList[index].id)
         }
       }, error => {
         console.error(error)
@@ -389,7 +403,22 @@ export default {
         return 'clock-circle-o'
       }
     },
-    openMailModal () {
+    handleNextStep () {
+      let selectCount = this.selectedRows.length
+      if (this.steps.findIndex(tr => { return parseFloat(tr.index) === this.step }) === this.steps.length - 2) { // 最后一步
+        this.nextButtonConfirmLoading = true
+        this.selectedRows.forEach(tr => {
+          axios.put('application/' + tr.id + '/step').then(response => {
+            selectCount--
+            if (selectCount === 0) {
+              this.nextButtonConfirmLoading = false
+              this.fetchApplicationList()
+              this.$message.success('Job seeker moved to offer list.')
+            }
+          })
+        })
+        return
+      }
       this.fetchCooperatorList()
       this.popMailVisible = true
       this.bBatchNextStep = true
