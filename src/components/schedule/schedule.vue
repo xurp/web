@@ -19,23 +19,30 @@
           v-for="day in days" :key="day"
           :slot="'checkbox-' + day" slot-scope="text, record"
         >
-          <template v-if="numberOfTime > 1">
-            <a-checkbox
-              :checked="isChecked(day, record.time)"
-              :disabled="isDisabled(day, record.time)"
-              @change="handleTimeChoose(day, record.time)"
-            />
+          <template v-if="isCurrentInterviewer">
+            <template v-if="numberOfTime > 1">
+              <a-checkbox
+                :checked="isChecked(day, record.time)"
+                @change="handleTimeChoose(day, record.time)"
+              />
+            </template>
+            <template v-else>
+              <a-radio
+                :checked="isChecked(day, record.time)"
+                @change="handleTimeChooseSingle(day, record.time)"
+              />
+            </template>
           </template>
           <template v-else>
-            <a-radio
-              :checked="isChecked(day, record.time)"
-              :disabled="isDisabled(day, record.time)"
-              @change="handleTimeChooseSingle(day, record.time)"
-            />
+            <a-button
+              type="primary"
+              v-if="!isDisabled(day, record.time)"
+              @click="occupy(day, record.time)"
+            >Occupy</a-button>
           </template>
         </div>
       </a-table>
-      <div style="margin-top: 16px; text-align: center">
+      <div v-if="isCurrentInterviewer" style="margin-top: 16px; text-align: center">
         <a-button
           size="large" type="primary"
           @click="submit"
@@ -102,6 +109,14 @@ export default {
           this.alreadyDone = true
         })
       } else {
+        // check done
+        axios.get('assessment/' + this.$route.params.assessmentId).then(r => {
+          if (r.data.interviewTime) {
+            this.alreadyDone = true
+          }
+        })
+
+        // fetch available times
         this.availableTimes = []
         this.numberOfTime = 1
         const params = {
@@ -156,22 +171,28 @@ export default {
         this.$message.warning(`Please choose ${this.numberOfTime} time periods`)
         return
       }
-      if (this.isCurrentInterviewer) {
-        const data = {
-          ...this.$route.params,
-          startTimes: this.chosenTimes.map(o => `${o.day}T${o.time.substr(0, 5)}:00.000+0000`)
-        }
-        axios.put('appointedTime', data).then(r => {
-          this.alreadyDone = true
-        })
-      } else {
-        const data = {
-          interviewTime: this.chosenTimes.map(o => `${o.day}T${o.time.substr(0, 5)}:00.000+0000`)[0]
-        }
-        axios.put(`assessment/${this.$route.params.assessmentId}/schedule`, data).then(r => {
-          this.alreadyDone = true
-        })
+      const data = {
+        ...this.$route.params,
+        startTimes: this.chosenTimes.map(o => `${o.day}T${o.time.substr(0, 5)}:00.000+0000`)
       }
+      this.$confirm({
+        title: 'Confirm your interview time',
+        onOk: () => axios.put('appointedTime', data).then(r => {
+          this.alreadyDone = true
+        })
+      })
+    },
+    occupy (day, time) {
+      const data = {
+        interviewTime: `${day}T${time.substr(0, 5)}:00.000+0000`
+      }
+      this.$confirm({
+        title: 'Confirm your interview time',
+        content: `${day} ${time}`,
+        onOk: () => axios.put(`assessment/${this.$route.params.assessmentId}/schedule`, data).then(r => {
+          this.alreadyDone = true
+        })
+      })
     }
   },
   created () {
