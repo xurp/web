@@ -1,5 +1,6 @@
 <template>
   <div>
+    <a-input-search v-model="queryStr" @search="fetchResumes"></a-input-search>
     <a-list :dataSource="resumes" itemLayout="vertical">
       <a-list-item slot="renderItem" slot-scope="resume, index" key="index">
         <a-list-item-meta>
@@ -62,12 +63,13 @@ export default {
         resume: null,
         job: null
       },
-      inviting: false
+      inviting: false,
+      queryStr: ''
     }
   },
   methods: {
     fetchResumes () {
-      axios.get('resume').then(r => {
+      axios.get('resume', {params: { keyword: this.queryStr}}).then(r => {
         this.resumes = r.data
       })
     },
