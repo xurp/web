@@ -111,7 +111,8 @@ export default {
        */
       bSendToAssess: true,
       nextBtnConfirmLoading: false,
-      bResend: false // 是否是重新发
+      bResend: false, // 是否是重新发
+      bReArrange: false // 是否重新安排面试
     }
   },
   created () {
@@ -182,6 +183,7 @@ export default {
     handleNextStep () {
       this.bResend = false
       this.bSendToAssess = true
+      this.bReArrange = false
       // TODOdone 最后一步offer不进入邮件列表，邮件单独提成新功能（保留进度条上的Offer字样，只更新进度）
       if (this.stepIndex === this.steps.length - 2) { // 最后一步
         this.nextBtnConfirmLoading = true
@@ -208,9 +210,13 @@ export default {
     handleMailSend: function () {
       this.mailConfirmLoading = true
       if (this.bSendToAssess) {
+        if (this.bReArrange) {
+          // TODO 这里需要重新安排面试，考虑是否需要清除旧的安排
+        }
         if (this.bResend) {
+          // 重置已经填好的面试结果
           this.mailConfirmLoading = true
-          axios.put('assessment/reset', {assessId: this.assesses,
+          axios.put('assessment/reset', {assessId: this.assesses[this.assesses.length - 1].id,
             subject: this.mail.subject,
             content: this.mail.content,
             receiver: this.cooperatorList.find(tr => { return tr.id === this.mail.cooperatorId }).email
@@ -302,6 +308,7 @@ export default {
     handleDecline () {
       this.bResend = false
       this.bSendToAssess = false
+      this.bReArrange = false
       this.mail.subject = 'Fail asessment notification.'
       this.mail.content = 'Dear ' + this.resume.name + ':\n' +
         'Thank you for your application for the position. As you can imagine, we received a large number of applications. I am sorry to inform you that you have not passed this position.\n' +
@@ -329,6 +336,7 @@ export default {
         '\r\n\tBest Regards,\r\n[company_name]'
       this.mail.subject = 're-assess response'
       this.bResend = true
+      this.bReArrange = false
       this.bSendToAssess = true
       this.popMailVisible = true
     },
@@ -351,6 +359,7 @@ export default {
         '\r\n\tBest Regards,\r\n[company_name]'
       this.mail.subject = 're-picking time response'
       this.bResend = true
+      this.bReArrange = true
       this.bSendToAssess = true
       this.popMailVisible = true
     }
