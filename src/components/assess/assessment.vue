@@ -10,8 +10,12 @@
           <a-textarea v-model="assessData.comment" :autosize="{minRows: 3, maxRows: 12}" placeholder="please input your assessment about the job seeker."></a-textarea>
         </a-form-item>
         <a-form-item class="btn-container">
-          <a-button class="submit-btn cancel-btn" @click="handleDecline" type="danger" htmlType="submit">Decline</a-button>
-          <a-button class="submit-btn accept-btn" @click="handleAccept" type="primary" htmlType="submit">Accept</a-button>
+          <a-modal :visible="modalVisible" :closable="false" @cancel="modalVisible=false" :maskClosable="true" @ok="handleOperationOK" okText="OK">
+            <span slot="title" style="color:lightskyblue"><a-icon type="question-circle-o" slot="title"></a-icon>  {{modalTitle}}</span>
+            <a-input v-model="typedText"></a-input>
+          </a-modal>
+          <a-button class="submit-btn cancel-btn" @click="openDeclineModal" type="danger" htmlType="submit">Decline</a-button>
+          <a-button class="submit-btn accept-btn" @click="openAcceptModal" type="primary" htmlType="submit">Accept</a-button>
         </a-form-item>
       </a-form>
     </div>
@@ -35,7 +39,13 @@ export default {
       assessId: '',
       finished: false,
       applicationId: '',
-      step: ''
+      step: '',
+      declineVisible: false,
+      typedText: '',
+      modalTitle: 'type DECLINE and click OK to proceed decline',
+      modalVisible: false,
+      operation: 'decline',
+      confirmText: 'DECLINE'
     }
   },
   created () {
@@ -71,9 +81,43 @@ export default {
       })
     },
     handleDecline () {
-      axios.put('assessment/' + this.assessId, {...this.assessData, id: this.assessId, pass: 'fail', applicationId: this.applicationId, step: this.step}).then(response => {
+      axios.put('assessment/' + this.assessId, {
+        ...this.assessData,
+        id: this.assessId,
+        pass: 'fail',
+        applicationId: this.applicationId,
+        step: this.step
+      }).then(response => {
         this.finished = true
       })
+    },
+    openDeclineModal () {
+      this.typedText = ''
+      this.operation = 'decline'
+      this.modalTitle = 'type DECLINE and click OK to proceed decline'
+      this.confirmText = 'DECLINE'
+      this.modalVisible = true
+    },
+    openAcceptModal () {
+      this.typedText = ''
+      this.operation = 'accept'
+      this.modalTitle = 'type ACCEPT and click OK to proceed accept'
+      this.confirmText = 'ACCEPT'
+      this.modalVisible = true
+    },
+    handleOperationOK () {
+      if (this.confirmText !== this.typedText) {
+        this.$message.error('wrong input')
+        return
+      }
+      switch (this.operation) {
+        case 'decline':
+          this.handleDecline()
+          break
+        case 'accept':
+          this.handleAccept()
+          break
+      }
     }
   }
 }
