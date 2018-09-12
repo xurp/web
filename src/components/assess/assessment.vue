@@ -45,7 +45,6 @@ export default {
   methods: {
     getData () {
       axios.get('assessment/' + this.assessId).then(response => {
-        console.log(response.data)
         this.resume = response.data.resume
         this.assesses = response.data.assessments.map(tr => {
           return {

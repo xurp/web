@@ -58,6 +58,12 @@ export const routes = [
     name: 'Resume Edit',
     component: () => import('@/components/resume/edit'),
     show: ['candidate']
+  },
+  {
+    path: 'progress',
+    name: 'My Progress',
+    component: () => import('@/components/progress/list'),
+    show: ['candidate']
   }
 ]
 
