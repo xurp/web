@@ -177,6 +177,7 @@ export default {
       }
       this.$confirm({
         title: 'Confirm your interview time',
+        content: <div>{this.chosenTimes.map(o => <div>{o.day} {o.time}</div>)}</div>,
         onOk: () => axios.put('appointedTime', data).then(r => {
           this.alreadyDone = true
         })
