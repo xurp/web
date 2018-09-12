@@ -16,8 +16,8 @@
       If assessors misoperated assessment result, please
       <a @click="resetAssessment">Reset current assessment result and resend assess link.</a>
       <br/>
-      Or, if assessors forgot to pick assess time, you can
-      <a @click="reArrange">Rearrange assessment.</a>
+      Or, if arrangement is unsuitable, you can
+      <a @click="reArrange">Rearrange assessment time.</a>
     </div>
     <router-link v-if="stepIndex===steps.length-1" :to="{name: 'Offer List'}">Candidate has passed all assessment process, Click to go to offer management.</router-link>
     <div class="bottom-container" slot="footer">
@@ -32,7 +32,7 @@
               <a-select-option v-for="re in cooperatorList" :key="re.id">{{re.department + '/' + re.name}}</a-select-option>
             </a-select>
             <a-input v-else v-model="resume.email"></a-input>
-            <a v-if="!bResend" style="position:absolute" @click="handleAddCooperatorClick"><a-icon type="plus-circle-o"></a-icon></a>
+            <a v-if="!bResetAsessResult" style="position:absolute" @click="handleAddCooperatorClick"><a-icon type="plus-circle-o"></a-icon></a>
             <a-modal :confirmLoading="coopConfirmLoading" :visible="coopModalVisible" @ok="coopModalOk" @cancel="coopModalCancel" :maskCancel="true">
               <a-form>
                 <a-form-item label="Name">
@@ -50,7 +50,7 @@
           <a-form-item label="MailSubject" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
             <a-input v-model="mail.subject"></a-input>
           </a-form-item>
-          <a-form-item v-if="bSendToAssess&&!bResend" label="AssessDate" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
+          <a-form-item v-if="bReArrange || (bSendToAssess&&!bResetAsessResult)" label="AssessDate" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
             <a-range-picker v-model="mail.timerange"></a-range-picker>
           </a-form-item>
           <a-form-item :labelCol="formLabelCol">
@@ -111,7 +111,8 @@ export default {
        */
       bSendToAssess: true,
       nextBtnConfirmLoading: false,
-      bResend: false // 是否是重新发
+      bResetAsessResult: false, // 是否是重新发
+      bReArrange: false // 是否重新安排面试
     }
   },
   created () {
@@ -180,8 +181,9 @@ export default {
       }
     },
     handleNextStep () {
-      this.bResend = false
+      this.bResetAsessResult = false
       this.bSendToAssess = true
+      this.bReArrange = false
       // TODOdone 最后一步offer不进入邮件列表，邮件单独提成新功能（保留进度条上的Offer字样，只更新进度）
       if (this.stepIndex === this.steps.length - 2) { // 最后一步
         this.nextBtnConfirmLoading = true
@@ -208,15 +210,39 @@ export default {
     handleMailSend: function () {
       this.mailConfirmLoading = true
       if (this.bSendToAssess) {
-        if (this.bResend) {
+        if (this.bReArrange) {
+          // TODOdone 这里需要重新安排面试，考虑是否需要清除旧的安排
+          // 旧安排不需要清除，如果旧安排不存在，需要新建一条空安排
+          // 如果已经评估，直接抛错
           this.mailConfirmLoading = true
-          axios.put('assessment/reset', {assessId: this.assesses,
+          axios.post('assess/rearrange', {assessId: this.assesses[this.assesses.length - 1].id,
+            applicationId: this.curApplication.id,
+            subject: this.mail.subject,
+            content: this.mail.content,
+            receiver: this.cooperatorList.find(tr => { return tr.id === this.mail.cooperatorId }).email,
+            cooperatorId: this.mail.cooperatorId,
+            operationId: uuid('http://localhost:4000/assessment/?', uuid.URL),
+            startDate: this.mail.timerange[0].format('YYYY-MM-DD HH:mm:ss'),
+            endDate: this.mail.timerange[1].format('YYYY-MM-DD HH:mm:ss')
+          }).then(response => {
+            this.mailConfirmLoading = false
+            this.popMailVisible = false
+            this.fetchData()
+          }, error => {
+            this.mailConfirmLoading = false
+            console.error(error)
+          })
+        }
+        if (this.bResetAsessResult) {
+          // 重置已经填好的面试结果
+          this.mailConfirmLoading = true
+          axios.put('assessment/reset', {assessId: this.assesses[this.assesses.length - 1].id,
             subject: this.mail.subject,
             content: this.mail.content,
             receiver: this.cooperatorList.find(tr => { return tr.id === this.mail.cooperatorId }).email
           }).then(response => {
             this.mailConfirmLoading = false
-            this.mailPopVisible = false
+            this.popMailVisible = false
             this.fetchData()
           }, error => {
             this.mailConfirmLoading = false
@@ -300,8 +326,9 @@ export default {
      * 点拒绝按钮
      */
     handleDecline () {
-      this.bResend = false
+      this.bResetAsessResult = false
       this.bSendToAssess = false
+      this.bReArrange = false
       this.mail.subject = 'Fail asessment notification.'
       this.mail.content = 'Dear ' + this.resume.name + ':\n' +
         'Thank you for your application for the position. As you can imagine, we received a large number of applications. I am sorry to inform you that you have not passed this position.\n' +
@@ -328,7 +355,8 @@ export default {
         (location.origin + '/' + location.pathname + '/#/assess/' + lastAssess.id).replace(/([^(http:)])\/{2,}/gi, '$1/') +
         '\r\n\tBest Regards,\r\n[company_name]'
       this.mail.subject = 're-assess response'
-      this.bResend = true
+      this.bResetAsessResult = true
+      this.bReArrange = false
       this.bSendToAssess = true
       this.popMailVisible = true
     },
@@ -350,7 +378,8 @@ export default {
         (location.origin + '/' + location.pathname + '/#/schedule/interview/[operation_id]/[cooperation_id]').replace(/([^(http:)])\/{2,}/gi, '$1/') +
         '\r\n\tBest Regards,\r\n[company_name]'
       this.mail.subject = 're-picking time response'
-      this.bResend = true
+      this.bResetAsessResult = true
+      this.bReArrange = true
       this.bSendToAssess = true
       this.popMailVisible = true
     }
