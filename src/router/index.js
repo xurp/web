@@ -45,7 +45,7 @@ export const routes = [
     path: 'job',
     name: 'Job List',
     component: () => import('@/components/job/list'),
-    show: ['hr', 'candidate']
+    show: ['candidate']
   },
   {
     path: 'offer',
