@@ -12,9 +12,11 @@
       </a-card>
     </div>
     <div v-if="offer && offer.result" style="font-size: 1.2em">
-      <span>You have already</span>
-      <a-tag :color="{accept: 'green', reject: 'red'}[offer.result]">{{offer.result}}</a-tag>
-      <span>the offer</span>
+      <a-alert
+        :type="{accept: 'success', reject: 'error'}[offer.result]"
+        :message="offer.result.toUpperCase()"
+        description="You have already done the decision"
+      />
     </div>
     <div v-else>
       <a-button type="primary" @click="accept" :loading="operating">ACCEPT</a-button>
