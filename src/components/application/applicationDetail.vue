@@ -139,6 +139,8 @@ export default {
       })
       axios.get('assessment?applicationId=' + localStorage.getItem('applicationId')).then(response => {
         this.assesses = response.data.map(tr => { // TODO 这里不管有没有正在进行的任务，都需要新加重新发送链接（如果未分配，禁用）
+          console.log(response.data)
+          console.log(moment(new Date(response.data[0].interviewTime).getTime()).format('YYYY-MM-DD hh:mm:ss'))
           const newTr = {id: tr.id,
             department: tr.cooperator === null ? '' : tr.cooperator.department,
             name: tr.cooperator === null ? 'To be arranged' : tr.cooperator.name,
@@ -146,12 +148,12 @@ export default {
             content: tr.comment,
             step: tr.step,
             pass: tr.pass,
-            reviewTime: tr.interviewTime === null ? '' : (new Date(tr.interviewTime).getTime()).format('YYYY-MM-DD HH-mm:ss')
+            reviewTime: tr.interviewTime === null ? '' : moment(new Date(tr.interviewTime).getTime()).format('YYYY-MM-DD HH-mm:ss')
           }
           if (newTr.reviewTime === '') {
             newTr.time = 'interview time to be determined'
           } else {
-            newTr.time = 'interview time' + newTr.reviewTime
+            newTr.time = 'interview time: ' + newTr.reviewTime
           }
           return newTr
         })
