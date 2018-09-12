@@ -46,21 +46,21 @@
       <a-modal
         title="Sending Offers ..."
         :visible="batch.dialog"
-        @cancel="batch.dialog = false"
+        @cancel="clearBatch"
         :closable="!batch.sending"
         :maskClosable="!batch.sending"
       >
         <p v-for="(status, idx) in batch.status" :key="idx">{{status}}</p>
         <template slot="footer">
-          <a-button
-            type="primary"
-            v-if="batch.offers.length > 0 && !batch.sending"
-            @click="batchSend"
-          >Start</a-button>
-          <a-button
-            v-if="batch.offers.length === 0 && !batch.sending"
-            @click="batch.dialog = false"
-          >DONE</a-button>
+          <template v-if="batch.offers.length > 0 && !batch.sending">
+            <a-button type="primary" @click="batchSend">Start</a-button>
+          </template>
+          <template v-else-if="batch.offers.length === 0 && !batch.sending">
+            <a-button @click="clearBatch">DONE</a-button>
+          </template>
+          <template v-else>
+            Please wait ...
+          </template>
         </template>
       </a-modal>
     </div>
@@ -174,6 +174,12 @@ export default {
         this.batch.status[this.batch.status.length - 1] = message
       }
       this.batch.offers = []
+      this.batch.sending = false
+    },
+    clearBatch () {
+      this.batch.offers = []
+      this.batch.status = []
+      this.batch.dialog = false
       this.batch.sending = false
     }
   }
