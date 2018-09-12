@@ -92,17 +92,22 @@ export default new Router({
     {
       path: '/assess/:id',
       name: 'Assess',
-      component: () => import('@/components/assess/assessment')
+      component: () => import('@/components/operation/assessment')
     },
     {
       path: '/schedule/interview/:operationId/:cooperatorId',
       name: 'Schedule - Interviewer',
-      component: () => import('@/components/schedule/schedule')
+      component: () => import('@/components/operation/schedule')
     },
     {
       path: '/schedule/candidate/:operationId/:assessmentId',
       name: 'Schedule - Candidate',
-      component: () => import('@/components/schedule/schedule')
+      component: () => import('@/components/operation/schedule')
+    },
+    {
+      path: '/o/:offerId',
+      name: 'Offer Operation',
+      component: () => import('@/components/operation/offer')
     }
   ]
 })

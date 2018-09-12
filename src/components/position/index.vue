@@ -208,7 +208,7 @@ export default {
       this.viewMode = false
       this.popVisible = true
     },
-    navToAppList(){
+    navToAppList () {
       // localStorage中如果存在该值，就直接导航到该列表，然后加载完成时直接移除localStorage
       localStorage.setItem('Position2ApplicationId', this.tmpData.id)
       this.$router.push({name: 'Application List'})
