@@ -46,6 +46,7 @@
         </a-form-item>
       </a-form>
       <template slot="footer" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
+        <a @click="navToAppList">navigate to applications</a>
         <a-button key="back" @click="handlePopCancel">Cancel</a-button>
         <a-button key="submit" type="primary"  v-if="!viewMode" :loading="popLoading" @click="handlePopOK">
           OK
@@ -206,6 +207,11 @@ export default {
       this.tmpData = {}
       this.viewMode = false
       this.popVisible = true
+    },
+    navToAppList(){
+      // localStorage中如果存在该值，就直接导航到该列表，然后加载完成时直接移除localStorage
+      localStorage.setItem('Position2ApplicationId', this.tmpData.id)
+      this.$router.push({name: 'Application List'})
     }
   }
 }

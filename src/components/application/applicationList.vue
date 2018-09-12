@@ -298,9 +298,18 @@ export default {
           Object.assign(as, tr)
           return as
         })
+        const aid = localStorage.getItem('Position2ApplicationId')
+        localStorage.setItem('Position2ApplicationId', '')
+        localStorage.removeItem('Position2ApplicationId')
+        let index = 0
+        if (aid !== undefined) {
+          index = this.jobList.findIndex(tr => {
+            return tr.id === aid
+          })
+        }
         // 加载完选择第一个
         if (this.jobList.length > 0) {
-          this.handleJobChange(this.jobList[0].id)
+          this.handleJobChange(this.jobList[index].id)
         }
       }, error => {
         console.error(error)
