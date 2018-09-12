@@ -97,6 +97,11 @@ export default new Router({
       path: '/schedule/candidate/:operationId/:assessmentId',
       name: 'Schedule - Candidate',
       component: () => import('@/components/operation/schedule')
+    },
+    {
+      path: '/o/:offerId',
+      name: 'Offer Operation',
+      component: () => import('@/components/operation/offer')
     }
   ]
 })
