@@ -24,7 +24,6 @@ export default {
   methods: {
     fetchAppList () {
       axios.get('application/candidate').then(response => {
-        console.log(response.data)
         this.applications = response.data
       })
     }

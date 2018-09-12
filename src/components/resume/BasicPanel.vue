@@ -88,7 +88,6 @@ export default{
       })
     },
     handleSubmit (e) {
-      console.log(e)
       this.infloading = true
       e.preventDefault()
       axios.put('resume/' + window.user.id, this.basicInfomation).then(response => {

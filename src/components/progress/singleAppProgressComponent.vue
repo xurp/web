@@ -27,9 +27,6 @@ export default {
       type: String
     }
   },
-  created(){
-    console.log(this.curStep)
-  },
   methods: {
     getStepIndex () {
       return this.steps.findIndex(tr => {

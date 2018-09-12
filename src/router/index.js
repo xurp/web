@@ -2,107 +2,68 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Layout from '@/components/Layout'
 
-const EmptyLayout = {
-  template: '<router-view/>'
-}
-
 Vue.use(Router)
 
 export const routes = [
   {
     path: '',
     name: 'Dashboard',
-    component: () => import('@/components/dashboard/dashboard')
+    component: () => import('@/components/dashboard/dashboard'),
+    show: true
   },
   {
     path: 'audit',
-    name: 'Audit',
-    component: EmptyLayout,
-    children: [
-      {
-        path: '',
-        name: 'HR Audit',
-        component: () => import('@/components/review/index')
-      }
-    ]
+    name: 'HR Audit',
+    component: () => import('@/components/review/index'),
+    show: ['admin', 'hr']
   },
   {
     path: 'position',
-    name: 'Position',
-    component: EmptyLayout,
-    children: [
-      {
-        path: '',
-        name: 'Position List',
-        component: () => import('@/components/position/index')
-      }
-    ]
-  },
-  {
-    path: 'application',
-    name: 'Application',
-    component: EmptyLayout,
-    children: [
-      {
-        path: '',
-        name: 'Application List',
-        component: () => import('@/components/application/applicationList')
-      },
-      {
-        path: 'application',
-        name: 'Application Detail',
-        component: () => import('@/components/application/applicationDetail'),
-        hidden: true
-      }
-    ]
+    name: 'Position List',
+    component: () => import('@/components/position/index'),
+    show: ['hr']
   },
   {
     path: 'resume',
-    name: 'Resume',
-    component: EmptyLayout,
-    children: [
-      {
-        path: 'edit',
-        name: 'Resume edit',
-        component: () => import('@/components/resume/index')
-      }
-    ]
+    name: 'Resume List',
+    component: () => import('@/components/resume/list'),
+    show: ['hr']
+  },
+  {
+    path: 'application',
+    name: 'Application List',
+    component: () => import('@/components/application/applicationList'),
+    show: ['hr']
+  },
+  {
+    path: 'application/detail',
+    name: 'Application Detail',
+    component: () => import('@/components/application/applicationDetail'),
+    show: false
   },
   {
     path: 'job',
-    name: 'Job',
-    component: EmptyLayout,
-    children: [
-      {
-        path: '',
-        name: 'Job List',
-        component: () => import('@/components/job/list')
-      }
-    ]
+    name: 'Job List',
+    component: () => import('@/components/job/list'),
+    show: ['hr', 'candidate']
   },
   {
     path: 'offer',
-    name: 'Offer',
-    component: EmptyLayout,
-    children: [
-      {
-        path: '',
-        name: 'Offer List',
-        component: () => import('@/components/offer/list')
-      }
-    ]
+    name: 'Offer List',
+    component: () => import('@/components/offer/list'),
+    show: ['hr']
+  },
+  {
+    path: 'resume/edit',
+    name: 'Resume Edit',
+    component: () => import('@/components/resume/edit'),
+    show: ['candidate']
   },
   {
     path: 'progress',
-    name: 'Progress',
-    component: EmptyLayout,
-    children: [
-      {
-        path: '',
-        name: 'My Progress',
-        component: () => import('@/components/progress/list')
-      }
-    ]
+    name: 'My Progress',
+    component: () => import('@/components/progress/list'),
+    show: ['candidate']
   }
 ]
 

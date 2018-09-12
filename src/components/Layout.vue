@@ -21,28 +21,11 @@
           :style="{ height: '100%', borderRight: 0 }"
           @click="handleNavRoute"
         >
-          <template v-for="route in routes" v-if="checkVisible(route)">
-            <template v-if="route.children && route.children.filter(o => !o.hidden).length > 0">
-              <template v-if="route.children.filter(o => !o.hidden).length === 1">
-                <a-menu-item
-                  v-for="sub in route.children.filter(o => !o.hidden)"
-                  :key="`/${route.path}/${sub.path}`"
-                >{{sub.name}}</a-menu-item>
-              </template>
-              <template v-else>
-                <a-sub-menu :key="route.path">
-                  <span slot="title">{{route.name}}</span>
-                  <a-menu-item
-                    v-for="sub in route.children.filter(o => !o.hidden)"
-                    :key="`/${route.path}/${sub.path}`"
-                  >{{sub.name}}</a-menu-item>
-                </a-sub-menu>
-              </template>
-            </template>
-            <template v-else>
-              <a-menu-item :key="'/' + route.path">{{route.name}}</a-menu-item>
-            </template>
-          </template>
+          <a-menu-item
+            v-for="route in routes"
+            v-if="checkVisible(route)"
+            :key="`/${route.path}`"
+          >{{route.name}}</a-menu-item>
         </a-menu>
       </a-layout-sider>
       <a-layout style="padding: 0 24px 24px">
@@ -128,13 +111,16 @@ export default {
       this.$router.push('/login')
     },
     checkVisible (route) {
-      if (route.hidden === true) {
+      if (route.show === true) {
+        return true
+      } else if (route.show === false) {
         return false
+      } else {
+        if (!(route.show instanceof Array)) {
+          route.show = [route.show]
+        }
+        return route.show.findIndex(o => o === window.user.role) !== -1
       }
-      if (window.user === undefined || window.user.role === undefined) {
-        return false
-      }
-      return this.$roleMap[window.user.role].indexOf(route.name) !== -1
     }
   }
 }
