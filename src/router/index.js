@@ -2,10 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Layout from '@/components/Layout'
 
-const EmptyLayout = {
-  template: '<router-view/>'
-}
-
 Vue.use(Router)
 
 export const routes = [
@@ -25,6 +21,12 @@ export const routes = [
     path: 'position',
     name: 'Position List',
     component: () => import('@/components/position/index'),
+    show: ['hr']
+  },
+  {
+    path: 'resume',
+    name: 'Resume List',
+    component: () => import('@/components/resume/list'),
     show: ['hr']
   },
   {
