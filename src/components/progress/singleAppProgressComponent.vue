@@ -61,11 +61,11 @@ export default {
 }
 </script>
 
-<style scoped lang="less">
+<style lang="less">
 .ant-card-body{
   padding: 0 5vh 0 5vh;
   .content-container{
-    padding: 0 5vh 0 5vh;
+    padding: 0 25px;
   }
 }
 </style>
