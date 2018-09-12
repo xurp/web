@@ -1,6 +1,20 @@
 <template>
     <div class="offer-form">
+      <a v-if="batch.offers.length" @click="batch.dialog = true">Send Offer to Selected</a>
       <a-table :loading="listLoading" :dataSource="list">
+        <a-table-column>
+          <a-checkbox
+            slot="title"
+            :checked="isAllChosen()"
+            @change="chooseAllOffer"
+          />
+          <a-checkbox
+            slot-scope="text, record"
+            :disabled="record.sendStatus === '1'"
+            :checked="batch.offers.findIndex(o => o === record) !== -1"
+            @change="chooseOffer(record)"
+          />
+        </a-table-column>
         <a-table-column title="Name" dataIndex="name"></a-table-column>
         <a-table-column title="Department" dataIndex="department"></a-table-column>
         <a-table-column title="Position" dataIndex="position"></a-table-column>
@@ -28,6 +42,27 @@
           </a-form>
         </div>
       </a-modal>
+
+      <a-modal
+        title="Sending Offers ..."
+        :visible="batch.dialog"
+        @cancel="batch.dialog = false"
+        :closable="!batch.sending"
+        :maskClosable="!batch.sending"
+      >
+        <p v-for="(status, idx) in batch.status" :key="idx">{{status}}</p>
+        <template slot="footer">
+          <a-button
+            type="primary"
+            v-if="batch.offers.length > 0 && !batch.sending"
+            @click="batchSend"
+          >Start</a-button>
+          <a-button
+            v-if="batch.offers.length === 0 && !batch.sending"
+            @click="batch.dialog = false"
+          >DONE</a-button>
+        </template>
+      </a-modal>
     </div>
 </template>
 
@@ -52,7 +87,13 @@ export default {
         content: 'Congratulations'
       },
       curData: {},
-      mailSendLoading: false
+      mailSendLoading: false,
+      batch: {
+        offers: [],
+        status: [],
+        dialog: false,
+        sending: false
+      }
     }
   },
   created () {
@@ -86,7 +127,7 @@ export default {
     },
     startSendOffer () {
       this.mailSendLoading = true
-      axios.put('offer', {offerId: this.curData.id, receiver: this.mail.email, subject: this.mail.subject, content: this.mail.content}).then(response => {
+      return axios.put('offer', {offerId: this.curData.id, receiver: this.mail.email, subject: this.mail.subject, content: this.mail.content}).then(response => {
         this.mailSendLoading = false
         this.mailModalVisible = false
         this.fetchList()
@@ -97,6 +138,43 @@ export default {
     },
     closeSendOfferModal () {
       this.mailModalVisible = false
+    },
+    isAllChosen () {
+      return this.batch.offers.length === this.list.filter(o => o.sendStatus !== '1').length
+    },
+    chooseOffer (offer) {
+      console.log(offer)
+      const idx = this.batch.offers.findIndex(o => o === offer)
+      if (idx === -1) {
+        this.batch.offers.push(offer)
+      } else {
+        this.batch.offers.splice(idx, 1)
+      }
+    },
+    chooseAllOffer () {
+      if (this.isAllChosen()) {
+        this.batch.offers = []
+      } else {
+        this.batch.offers = [...this.list.filter(o => o.sendStatus !== '1')]
+      }
+    },
+    async batchSend () {
+      this.batch.sending = true
+      for (const offer of this.batch.offers) {
+        this.mail.email = offer.email
+        this.curData = Object.assign({}, offer)
+        let message = `Sending offer to ${offer.name} ... `
+        this.batch.status.push(message)
+        try {
+          await this.startSendOffer()
+          message += 'Succeed'
+        } catch (e) {
+          message += 'Failed'
+        }
+        this.batch.status[this.batch.status.length - 1] = message
+      }
+      this.batch.offers = []
+      this.batch.sending = false
     }
   }
 }
