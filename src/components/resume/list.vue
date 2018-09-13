@@ -69,7 +69,7 @@ export default {
   },
   methods: {
     fetchResumes () {
-      axios.get('resume', {params: { keyword: this.queryStr}}).then(r => {
+      axios.get('resume', {params: {keyword: this.queryStr}}).then(r => {
         this.resumes = r.data
       })
     },

@@ -18,7 +18,25 @@ export default {
         { 'Department': 'HR', 'Candidates': 9 / 17 }
       ]
     }
-  })
+  }),
+  props: {
+    dataByDepartment: {
+      type: Array
+    }
+  },
+  watch: {
+    dataByDepartment () {
+      this.chartData = {
+        columns: ['Department', 'Candidates'],
+        rows: this.dataByDepartment.map(tr => {
+          return {
+            'Department': tr.Department,
+            'Candidates': tr.Offers / tr.Candidates
+          }
+        })
+      }
+    }
+  }
 }
 </script>
 
