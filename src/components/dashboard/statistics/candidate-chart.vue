@@ -11,14 +11,22 @@ export default {
   data: () => ({
     chartData: {
       columns: ['Department', 'Candidates'],
-      rows: [
-        { 'Department': 'QC', 'Candidates': 13 },
-        { 'Department': 'Dev', 'Candidates': 35 },
-        { 'Department': 'Sales', 'Candidates': 29 },
-        { 'Department': 'HR', 'Candidates': 17 }
-      ]
+      rows: []
     }
-  })
+  }),
+  props: {
+    dataByDepartment: {
+      type: Array
+    }
+  },
+  watch: {
+    dataByDepartment () {
+      this.chartData = {
+        columns: ['Department', 'Candidates'],
+        rows: this.dataByDepartment
+      }
+    }
+  }
 }
 </script>
 

@@ -46,7 +46,7 @@
       <a-table-column title="Major" key="major" dataIndex="major"></a-table-column>
       <a-table-column title="Age" key="age" dataIndex="age"></a-table-column>
       <a-table-column title="Gender" key="gender" dataIndex="gender"></a-table-column>
-      <a-table-column title="Status" key="status" dataIndex="status">
+      <a-table-column title="Status" key="status" :sorter="(a,b)=>a.status.trim().localeCompare(b.status.trim())" dataIndex="status">
         <span slot-scope="text,record" :style="{color:getStatusColor(record.status)}">{{text}}</span>
       </a-table-column>
       <a-table-column title="Action" key="action">
