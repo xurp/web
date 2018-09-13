@@ -6,17 +6,16 @@
     >
       <a-row type="flex" align="middle">
         <a-col :span="20">
-          <div>
-            <div style="font-size: 1.3em">{{invitation.job.name}}</div>
-            <span style="color: gray">
-              <span>{{invitation.job.company.companyName}}</span>
-              <span>/</span>
-              <span>{{invitation.job.department}}</span>
-              <span>/</span>
-              <span>{{invitation.job.name}}</span>
-            </span>
+          <div style="color: gray; float: right">Invitation sent at {{invitation.inviteTime}}</div>
+          <div style="font-size: 1.3em">{{invitation.job.name}}</div>
+          <div style="color: gray">
+            <span>{{invitation.job.company.companyName}}</span>
+            <a-divider type="vertical"/>
+            <span>{{invitation.job.department}}</span>
+            <a-divider type="vertical"/>
+            <span>{{invitation.job.name}}</span>
           </div>
-          <div style="color: gray">{{invitation.inviteTime}}</div>
+          <a-divider/>
           <div style="color: darkgray">{{invitation.job.detail}}</div>
         </a-col>
         <a-col :span="4">
