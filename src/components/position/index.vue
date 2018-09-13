@@ -8,9 +8,11 @@
              :loading="listLoading">
       <span slot="action" slot-scope="text, record">
         <!--<router-link :to="{name: 'Application List', params: { id: record.id } }">DETAIL</router-link>-->
-        <a-button v-on:click="detailPosition(record)">Detail</a-button>
+        <a v-on:click="detailPosition(record)">Detail</a>
         <a-divider type="vertical" />
-        <a-button v-on:click="modifyPosition(record)">Modify</a-button>
+        <a v-on:click="modifyPosition(record)">Modify</a>
+        <a-divider type="vertical" />
+        <a v-on:click="setStep(record)">Step Setting</a>
         <!--<a-divider type="vertical" />-->
         <!--<a-popconfirm-->
           <!--title="Sure to delete?"-->
@@ -212,6 +214,10 @@ export default {
       // localStorage中如果存在该值，就直接导航到该列表，然后加载完成时直接移除localStorage
       localStorage.setItem('Position2ApplicationId', this.tmpData.id)
       this.$router.push({name: 'Application List'})
+    },
+    setStep(record){
+      localStorage.setItem('jobId4Step', record.id)
+      this.$router.push({name: 'Position Step'})
     }
   }
 }
