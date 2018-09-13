@@ -24,6 +24,11 @@ export const routes = [
     show: ['hr']
   },
   {
+    path: 'position/step',
+    name: 'Position Step',
+    component: () => import('@/components/position/stepConfig')
+  },
+  {
     path: 'resume',
     name: 'Resume List',
     component: () => import('@/components/resume/list'),
