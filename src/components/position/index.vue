@@ -215,7 +215,7 @@ export default {
       localStorage.setItem('Position2ApplicationId', this.tmpData.id)
       this.$router.push({name: 'Application List'})
     },
-    setStep(record){
+    setStep (record) {
       localStorage.setItem('jobId4Step', record.id)
       this.$router.push({name: 'Position Step'})
     }

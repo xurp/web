@@ -5,7 +5,7 @@
         <a-table-column>
           <a-checkbox
             slot="title"
-            :checked="isAllChosen()"
+            :checked="isAllChosen"
             @change="chooseAllOffer"
           />
           <a-checkbox
@@ -96,6 +96,12 @@ export default {
       }
     }
   },
+  computed: {
+    isAllChosen () {
+      return this.batch.offers.length > 0 &&
+        this.batch.offers.length === this.list.filter(o => o.sendStatus !== '1').length
+    }
+  },
   created () {
     this.fetchList()
   },
@@ -139,10 +145,6 @@ export default {
     closeSendOfferModal () {
       this.mailModalVisible = false
     },
-    isAllChosen () {
-      return this.batch.offers.length > 0
-        && this.batch.offers.length === this.list.filter(o => o.sendStatus !== '1').length
-    },
     chooseOffer (offer) {
       console.log(offer)
       const idx = this.batch.offers.findIndex(o => o === offer)
@@ -153,7 +155,7 @@ export default {
       }
     },
     chooseAllOffer () {
-      if (this.isAllChosen()) {
+      if (this.isAllChosen) {
         this.batch.offers = []
       } else {
         this.batch.offers = [...this.list.filter(o => o.sendStatus !== '1')]
