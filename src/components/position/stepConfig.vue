@@ -78,7 +78,7 @@ export default {
     },
     submitStepChange () {
       this.submitLoading = true
-      axios.put('job/steps', {jobId: this.jobId, steps: this.steps}).then(response => {
+      axios.put('job/steps', {id: this.jobId, step: this.steps}).then(response => {
         this.fetchStep()
         this.submitLoading = false
       }, error => {

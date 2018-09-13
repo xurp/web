@@ -247,7 +247,7 @@ export default {
       this.applicationList = this.applicationList.map(tr => {
         return {
           ...tr,
-          checkStatus: tr.step.indexOf('-') > 0 && tr.step.indexOf('--') === -1
+          checkStatus: tr.step.indexOf('-') > -1 && tr.step.indexOf('--') === -1
         }
       })
       this.selectedRows = this.getSelectedRows()
