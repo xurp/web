@@ -124,9 +124,9 @@ export default {
         }
         axios.get('appointedTime/schedule', { params }).then(r => {
           const days = []
-          r.data.map(o => o.startTime).forEach(o => {
-            const day = o.substr(0, 10)
-            const hour = o.substr(11, 2)
+          r.data.map(o => moment(o.startTime)).forEach(o => {
+            const day = o.format('YYYY-MM-DD')
+            const hour = o.format('HH')
             const daytime = {
               day,
               time: this.timePeriods.find(o => o.substr(0, 2) === hour)
