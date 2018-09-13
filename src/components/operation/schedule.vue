@@ -36,7 +36,7 @@
           <template v-else>
             <a-button
               type="primary"
-              v-if="!isDisabled(day, record.time)"
+              v-if="isAvailable(day, record.time)"
               @click="occupy(day, record.time)"
             >Occupy</a-button>
           </template>
@@ -84,6 +84,21 @@ export default {
   computed: {
     isCurrentInterviewer () {
       return this.$route.name.substr(11).toLowerCase() === 'interviewer'
+    },
+    isChecked () {
+      return (day, time) => {
+        const idx = this.chosenTimes.findIndex(o => o.day === day && o.time === time)
+        return idx !== -1
+      }
+    },
+    isAvailable () {
+      return (day, time) => {
+        if (this.availableTimes === true) {
+          return true
+        }
+        const idx = this.availableTimes.findIndex(o => o.day === day && o.time === time)
+        return idx !== -1
+      }
     },
     columns () {
       return [{
@@ -155,17 +170,6 @@ export default {
         this.chosenTimes.splice(idx, 1)
       }
     },
-    isChecked (day, time) {
-      const idx = this.chosenTimes.findIndex(o => o.day === day && o.time === time)
-      return idx !== -1
-    },
-    isDisabled (day, time) {
-      if (this.availableTimes === true) {
-        return false
-      }
-      const idx = this.availableTimes.findIndex(o => o.day === day && o.time === time)
-      return idx === -1
-    },
     submit () {
       if (this.chosenTimes.length !== this.numberOfTime) {
         this.$message.warning(`Please choose ${this.numberOfTime} time periods`)
@@ -198,7 +202,6 @@ export default {
   },
   created () {
     this.fetchData()
-    window.moment = moment
   }
 }
 </script>

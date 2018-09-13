@@ -1,12 +1,14 @@
 <template>
   <div class="single-progress-container">
     <titledCard :title="title">
-      <a-steps :current="getStepIndex()">
-        <a-step v-for="curstep in steps" :key="curstep.index" :title="curstep.name" :status="getStepStatus(curstep)">
-          <a-icon v-if="getIfIcon(curstep)" type="loading" slot="icon"/>
-        </a-step>
-      </a-steps>
-      <a-divider></a-divider>
+      <div style="padding: 0 25px">
+        <a-steps :current="getStepIndex()">
+          <a-step v-for="curstep in steps" :key="curstep.index" :title="curstep.name" :status="getStepStatus(curstep)">
+            <a-icon v-if="getIfIcon(curstep)" type="loading" slot="icon"/>
+          </a-step>
+        </a-steps>
+        <a-divider></a-divider>
+      </div>
     </titledCard>
   </div>
 </template>
@@ -61,11 +63,5 @@ export default {
 }
 </script>
 
-<style lang="less">
-.ant-card-body{
-  padding: 0 5vh 0 5vh;
-  .content-container{
-    padding: 0 25px;
-  }
-}
+<style scoped lang="less">
 </style>
