@@ -5,7 +5,7 @@
         <a-table-column>
           <a-checkbox
             slot="title"
-            :checked="isAllChosen()"
+            :checked="isAllChosen"
             @change="chooseAllOffer"
           />
           <a-checkbox
@@ -155,7 +155,7 @@ export default {
       }
     },
     chooseAllOffer () {
-      if (this.isAllChosen()) {
+      if (this.isAllChosen) {
         this.batch.offers = []
       } else {
         this.batch.offers = [...this.list.filter(o => o.sendStatus !== '1')]
