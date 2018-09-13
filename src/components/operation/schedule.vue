@@ -173,7 +173,7 @@ export default {
       }
       const data = {
         ...this.$route.params,
-        startTimes: this.chosenTimes.map(o => `${o.day}T${o.time.substr(0, 5)}:00.000+0000`)
+        startTimes: this.chosenTimes.map(o => moment(`${o.day} ${o.time.substr(0, 5)}`).format())
       }
       this.$confirm({
         title: 'Confirm your interview time',
@@ -185,7 +185,7 @@ export default {
     },
     occupy (day, time) {
       const data = {
-        interviewTime: `${day}T${time.substr(0, 5)}:00.000+0000`
+        interviewTime: moment(`${day} ${time.substr(0, 5)}`).format()
       }
       this.$confirm({
         title: 'Confirm your interview time',
@@ -198,6 +198,7 @@ export default {
   },
   created () {
     this.fetchData()
+    window.moment = moment
   }
 }
 </script>
