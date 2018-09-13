@@ -96,6 +96,12 @@ export default {
       }
     }
   },
+  computed: {
+    isAllChosen () {
+      return this.batch.offers.length > 0 &&
+        this.batch.offers.length === this.list.filter(o => o.sendStatus !== '1').length
+    }
+  },
   created () {
     this.fetchList()
   },
@@ -138,10 +144,6 @@ export default {
     },
     closeSendOfferModal () {
       this.mailModalVisible = false
-    },
-    isAllChosen () {
-      return this.batch.offers.length > 0 &&
-        this.batch.offers.length === this.list.filter(o => o.sendStatus !== '1').length
     },
     chooseOffer (offer) {
       console.log(offer)
