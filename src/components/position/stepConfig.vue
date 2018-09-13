@@ -1,5 +1,12 @@
 <template>
   <div>
+    <a-alert
+      v-if="successVisible"
+      message="Success Tips"
+      description="The steps have been saved successfully."
+      type="success"
+      showIcon
+    />
     <a-steps>
       <span slot="progressDot" slot-scope="{index, status, prefixCls}">
         <a-popover v-if="index != steps.length -1">
@@ -39,7 +46,8 @@ export default {
     steps: [],
     jobId: '',
     editingIndex: 1,
-    submitLoading: false
+    submitLoading: false,
+    successVisible: false
   }),
   created () {
     this.jobId = localStorage.getItem('jobId4Step')
@@ -81,6 +89,7 @@ export default {
       axios.put('job/steps', {id: this.jobId, step: this.steps}).then(response => {
         this.fetchStep()
         this.submitLoading = false
+        this.$message.success('Steps saved successfully.')
       }, error => {
         this.submitLoading = false
         console.error(error)
