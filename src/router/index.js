@@ -42,12 +42,6 @@ export const routes = [
     show: false
   },
   {
-    path: 'job',
-    name: 'Job List',
-    component: () => import('@/components/job/list'),
-    show: ['candidate']
-  },
-  {
     path: 'offer',
     name: 'Offer List',
     component: () => import('@/components/offer/list'),
@@ -57,6 +51,18 @@ export const routes = [
     path: 'resume/edit',
     name: 'Resume Edit',
     component: () => import('@/components/resume/edit'),
+    show: ['candidate']
+  },
+  {
+    path: 'job',
+    name: 'Job List',
+    component: () => import('@/components/job/list'),
+    show: ['candidate']
+  },
+  {
+    path: 'invitation',
+    name: 'My Invitations',
+    component: () => import('@/components/invitation/list'),
     show: ['candidate']
   },
   {
