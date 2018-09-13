@@ -95,11 +95,11 @@ export default {
       const q = new URLSearchParams()
       q.set('resumeId', this.invite.resume.id)
       q.set('jobId', this.invite.job.id)
-      axios.post('application/resume?' + q.toString()).then(r => {
+      axios.post('invitation?' + q.toString()).then(r => {
         this.inviting = false
         this.invite.resume = null
         this.invite.job = null
-        this.$message.success('Apply Succeed!')
+        this.$message.success('Invitation sent!')
       }).catch(e => {
         this.inviting = false
       })
