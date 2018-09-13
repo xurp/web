@@ -17,7 +17,18 @@
           </span>
         </a-list-item-meta>
         <div>{{resume.intro}}</div>
-        <div slot="actions" @click="openApplication(resume)">
+        <div
+          v-if="isInvited(resume)"
+          slot="actions"
+        >
+          <span>Already invited</span>
+          <strong>{{invitedToJob(resume).department}} / {{invitedToJob(resume).name}}</strong>
+        </div>
+        <div
+          v-else
+          slot="actions"
+          @click="openApplication(resume)"
+        >
           <span>Interested in this resume?</span>
           <a>Invite</a>
           <span>him to interview!</span>
@@ -58,6 +69,7 @@ export default {
   data () {
     return {
       resumes: [],
+      invitations: [],
       jobs: [],
       invite: {
         resume: null,
@@ -67,10 +79,28 @@ export default {
       queryStr: ''
     }
   },
+  computed: {
+    isInvited () {
+      return resume => {
+        return this.invitations.findIndex(o => o.userId === resume.userId) !== -1
+      }
+    },
+    invitedToJob () {
+      return resume => {
+        const invitation = this.invitations.find(o => o.userId === resume.userId)
+        return this.jobs.find(o => o.id === invitation.jobId) || {}
+      }
+    }
+  },
   methods: {
     fetchResumes () {
       axios.get('resume', {params: {keyword: this.queryStr}}).then(r => {
         this.resumes = r.data
+      })
+    },
+    fetchInvitations () {
+      axios.get('invitation').then(r => {
+        this.invitations = r.data
       })
     },
     fetchJobs () {
@@ -84,7 +114,6 @@ export default {
     openApplication (resume) {
       this.invite.resume = resume
       this.invite.job = null
-      this.fetchJobs()
     },
     closeApplication () {
       this.invite.resume = null
@@ -100,6 +129,7 @@ export default {
         this.invite.resume = null
         this.invite.job = null
         this.$message.success('Invitation sent!')
+        this.fetchInvitations()
       }).catch(e => {
         this.inviting = false
       })
@@ -107,6 +137,8 @@ export default {
   },
   created () {
     this.fetchResumes()
+    this.fetchInvitations()
+    this.fetchJobs()
   }
 }
 </script>
