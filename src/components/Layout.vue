@@ -143,4 +143,7 @@ export default {
     user-select: none;
     -moz-user-select: none;
   }
+  .ant-layout-content {
+    min-height: unset !important;
+  }
 </style>

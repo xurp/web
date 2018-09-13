@@ -361,8 +361,6 @@ export default {
             disableStatus: tr.step.indexOf('--') > -1
           }
         })
-        // 下面这行为了列表白底的动态增加
-        document.getElementsByClassName('ant-layout-content')[0].style.removeProperty('min-height')
       }, error => {
         console.error(error)
       })
