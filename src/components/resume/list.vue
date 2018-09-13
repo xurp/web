@@ -21,6 +21,7 @@
           v-if="isInvited(resume)"
           slot="actions"
         >
+          <a-icon type="check-circle-o"/>
           <span>Already invited</span>
           <strong>{{invitedToJob(resume).department}} / {{invitedToJob(resume).name}}</strong>
         </div>
