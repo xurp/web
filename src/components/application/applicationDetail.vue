@@ -12,7 +12,7 @@
     <assessComponent v-bind:steps="steps" v-bind:assesses="assesses"></assessComponent>
     <a-divider/>
     <!--<div v-if="step.indexOf('+')===-1 && step.indexOf('-')===-1 && assesses.length > 0 && stepIndex!==steps.length-1">-->
-    <div>
+    <div v-if="stepIndex!==steps.length-1">
       If assessors misoperated assessment result, please
       <a @click="resetAssessment">Reset current assessment result and resend assess link.</a>
       <br/>

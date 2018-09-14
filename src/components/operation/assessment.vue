@@ -1,6 +1,11 @@
 <template>
   <div class="assess-container">
-    <div v-if="finished" style="width:100%;height:100%;text-align:center;vertical-align:middle;"><h1>Thank you for assessment.</h1></div>
+    <h1 style="width:100%;text-align:center;margin-top:50px;">Interview Assessment</h1>
+    <div v-if="finished" style="width:100%;height:100%;">
+      <a-alert message="Success Tips" description="You have submitted assessment successfully."
+      type="success"
+      showIcon/>
+    </div>
     <div v-else>
       <resumePanel :resumeData="resume"></resumePanel>
       <a-divider/>
@@ -14,8 +19,8 @@
             <span slot="title" style="color:lightskyblue"><a-icon type="question-circle-o" slot="title"></a-icon>  {{modalTitle}}</span>
             <a-input v-model="typedText"></a-input>
           </a-modal>
-          <a-button class="submit-btn cancel-btn" @click="openDeclineModal" type="danger" htmlType="submit">Decline</a-button>
-          <a-button class="submit-btn accept-btn" @click="openAcceptModal" type="primary" htmlType="submit">Accept</a-button>
+          <a-button class="submit-btn cancel-btn" :loading="submitLoading" @click="openDeclineModal" type="danger" htmlType="submit">Decline</a-button>
+          <a-button class="submit-btn accept-btn" loading="submitLoading" @click="openAcceptModal" type="primary" htmlType="submit">Accept</a-button>
         </a-form-item>
       </a-form>
     </div>
@@ -45,7 +50,8 @@ export default {
       modalTitle: 'type DECLINE and click OK to proceed decline',
       modalVisible: false,
       operation: 'decline',
-      confirmText: 'DECLINE'
+      confirmText: 'DECLINE',
+      submitLoading: false
     }
   },
   created () {
@@ -76,11 +82,14 @@ export default {
       })
     },
     handleAccept () {
+      this.submitLoading = true
       axios.put('assessment/' + this.assessId, {...this.assessData, id: this.assessId, pass: 'pass', applicationId: this.applicationId, step: this.step}).then(response => {
         this.finished = true
+        this.submitLoading = false
       })
     },
     handleDecline () {
+      this.submitLoading = true
       axios.put('assessment/' + this.assessId, {
         ...this.assessData,
         id: this.assessId,
@@ -89,6 +98,7 @@ export default {
         step: this.step
       }).then(response => {
         this.finished = true
+        this.submitLoading = false
       })
     },
     openDeclineModal () {
