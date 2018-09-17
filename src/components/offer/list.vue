@@ -16,9 +16,21 @@
           />
         </a-table-column>
         <a-table-column title="Name" dataIndex="name"></a-table-column>
-        <a-table-column title="Department" dataIndex="department"></a-table-column>
-        <a-table-column title="Position" dataIndex="position"></a-table-column>
-        <a-table-column title="Result" dataIndex="result"></a-table-column>
+        <a-table-column
+          title="Department" dataIndex="department"
+          :filters="list.map(o => o.department).unique().map(o => ({text: o, value: o}))"
+          @filter="(value, record) => record.department === value"
+        ></a-table-column>
+        <a-table-column
+          title="Position" dataIndex="position"
+          :filters="list.map(o => o.position).unique().map(o => ({text: o, value: o}))"
+          @filter="(value, record) => record.position === value"
+        ></a-table-column>
+        <a-table-column
+          title="Result" dataIndex="result"
+          :filters="list.map(o => o.result).unique().map(o => ({text: o, value: o}))"
+          @filter="(value, record) => record.result === value"
+        ></a-table-column>
         <a-table-column title="Action" key="action">
           <span slot-scope="text,record">
             <span v-if="record.sendStatus!=='1'"><a @click="openSendOfferModal(record)">Send Offer</a></span>

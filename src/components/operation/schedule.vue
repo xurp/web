@@ -38,7 +38,7 @@
               type="primary"
               v-if="isAvailable(day, record.time)"
               @click="occupy(day, record.time)"
-            >Occupy</a-button>
+            >Select</a-button>
           </template>
         </div>
       </a-table>

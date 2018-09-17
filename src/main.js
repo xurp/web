@@ -26,6 +26,13 @@ export const fetchUser = () => axios.get('auth').then(r => {
 window.user = {}
 Vue.$fetchUser = Vue.prototype.$fetchUser = fetchUser
 
+// eslint-disable-next-line
+Array.prototype.unique = function () {
+  return this.filter(o => o !== null)
+    .filter(o => o !== undefined)
+    .filter((o, i, arr) => arr.indexOf(o) === i)
+}
+
 const loadApp = async () => {
   try {
     await fetchUser()
