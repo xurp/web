@@ -189,8 +189,11 @@ export default {
     },
     occupy (day, time) {
       const data = {
-        interviewTime: moment(`${day} ${time.substr(0, 5)}`).format()
+        interviewTime: moment(`${day} ${time.substr(0, 5)}`).format(),
+        id: this.$route.params.assessmentId,
+        operationId: this.$route.params['operationId']
       }
+      console.log(data)
       this.$confirm({
         title: 'Confirm your interview time',
         content: `${day} ${time}`,
