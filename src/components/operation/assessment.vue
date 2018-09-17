@@ -75,7 +75,6 @@ export default {
         this.steps = response.data.stepList
         this.step = response.data.step
         this.applicationId = response.data.applicationId
-        console.log(this.assesses)
       }, error => {
         console.error(error)
         this.finished = true

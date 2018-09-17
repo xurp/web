@@ -1,6 +1,6 @@
 <template>
     <div class="offer-form">
-      <a v-if="batch.offers.length" @click="batch.dialog = true">Send Offer to Selected</a>
+      <a v-if="batch.offers.length" @click="openMultiSendModal">Send Offer to Selected</a>
       <a-table :loading="listLoading" :dataSource="list">
         <a-table-column>
           <a-checkbox
@@ -39,19 +39,10 @@
         </a-table-column>
       </a-table>
 
-      <a-modal width="680px" :visible="mailModalVisible" :confirmLoading="mailSendLoading" :maskClosable="false" :closable="false" @ok="startSendOffer" @cancel="closeSendOfferModal" cancleText="Cancel" okText="Send">
+      <a-modal width="680px" :visible="mailModalVisible" :confirmLoading="mailSendLoading" :maskClosable="false" :closable="false" @ok="batchSend" @cancel="closeSendOfferModal" cancleText="Cancel" okText="Send">
         <div class="mail-form-container">
-          <a-form>
-            <a-form-item label="MailTo" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
-              <a-input v-model="mail.email"></a-input>
-            </a-form-item>
-            <a-form-item label="Subject" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
-              <a-input v-model="mail.subject"></a-input>
-            </a-form-item>
-            <a-form-item :labelCol="formLabelCol">
-              <a-textarea v-model="mail.content" :autosize="{maxRows: 12, minRows: 8}"></a-textarea>
-            </a-form-item>
-          </a-form>
+          <mail-component :mail="mail" :is-receiver-list="true" :show-add-receiver="false" :email-type="'offer'" :receiver-list="receiverList" :select-mode="'tags'"
+                          :show-date="false" @receiverChange="handleReceiverChange"></mail-component>
         </div>
       </a-modal>
 
@@ -80,8 +71,10 @@
 
 <script>
 import axios from '../../service'
+import mailComponent from '../subComponent/mailComponent'
 export default {
   name: 'offer-list',
+  components: {mailComponent},
   data () {
     return {
       listLoading: false,
@@ -105,7 +98,8 @@ export default {
         status: [],
         dialog: false,
         sending: false
-      }
+      },
+      receiverList: []
     }
   },
   computed: {
@@ -132,15 +126,42 @@ export default {
             sendStatus: tr.sendStatus
           }
         })
+        this.receiverList = this.list.map(tr => {
+          return {
+            id: tr.id,
+            name: tr.name
+          }
+        })
         this.listLoading = false
       }, error => {
         console.error(error)
         this.listLoading = false
       })
     },
+    handleReceiverChange (value) {
+      for (const val of value) {
+        const idx = this.batch.offers.findIndex(tr => tr.id === val)
+        if (idx === -1) {
+          this.batch.offers.push(this.list.find(tr => tr.id === val))
+        } else {
+          this.batch.offers.splice(idx, 1)
+        }
+      }
+      this.receiverList = this.receiverList.map(tr => { return tr })
+    },
     openSendOfferModal (record) {
-      this.mail.email = record.email
       this.curData = Object.assign({}, record)
+      this.mail.receivers = record.id
+      this.batch.offers = [this.list.find(tr => tr.id === record.id)]
+      this.mailModalVisible = true
+    },
+    openMultiSendModal () {
+      this.receiverList = this.batch.offers.map(tr => {
+        return {id: tr.id, name: tr.name}
+      })
+      this.mail.receivers = this.batch.offers.map(tr => {
+        return tr.id
+      })
       this.mailModalVisible = true
     },
     startSendOffer () {
@@ -158,7 +179,6 @@ export default {
       this.mailModalVisible = false
     },
     chooseOffer (offer) {
-      console.log(offer)
       const idx = this.batch.offers.findIndex(o => o === offer)
       if (idx === -1) {
         this.batch.offers.push(offer)
@@ -174,6 +194,7 @@ export default {
       }
     },
     async batchSend () {
+      this.batch.dialog = true
       this.batch.sending = true
       for (const offer of this.batch.offers) {
         this.mail.email = offer.email
