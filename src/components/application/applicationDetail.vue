@@ -196,7 +196,7 @@ export default {
             applicationId: this.curApplication.id,
             subject: this.mail.subject,
             content: this.mail.content,
-            receiver: this.cooperatorList.find(tr => { return tr.id === this.mail.cooperatorId }).email,
+            receiver: this.cooperatorList.find(tr => { return tr.id === this.mail.receivers }).email,
             cooperatorId: this.mail.receivers,
             operationId: uuid('http://localhost:4000/assessment/?', uuid.URL),
             startDate: this.mail.timerange[0].format('YYYY-MM-DD HH:mm:ss'),
