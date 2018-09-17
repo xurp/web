@@ -47,6 +47,7 @@ export default {
           ...o,
           offerTime: moment(o).format('YYYY-MM-DD HH:mm:ss')
         }))
+          .filter(o => o.sendStatus === '1')
       })
     },
     operateOffer (offer) {
