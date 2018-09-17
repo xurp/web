@@ -1,7 +1,7 @@
 <template>
   <div>
-    <a-input-search v-model="queryStr" @search="fetchResumes"></a-input-search>
-    <a-list :dataSource="resumes" itemLayout="vertical">
+    <a-input v-model="filter.keyword"></a-input>
+    <a-list :dataSource="filteredResumes" itemLayout="vertical">
       <a-list-item slot="renderItem" slot-scope="resume, index" key="index">
         <a-list-item-meta>
           <span slot="title">{{resume.name}}</span>
@@ -77,7 +77,9 @@ export default {
         job: null
       },
       inviting: false,
-      queryStr: ''
+      filter: {
+        keyword: ''
+      }
     }
   },
   computed: {
@@ -91,12 +93,24 @@ export default {
         const invitation = this.invitations.find(o => o.userId === resume.userId)
         return this.jobs.find(o => o.id === invitation.jobId) || {}
       }
+    },
+    filteredResumes () {
+      return this.resumes
+        .filter(o => {
+          let flag = false
+          for (const key of ['name', 'major', 'school', 'degree', 'intro']) {
+            const text = o[key] || ''
+            const result = text.toLowerCase().match(this.filter.keyword.toLowerCase())
+            flag = flag || !!result
+          }
+          return flag
+        })
     }
   },
   methods: {
     fetchResumes () {
-      axios.get('resume', {params: {keyword: this.queryStr}}).then(r => {
-        this.resumes = r.data
+      axios.get('resume', {params: {keyword: ''}}).then(r => {
+        this.resumes = r.data.reverse() // make it newest order
       })
     },
     fetchInvitations () {
