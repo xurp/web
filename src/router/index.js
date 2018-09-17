@@ -75,6 +75,12 @@ export const routes = [
     name: 'My Progress',
     component: () => import('@/components/progress/list'),
     show: ['candidate']
+  },
+  {
+    path: 'offers',
+    name: 'My Offers',
+    component: () => import('@/components/offer/list-candidate'),
+    show: ['candidate']
   }
 ]
 
