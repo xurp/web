@@ -55,7 +55,10 @@
         </a-button>
       </template>
     </a-modal>
-    <a-button class="position-create" v-on:click="handleCreate">Create New Position</a-button>
+    <div class="down-button-container">
+      <a-button class="statics-export" v-on:click="handleExportExcel" :loading="btnLoading">Export all position statics</a-button>
+      <a-button class="position-create" v-on:click="handleCreate">Create New Position</a-button>
+    </div>
   </div>
 </template>
 
@@ -114,7 +117,8 @@ export default {
           title: 'Action',
           key: 'action',
           scopedSlots: { customRender: 'action' }
-        }]
+        }],
+      btnLoading: false
     }
   },
   created () {
@@ -218,6 +222,23 @@ export default {
     setStep (record) {
       localStorage.setItem('jobId4Step', record.id)
       this.$router.push({name: 'Position Step'})
+    },
+    handleExportExcel(){
+      this.btnLoading = true
+      //tododone 待测
+      axios.get('/dashboard/export', {responseType: 'blob'}).then(response => {
+        this.btnLoading = false
+        let url = window.URL.createObjectURL(response.data)
+        let link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = url
+        link.setAttribute('download', 'positionApplicationStatics.xlsx')
+        document.body.appendChild(link)
+        link.click()
+      }, error => {
+        this.btnLoading = false
+        console.error(error)
+      })
     }
   }
 }
@@ -226,9 +247,19 @@ export default {
   .pop-model{
     width: 540px;
   }
-  .position-create{
-    float: right;
+  .down-button-container{
     margin: 20px auto;
+    text-align: center;
+
+    .statics-export {
+      width: 200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .position-create{
+      float: right;
+    }
   }
   .detail-num{
     width: 100%;
