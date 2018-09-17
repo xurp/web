@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-input v-model="keyword"></a-input>
+    <a-input v-model="keyword" placeholder="Search school, major... anything here"></a-input>
     <a-list :dataSource="filteredResumes" itemLayout="vertical">
       <a-list-item slot="renderItem" slot-scope="resume, index" key="index">
         <a-list-item-meta>
