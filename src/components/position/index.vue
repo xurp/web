@@ -223,9 +223,9 @@ export default {
       localStorage.setItem('jobId4Step', record.id)
       this.$router.push({name: 'Position Step'})
     },
-    handleExportExcel(){
+    handleExportExcel () {
       this.btnLoading = true
-      //tododone 待测
+      // tododone 待测
       axios.get('/dashboard/export', {responseType: 'blob'}).then(response => {
         this.btnLoading = false
         let url = window.URL.createObjectURL(response.data)
