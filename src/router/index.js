@@ -80,7 +80,7 @@ export const routes = [
     path: 'offers',
     name: 'My Offers',
     component: () => import('@/components/offer/list-candidate'),
-    show: ['candidate']
+    show: ['candidate', 'hr']
   }
 ]
 
