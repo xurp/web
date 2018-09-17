@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-input v-model="filter.keyword"></a-input>
+    <a-input v-model="keyword"></a-input>
     <a-list :dataSource="filteredResumes" itemLayout="vertical">
       <a-list-item slot="renderItem" slot-scope="resume, index" key="index">
         <a-list-item-meta>
@@ -77,9 +77,7 @@ export default {
         job: null
       },
       inviting: false,
-      filter: {
-        keyword: ''
-      }
+      keyword: ''
     }
   },
   computed: {
@@ -98,9 +96,9 @@ export default {
       return this.resumes
         .filter(o => {
           let flag = false
-          for (const key of ['name', 'major', 'school', 'degree', 'intro']) {
+          for (const key of ['name', 'major', 'school', 'intro']) {
             const text = o[key] || ''
-            const result = text.toLowerCase().match(this.filter.keyword.toLowerCase())
+            const result = text.toLowerCase().match(this.keyword.toLowerCase())
             flag = flag || !!result
           }
           return flag
