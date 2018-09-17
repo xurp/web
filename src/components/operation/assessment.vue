@@ -20,7 +20,7 @@
             <a-input v-model="typedText"></a-input>
           </a-modal>
           <a-button class="submit-btn cancel-btn" :loading="submitLoading" @click="openDeclineModal" type="danger" htmlType="submit">Decline</a-button>
-          <a-button class="submit-btn accept-btn" loading="submitLoading" @click="openAcceptModal" type="primary" htmlType="submit">Accept</a-button>
+          <a-button class="submit-btn accept-btn" :loading="submitLoading" @click="openAcceptModal" type="primary" htmlType="submit">Accept</a-button>
         </a-form-item>
       </a-form>
     </div>

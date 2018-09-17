@@ -225,11 +225,11 @@ export default {
     },
     handleExportExcel(){
       this.btnLoading = true
-      //todo 待测
-      axios.post('/statics/download', {responseType: 'blob'}).then(response => {
+      //tododone 待测
+      axios.get('/dashboard/export', {responseType: 'blob'}).then(response => {
         this.btnLoading = false
         let url = window.URL.createObjectURL(response.data)
-        let link = document.createElement('link')
+        let link = document.createElement('a')
         link.style.display = 'none'
         link.href = url
         link.setAttribute('download', 'positionApplicationStatics.xlsx')

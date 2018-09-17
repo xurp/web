@@ -53,6 +53,7 @@
         <a slot-scope="text,record" v-on:click="detailApplication(record)">Detail/Operation</a>
       </a-table-column>
     </a-table>
+
     <div class="operation-div">
       <a-button class="decline-btn" type="danger" :disabled="!declineEnable" @click="handleDecline">Decline</a-button>
       <a-button class="accept-btn" type="primary" :loading="nextButtonConfirmLoading" :disabled="!nextStepEnable" @click="handleNextStep">Next Step</a-button>
@@ -60,37 +61,8 @@
 
     <a-modal class="mail-modal" :confirmLoading="mailConfirmLoading" width="680px" okText="Send" title="batch assessment arrangement" :visible="popMailVisible" v-on:cancel="handleMailCancel" @ok="handleMailSend" :maskClosable="false" :closable="true">
       <div class="mail-form-container">
-        <a-form>
-          <a-form-item label="Cooperator" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
-            <a-select v-model="mail.cooperators" mode="tags" :tokenSeparators="[',']" @change="handleReceiverChange">
-              <a-select-option v-if="bBatchNextStep" v-for="re in cooperatorList" :key="re.id">{{re.department + '/' + re.name}}</a-select-option>
-              <a-select-option v-if="!bBatchNextStep" v-for="re in selectedRows" :key="re.id">{{re.name}}</a-select-option>
-            </a-select>
-            <a style="position:absolute" @click="handleAddCooperatorClick"><a-icon type="plus-circle-o"></a-icon></a>
-            <a-modal :confirmLoading="coopConfirmLoading" :visible="coopModalVisible" @ok="coopModalOk" @cancel="coopModalCancel" :maskCancel="true">
-              <a-form>
-                <a-form-item label="Name">
-                  <a-input v-model="toBeAddCoop.name" placeholder="Name of cooperator"></a-input>
-                </a-form-item>
-                <a-form-item label="Email">
-                  <a-input v-model="toBeAddCoop.email" placeholder="Email of cooperator"></a-input>
-                </a-form-item>
-                <a-form-item label="Department">
-                  <a-input v-model="toBeAddCoop.department" placeholder="Branch of cooperator"></a-input>
-                </a-form-item>
-              </a-form>
-            </a-modal>
-          </a-form-item>
-          <a-form-item label="MailSubject" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
-            <a-input v-model="mail.subject"></a-input>
-          </a-form-item>
-          <a-form-item v-if="bBatchNextStep" label="AssessDate" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
-            <a-range-picker v-model="mail.timerange"></a-range-picker>
-          </a-form-item>
-          <a-form-item :labelCol="formLabelCol">
-            <a-textarea v-model="mail.content" :autosize="{maxRows: 12, minRows: 8}" :value="mail.content"></a-textarea>
-          </a-form-item>
-        </a-form>
+        <mail-component :mail="this.mail" :show-date="bBatchNextStep" :is-receiver-list="true" selectMode="tags" :show-add-receiver="this.bBatchNextStep"
+                        :receiver-list="receiverList" @receiverChange="handleReceiverChange" :email-type="emailType"></mail-component>
       </div>
     </a-modal>
   </div>
@@ -101,10 +73,11 @@ import posDetail from './posDetailComponent'
 import axios from '../../service'
 import moment from 'moment'
 import uuid from 'uuid'
+import mailComponent from '../subComponent/mailComponent'
 
 export default {
   name: 'application-list',
-  components: {posDetail},
+  components: {posDetail, mailComponent},
   data () {
     return {
       curPosition: {},
@@ -129,7 +102,9 @@ export default {
       toBeAddCoop: {},
       bBatchNextStep: true,
       selectedRows: [],
-      nextButtonConfirmLoading: false // 下一步按钮是否在忙
+      nextButtonConfirmLoading: false, // 下一步按钮是否在忙
+      receiverList: [],
+      emailType: 'interviewerDate'
     }
   },
   created () {
@@ -401,9 +376,12 @@ export default {
         return 'clock-circle-o'
       }
     },
-    handleNextStep () {
+    handleNextStep: function () {
+      this.emailType = 'interviewerDate' // 方便设置邮件模板的获取地址
       let selectCount = this.selectedRows.length
-      if (this.steps.findIndex(tr => { return parseFloat(tr.index) === this.step }) === this.steps.length - 2) { // 最后一步
+      if (this.steps.findIndex(tr => {
+        return parseFloat(tr.index) === this.step
+      }) === this.steps.length - 2) { // 最后一步
         this.nextButtonConfirmLoading = true
         this.selectedRows.forEach(tr => {
           axios.put('application/' + tr.id + '/step').then(response => {
@@ -417,20 +395,22 @@ export default {
         })
         return
       }
-      this.fetchCooperatorList()
-      this.popMailVisible = true
-      this.bBatchNextStep = true
-      this.mail = {
-        content: 'Dear [assessor_name]\r\n\tPlease select the time during which you will be available for the interview. ' +
-          'Attention please, once selected, the time table can not be changed! The time selection link is below: \r\n\t\t' +
-          (location.origin + '/' + location.pathname + '/#/schedule/interview/[operation_id]/[cooperation_id]').replace(/([^(http:)])\/{2,}/gi, '$1/') +
-          '\r\n\tBest Regards\r\n[company_name]',
-        subject: 'select interview time as an interviewer',
-        cooperators: []
-      }
+      this.fetchCooperatorList().then(response => {
+        this.popMailVisible = true
+        this.bBatchNextStep = true
+        this.mail = {
+          content: 'Dear [assessor_name]\r\n\tPlease select the time during which you will be available for the interview. ' +
+            'Attention please, once selected, the time table can not be changed! The time selection link is below: \r\n\t\t' +
+            (location.origin + '/' + location.pathname + '/#/schedule/interview/[operation_id]/[cooperation_id]').replace(/([^(http:)])\/{2,}/gi, '$1/') +
+            '\r\n\tBest Regards\r\n[company_name]',
+          subject: 'select interview time as an interviewer',
+          receivers: []
+        }
+        this.receiverList = this.cooperatorList
+      })
     },
     fetchCooperatorList () {
-      axios.get('review/cooperator').then(response => {
+      return axios.get('review/cooperator').then(response => {
         this.cooperatorList = response.data
       })
     },
@@ -438,6 +418,7 @@ export default {
      * 点邮件的发送按钮
      */
     handleMailSend: function () {
+      // TODO 重新获取mail页面中的值
       this.mailConfirmLoading = true
       if (this.bBatchNextStep) {
         axios.post('assessment', {
@@ -450,7 +431,7 @@ export default {
           startDate: this.mail.timerange[0].format('YYYY-MM-DD HH:mm:ss'),
           endDate: this.mail.timerange[1].format('YYYY-MM-DD HH:mm:ss'),
           ...this.mail,
-          cooperatorIds: this.mail.cooperators
+          cooperatorIds: this.mail.receivers
         }).then(response => {
           this.mailConfirmLoading = false
           this.popMailVisible = false
@@ -485,46 +466,17 @@ export default {
     handleMailCancel () {
       this.popMailVisible = false
     },
-    /**
-     * 发送邮件页面点添加协作者
-     */
-    handleAddCooperatorClick () {
-      this.coopModalVisible = true
-      this.toBeAddCoop = {}
-    },
-    /**
-     * 添加协作者界面点击OK
-     */
-    coopModalOk () {
-      this.coopConfirmLoading = true
-      axios.put('cooperator', {}).then(response => {
-        this.coopConfirmLoading = false
-        // TODO 重新获取协作者列表
-      }, error => {
-        this.coopConfirmLoading = false
-        console.error(error)
-      })
-    },
-    /**
-     * 发送邮件页面点取消
-     */
-    coopModalCancel () {
-      this.coopModalVisible = false
-    },
     handleDecline () {
       this.bBatchNextStep = false
-      this.mail.cooperators = this.selectedRows.map(tr => {
+      this.mail.receivers = this.selectedRows.map(tr => {
         return tr.id
       })
       this.mail.subject = 'Fail asessment notification.'
-      this.mail.content = 'Dear [candidate_name]:\n' +
-        '\tThank you for your application for the position. As you can imagine, we received a large number of applications. I am sorry to inform you that you have not passed this position.\n' +
-        '\n' +
-        '\tWe thanks you for the time you invested in applying for the shipping coordinator position. We encourage you to apply for future openings for which you qualify.\n' +
-        '\n' +
-        'Best wishes for a successful job search. Thank you, again, for your interest in our company.'
+      this.receiverList = this.selectedRows
       this.popMailVisible = true
+      this.emailType = 'decline'
     },
+    // TODO 这里需要父子组件通信
     handleReceiverChange (value) {
       if (this.bBatchNextStep) {
         return false
@@ -548,13 +500,13 @@ export default {
 </script>
 
 <style scoped lang="less">
-.application-container{
-  /*margin-top: -24px;*/
-}
-.anticon-down{
-  font-size: 12px;
-  color: #aaaaaa;
-}
+  .application-container{
+    /*margin-top: -24px;*/
+  }
+  .anticon-down{
+    font-size: 12px;
+    color: #aaaaaa;
+  }
   .operation-div{
     padding: 5px 0 20px 0;
     text-align:center;
