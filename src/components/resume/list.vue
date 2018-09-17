@@ -1,6 +1,8 @@
 <template>
   <div>
+    <field-filter :filter-options="filterOptions" @filter="e => filter = e"/>
     <a-input v-model="keyword" placeholder="Search school, major... anything here"></a-input>
+    <a-divider/>
     <a-list :dataSource="filteredResumes" itemLayout="vertical">
       <a-list-item slot="renderItem" slot-scope="resume, index" key="index">
         <a-list-item-meta>
@@ -65,8 +67,10 @@
 
 <script>
 import axios from '../../service'
+import FieldFilter from '../field-filter'
 export default {
   name: 'resume-list',
+  components: {FieldFilter},
   data () {
     return {
       resumes: [],
@@ -77,7 +81,15 @@ export default {
         job: null
       },
       inviting: false,
-      keyword: ''
+      keyword: '',
+      filter: {
+        major: [],
+        school: []
+      },
+      filterOptions: {
+        major: [],
+        school: []
+      }
     }
   },
   computed: {
@@ -94,9 +106,11 @@ export default {
     },
     filteredResumes () {
       return this.resumes
+        .filter(o => this.filter.major.length === 0 || this.filter.major.indexOf(o.major) !== -1)
+        .filter(o => this.filter.school.length === 0 || this.filter.school.indexOf(o.school) !== -1)
         .filter(o => {
           let flag = false
-          for (const key of ['name', 'major', 'school', 'intro']) {
+          for (const key of ['name', 'school', 'major', 'intro']) {
             const text = o[key] || ''
             const result = text.toLowerCase().match(this.keyword.toLowerCase())
             flag = flag || !!result
@@ -109,6 +123,9 @@ export default {
     fetchResumes () {
       axios.get('resume', {params: {keyword: ''}}).then(r => {
         this.resumes = r.data.reverse() // make it newest order
+        this.filterOptions.major = r.data.map(o => o.major).unique().sort()
+        this.filterOptions.school = r.data.map(o => o.school).unique().sort()
+        this.filter = this.filterOptions
       })
     },
     fetchInvitations () {
