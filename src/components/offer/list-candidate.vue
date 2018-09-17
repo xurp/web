@@ -42,7 +42,7 @@ export default {
   },
   methods: {
     fetchOffers () {
-      axios.get('offer').then(r => {
+      axios.get('offer/candidate').then(r => {
         this.offers = r.data.map(o => ({
           ...o,
           offerTime: moment(o).format('YYYY-MM-DD HH:mm:ss')
