@@ -168,7 +168,8 @@ export default {
       }
       const data = {
         ...this.$route.params,
-        startTimes: this.chosenTimes.map(o => moment(`${o.day} ${o.time.substr(0, 5)}`).format())
+        startTimes: this.chosenTimes.map(o => moment(`${o.day} ${o.time.substr(0, 5)}`).format()),
+        endTimes: this.chosenTimes.map(o => moment(`${o.day} ${o.time.substr(-5)}`).format())
       }
       this.$confirm({
         title: 'Confirm your interview time',
