@@ -137,7 +137,7 @@ export default {
     getStepStatus (curStep) {
       const stepNum = parseFloat(this.step.replace('+', '').replace('-', '').replace('+', '').replace('-', ''))
       if (curStep.index === stepNum) {
-        if (this.step.indexOf('+') > -1) {
+        if (this.step.indexOf('+') > -1 && this.step.indexOf('++') === -1) {
           return 'finish'
         } else if (this.step.indexOf('-') > -1) {
           return 'error'
@@ -156,7 +156,7 @@ export default {
     },
     getIfIcon (curStep) {
       const stepNum = parseFloat(this.step.replace('+', '').replace('-', '').replace('+', '').replace('-', ''))
-      if (curStep.index === stepNum && this.step.indexOf('+') === -1 && this.step.indexOf('-') === -1) {
+      if (curStep.index === stepNum && (this.step.indexOf('+') === -1 || this.step.indexOf('++') > -1) && this.step.indexOf('-') === -1) {
         return true
       } else {
         return false
@@ -305,8 +305,8 @@ export default {
      */
     resetAssessment () { // TODO 这里需要判断，如果是没有安排的，不给点，此时的cooperator是空
       const lastAssess = this.assesses[this.assesses.length - 1]
-      if (lastAssess === undefined || lastAssess.name === 'To be arranged') {
-        this.$message.warn('assessment not arranged yet', 0.5)
+      if (!(this.step.indexOf('-') > -1 || (this.step.indexOf('+') > -1 && this.step.indexOf('++') === -1))) {
+        this.$message.warn('no assessment result can be reset', 1)
         return
       }
       this.bDecline = false
@@ -326,8 +326,8 @@ export default {
      */
     reArrange () {
       const lastAssess = this.assesses[this.assesses.length - 1]
-      if (lastAssess === undefined || lastAssess.name === 'To be arranged') {
-        this.$message.warn('assessment not arranged yet', 0.5)
+      if (this.step.indexOf('++') === -1 && this.step.indexOf('+') > -1) {
+        this.$message.warn('already assessed, no need to rearrange', 1)
         return
       }
       this.bDecline = false
@@ -335,7 +335,9 @@ export default {
       const curCooperator = this.cooperatorList.find(tr => {
         return tr.department === lastAssess.department && tr.name === lastAssess.name
       })
-      this.mail.receivers = curCooperator.id
+      if (curCooperator) {
+        this.mail.receivers = curCooperator.id
+      }
       this.mail.subject = 're-picking time response'
       this.bResetAsessResult = true
       this.bReArrange = true

@@ -19,7 +19,6 @@
 
     <a-table :dataSource="applicationList">
       <a-table-column>
-        <!--<a-checkbox slot="title" :indeterminate="checkIndeterminate" @change="totalCheckChange" :checked="totalChecked"></a-checkbox>-->
         <a-dropdown slot="title" :placement="'bottomCenter'">
           <a class="ant-dropdown-link" href="#">
             Selection <a-icon type="down" />
@@ -116,7 +115,7 @@ export default {
         return tr.checkStatus
       })
       if (selectedOne !== undefined) {
-        return selectedOne.step.indexOf('-') > -1 || parseFloat(selectedOne.step.replace(/\+/, '').replace('/-/', '')) === 0
+        return (selectedOne.step.indexOf('-') > -1 && selectedOne.step.indexOf('--') === -1) || parseFloat(selectedOne.step.replace(/\+/, '').replace('/-/', '')) === 0
       } else {
         return false
       }
@@ -126,29 +125,20 @@ export default {
         return tr.checkStatus
       })
       if (selectedOne !== undefined) {
-        return selectedOne.step.indexOf('+') > -1 || parseFloat(selectedOne.step.replace(/\+/, '').replace('/-/', '')) === 0
+        // 已通过，或者或者
+        console.log(selectedOne)
+        return (selectedOne.step.indexOf('+') > -1 && selectedOne.step.indexOf('++') === -1) || parseFloat(selectedOne.step.replace(/\+/, '').replace('/-/', '')) === 0
       } else {
         return false
       }
     },
-    checkIndeterminate () {
-      const totalNum = this.applicationList.length
-      const checkNum = this.applicationList.filter(tr => {
-        return tr.checkStatus
-      }).length
-      return !(checkNum === 0 || checkNum === totalNum)
-    },
-    totalChecked () {
-      const totalNum = this.applicationList.length
-      const checkNum = this.applicationList.filter(tr => {
-        return tr.checkStatus
-      }).length
-      return checkNum === totalNum
+    selectionChange () {
+      return this.selectedRows
     }
   },
   watch: {
-    checkIndeterminate (newVal, oldVal) {
-      if (newVal) {
+    selectionChange (newVal, oldVal) {
+      if (this.selectedRows.length > 0) {
         // 选择变为非空，应该将状态不同的设置为disabled
         const curSlectStep = this.applicationList.find(tr => {
           return tr.checkStatus
@@ -199,6 +189,8 @@ export default {
           return 'blue'
         case 'rejected':
           return 'darkred'
+        case 'not arranged':
+          return '#0f3050'
       }
     },
     /**
@@ -209,7 +201,7 @@ export default {
       this.applicationList = this.applicationList.map(tr => {
         return {
           ...tr,
-          checkStatus: tr.step.indexOf('+') > -1
+          checkStatus: tr.step.indexOf('+') > -1 && tr.step.indexOf('++') === -1
         }
       })
       this.selectedRows = this.getSelectedRows()
@@ -241,7 +233,7 @@ export default {
       this.applicationList = this.applicationList.map(tr => {
         return {
           ...tr,
-          checkStatus: tr.step.indexOf('-') === -1 && tr.step.indexOf('+') === -1
+          checkStatus: tr.step.indexOf('++') > -1
         }
       })
       this.selectedRows = this.getSelectedRows()
@@ -344,16 +336,20 @@ export default {
      *  根据当前的step，确定状态为assessing、failed、rejected还是passed
      * @param step
      */
-    getStatusByStep (step) {
-      if (step === '0' || (step.indexOf('-') === -1 && step.indexOf('+') === -1)) {
+    getStatusByStep (step) { // ++表示已安排， ＋表示已通过， －表示已失败，－－表示已拒绝
+      if (step === '0') {
+        return ''
+      } else if (step.indexOf('++') > -1) {
         return 'assessing'
-      } else
-      if (step.indexOf('--') > -1) {
+      } else if (step.indexOf('--') > -1) {
         return 'rejected'
-      } else
-      if (step.indexOf('-') > -1) {
+      } else if (step.indexOf('-') > -1) {
         return 'failed'
-      } else { return 'passed' }
+      } else if (step.indexOf('+') > -1) {
+        return 'passed'
+      } else {
+        return 'not arranged'
+      }
     },
     /**
      * 打开单个申请的详情页面
