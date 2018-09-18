@@ -193,7 +193,6 @@ export default {
         id: this.$route.params.assessmentId,
         operationId: this.$route.params['operationId']
       }
-      console.log(data)
       this.$confirm({
         title: 'Confirm your interview time',
         content: `${day} ${time}`,

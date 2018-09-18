@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import titledCard from './titledCard'
+import titledCard from '../subComponent/titledCard'
 export default {
   name: 'position-detail',
   components: {titledCard},

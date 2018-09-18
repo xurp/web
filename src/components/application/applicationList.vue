@@ -126,7 +126,6 @@ export default {
       })
       if (selectedOne !== undefined) {
         // 已通过，或者或者
-        console.log(selectedOne)
         return (selectedOne.step.indexOf('+') > -1 && selectedOne.step.indexOf('++') === -1) || parseFloat(selectedOne.step.replace(/\+/, '').replace('/-/', '')) === 0
       } else {
         return false

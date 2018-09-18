@@ -1,7 +1,7 @@
 <template>
   <div class="assess-container">
     <template v-for="assessData in assesses">
-      <div :key="assessData.step + Math.random()">
+      <div :key="assessData.step">
         <div class="assess-header" style="position:relative">
           <div class="assess-person">
             <span class="assess-depart">{{assessData.department}}</span>
@@ -16,7 +16,14 @@
             {{assessData.time}}
           </div>
         </div>
-        <div :key="assessData.step + Math.random()" class="assess-content">
+        <div class="item-container">
+          <a-form>
+            <a-form-item v-for="item in assessData.items" :key="item.name+item.value" :label="item.name" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-progress :percent="item.value" size="small" :format="percent=>percent" :status="item.value>=60?'success':'exception'"></a-progress>
+            </a-form-item>
+          </a-form>
+        </div>
+        <div class="assess-content">
           {{assessData.content}}
         </div>
         <a-divider/>
@@ -30,6 +37,12 @@ export default {
   name: 'assessComponent',
   data () {
     return {
+      labelCol: {
+        span: 6
+      },
+      wrapperCol: {
+        span: 15
+      }
     }
   },
   props: {
@@ -118,6 +131,12 @@ export default {
       letter-spacing: 1.5px;
       word-spacing: 3px;
       line-break: loose;
+    }
+    .item-container{
+
+    }
+    .ant-form-item{
+      margin-bottom: 0;
     }
   }
 

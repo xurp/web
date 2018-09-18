@@ -1,13 +1,7 @@
 <template>
   <div>
-    <a-alert
-      v-if="successVisible"
-      message="Success Tips"
-      description="The steps have been saved successfully."
-      type="success"
-      showIcon
-    />
-    <a-steps>
+    <titled-panel title="Step Config">
+      <a-steps>
       <span slot="progressDot" slot-scope="{index, status, prefixCls}">
         <a-popover v-if="index != steps.length -1">
           <template slot="content">
@@ -20,48 +14,82 @@
         </a-popover>
         <span v-else :class="`${prefixCls}-icon-dot`"></span>
       </span>
-      <a-step v-for="step in steps" :key="step.index">
+        <a-step v-for="step in steps" :key="step.index">
         <span slot="title">
           <a-input v-if="step.isEditing" v-model="step.name" placeholder="input step name"></a-input>
           <span v-else>{{step.name}}</span>
         </span>
-        <span slot="description">
+          <span slot="description">
           <a-textarea v-if="step.isEditing" v-model="step.description" placeholder="input step description(optional)"></a-textarea>
           <span v-else>{{step.description}}</span>
         </span>
-      </a-step>
-    </a-steps>
-    <a-divider></a-divider>
-    <div class="submit-container">
-      <a-button type="primary" :loading="submitLoading" @click="submitStepChange">Submit Step Change</a-button>
-    </div>
+        </a-step>
+      </a-steps>
+      <a-divider></a-divider>
+      <div class="submit-container">
+        <a-button type="primary" :loading="submitLoading" @click="submitStepChange">Submit Step Change</a-button>
+      </div>
+    </titled-panel>
+    <titled-panel title="Assessment item config">
+      <a-steps class="bottom-step-cotainer">
+        <a-step v-for="step in dbSteps" @click="stepClick(step)" :key="step.index" :title="step.name" :description="step.description" :status="getStepStatus(step)"></a-step>
+      </a-steps>
+      <div class="itemform-container">
+        <a-form>
+          <a-form-item v-for="(item, idx) in curItems" :key="idx" :wrapperCol="itemFormWrapperCol">
+            <span v-if="!item.editing" class="itemname-span">{{item.name}}</span>
+            <span v-else>
+              <a-input class="item-input" v-model="item.name"></a-input>
+              <a-icon type="check-circle-o" class="dynamic-delete-button" @click="okItem(idx)"></a-icon>
+            </span>
+            <a-icon type="minus-circle-o" class='dynamic-delete-button' @click="removeItem(idx)"></a-icon>
+          </a-form-item>
+          <a-form-item>
+            <a-button class="additem-button" type="dashed" @click="addItem">
+              <a-icon type="plus"></a-icon>Add Assessment Item
+            </a-button>
+          </a-form-item>
+        </a-form>
+      </div>
+      <div class="submit-container">
+        <a-button type="primary" :loading="submitLoading" @click="submitItemChange">Save</a-button>
+      </div>
+    </titled-panel>
   </div>
 </template>
 
 <script>
 import axios from '../../service'
+import titledPanel from '../subComponent/titledCard'
+import uuid from 'uuid'
 export default {
   name: 'stepConfig',
+  components: {titledPanel},
   data: () => ({
     steps: [],
     jobId: '',
     editingIndex: 1,
     submitLoading: false,
-    successVisible: false
+    clickIndex: 0,
+    dbSteps: [],
+    curItems: [],
+    itemFormWrapperCol: {
+      span: 18,
+      offset: 3
+    }
   }),
   created () {
-    this.jobId = localStorage.getItem('jobId4Step')
+    this.jobId = this.$route.params['id']
     this.fetchStep()
-    // this.steps = [
-    //   {index: 0, name: 'Resume Filter', description: 'filter the resume'},
-    //   {index: 1, name: 'Interview', description: 'assess the candidates'},
-    //   {index: 3, name: 'Offer', description: 'send offer to candidates'}
-    // ]
   },
   methods: {
     fetchStep () {
       axios.get('job/steps', {params: {jobId: this.jobId}}).then(response => {
         this.steps = response.data
+        this.dbSteps = response.data.map(tr => {
+          return Object.assign({}, tr)
+        })
+        this.stepClick(this.dbSteps[0])
       })
     },
     deleteCurrent (index) {
@@ -94,6 +122,48 @@ export default {
         this.submitLoading = false
         console.error(error)
       })
+    },
+    getStepStatus (step) {
+      const curIndex = this.steps.findIndex(tr => {
+        return tr.index === step.index
+      })
+      return this.clickIndex === curIndex ? 'process' : 'wait'
+    },
+    stepClick (step) {
+      const curIndex = this.dbSteps.findIndex(tr => {
+        return tr.index === step.index
+      })
+      this.clickIndex = curIndex
+      this.fetchCurItem()
+    },
+    submitItemChange () {
+      axios.put('/job/items', {itemList: this.curItems.map(o => { return {id: o.id, name: o.name} }),
+        stepId: this.dbSteps[this.clickIndex].id,
+        jobId: this.$route.params['id']})
+    },
+    fetchCurItem () {
+      axios.get('job/items', {params: {stepId: this.dbSteps[this.clickIndex].id}}).then(response => {
+        this.curItems = response.data.map(tr => {
+          return {
+            id: tr.id,
+            name: tr.name,
+            editing: false
+          }
+        })
+      })
+    },
+    addItem () {
+      if (this.curItems.find(o => o.editing) !== undefined) {
+        return
+      }
+      this.curItems.push({name: '', editing: true, id: uuid('http://localhost:4000/assessment/?', uuid.URL)})
+    },
+    removeItem (idx) {
+      this.curItems.splice(idx, 1)
+    },
+    okItem (idx) {
+      const oldItem = this.curItems[idx]
+      oldItem.editing = false
     }
   }
 }
@@ -120,5 +190,37 @@ export default {
   }
   .submit-container{
     text-align: center;
+    padding-bottom: 20px;
+  }
+  .bottom-step-cotainer{
+    padding: 20px 40px;
+  }
+  .itemform-container{
+    text-align:center;
+    .additem-button{
+      width: 40vh;
+    }
+  }
+  .dynamic-delete-button {
+    cursor: pointer;
+    position: relative;
+    top: 4px;
+    font-size: 24px;
+    color: #999;
+    transition: all .3s;
+  }
+  .dynamic-delete-button:hover {
+    color: #777;
+  }
+  .dynamic-delete-button[disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  .item-input{
+    width: 60%;
+    margin-right:8px;
+  }
+  .itemname-span{
+    margin-right: 28px
   }
 </style>

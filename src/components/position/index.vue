@@ -220,8 +220,7 @@ export default {
       this.$router.push({name: 'Application List'})
     },
     setStep (record) {
-      localStorage.setItem('jobId4Step', record.id)
-      this.$router.push({name: 'Position Step'})
+      this.$router.push({name: 'Position Step', params: {id: record.id}})
     },
     handleExportExcel () {
       this.btnLoading = true

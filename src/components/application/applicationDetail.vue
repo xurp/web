@@ -117,7 +117,9 @@ export default {
             content: tr.comment,
             step: tr.step,
             pass: tr.pass,
-            reviewTime: tr.interviewTime === null ? '' : moment(new Date(tr.interviewTime).getTime()).format('YYYY-MM-DD HH-mm:ss')
+            reviewTime: tr.interviewTime === null ? '' : moment(new Date(tr.interviewTime).getTime()).format('YYYY-MM-DD HH-mm:ss'),
+            // fixme 这里先mock一份
+            items: [{name: 'skill', value: 80}, {name: 'language', value: 59}]
           }
           if (newTr.reviewTime === '') {
             newTr.time = 'interview time to be determined'
