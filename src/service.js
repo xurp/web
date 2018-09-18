@@ -1,16 +1,20 @@
 import axios from 'axios'
 import router from './router'
-// import Antd from 'ant-design-vue'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '/jobhere-api' : '/api'
 
 axios.interceptors.request.use(config => {
   config.headers['Api-Token'] = localStorage.getItem('token')
+  NProgress.start()
   return config
 }, error => {
+  NProgress.done()
   return Promise.reject(error)
 })
 
 axios.interceptors.response.use(response => {
+  NProgress.done()
   return response
 }, error => {
   const code = error.response.status
@@ -27,6 +31,7 @@ axios.interceptors.response.use(response => {
   } else {
     router.app.$message.error(message)
   }
+  NProgress.done()
   return Promise.reject(error)
 })
 
