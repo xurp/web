@@ -26,6 +26,10 @@
     <a-form-item v-if="showDate" label="AssessDate" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
       <a-range-picker v-model="mail.timerange"></a-range-picker>
     </a-form-item>
+    <a-form-item v-if="showDate" label="TimeSlots" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
+      <time-slots v-model="mail.times"/>
+      <div>{{(mail.times || []).length}} Sessions Per day</div>
+    </a-form-item>
     <a-form-item label="Template" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
       <a-select @change="handleTemplateChange" v-model="curTemplateName">
         <a-select-option v-for="template in templates" :key="Math.random()+template.name" :value="template.name">{{template.name}}</a-select-option>
@@ -39,8 +43,10 @@
 
 <script>
 import axios from '../../service'
+import TimeSlots from '../application/time-slots'
 export default {
   name: 'mailComponent',
+  components: {TimeSlots},
   data: () => ({
     coopConfirmLoading: false,
     toBeAddCoop: {},

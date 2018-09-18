@@ -418,6 +418,10 @@ export default {
         this.$message.warning('Please config time range')
         return
       }
+      if (!this.mail.times || this.mail.times.length === 0) {
+        this.$message.warning('Please config time periods')
+        return
+      }
       // TODO 重新获取mail页面中的值
       this.mailConfirmLoading = true
       if (this.bBatchNextStep) {
@@ -430,6 +434,7 @@ export default {
           }),
           startDate: this.mail.timerange[0].format('YYYY-MM-DD HH:mm:ss'),
           endDate: this.mail.timerange[1].format('YYYY-MM-DD HH:mm:ss'),
+          periods: JSON.stringify(this.mail.times),
           ...this.mail,
           cooperatorIds: this.mail.receivers
         }).then(response => {
