@@ -11,6 +11,14 @@
       <a-divider/>
       <assessComponent v-bind:steps="steps" v-bind:assesses="assesses"></assessComponent>
       <a-form>
+        <a-form-item v-for="item in items" :key="item.name" :label="item.name" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-col :span="17">
+            <a-slider v-model="item.value"></a-slider>
+          </a-col>
+          <a-col :span="3">
+            <a-input-number v-model="item.value" style="marginLeft:16px"></a-input-number>
+          </a-col>
+        </a-form-item>
         <a-form-item>
           <a-textarea v-model="assessData.comment" :autosize="{minRows: 3, maxRows: 12}" placeholder="please input your assessment about the job seeker."></a-textarea>
         </a-form-item>
@@ -19,8 +27,8 @@
             <span slot="title" style="color:lightskyblue"><a-icon type="question-circle-o" slot="title"></a-icon>  {{modalTitle}}</span>
             <a-input v-model="typedText"></a-input>
           </a-modal>
-          <a-button class="submit-btn cancel-btn" :loading="submitLoading" @click="openDeclineModal" type="danger" htmlType="submit">Decline</a-button>
-          <a-button class="submit-btn accept-btn" :loading="submitLoading" @click="openAcceptModal" type="primary" htmlType="submit">Accept</a-button>
+          <a-button class="submit-btn cancel-btn" :loading="submitLoading" @click="handleDeclineClick" type="danger" htmlType="submit">Decline</a-button>
+          <a-button class="submit-btn accept-btn" :loading="submitLoading" @click="handleAcceptClick" type="primary" htmlType="submit">Accept</a-button>
         </a-form-item>
       </a-form>
     </div>
@@ -51,7 +59,14 @@ export default {
       modalVisible: false,
       operation: 'decline',
       confirmText: 'DECLINE',
-      submitLoading: false
+      submitLoading: false,
+      items: [],
+      labelCol: {
+        span: 4
+      },
+      wrapperCol: {
+        span: 20
+      }
     }
   },
   created () {
@@ -60,7 +75,14 @@ export default {
   },
   methods: {
     getData () {
+      // todo 这里需要获取item列表
       axios.get('assessment/' + this.assessId).then(response => {
+        const stepId = response.data.stepList.find(tr => {
+          return parseFloat(tr.index) === parseFloat(response.data.step.replace(/\++/gi, '').replace(/-+/gi, ''))
+        }).id
+        axios.get('job/items', {params: {stepId: stepId}}).then(res => {
+          this.items = res.data
+        })
         this.resume = response.data.resume
         this.assesses = response.data.assessments.map(tr => {
           return {
@@ -69,7 +91,10 @@ export default {
             time: moment(new Date(tr.assessmentTime).getTime()).format('YYYY-MM-DD HH-mm:ss'),
             content: tr.comment,
             step: tr.step,
-            pass: tr.pass
+            pass: tr.pass,
+            items: tr.score === null ? [] : tr.score.trim().replace(/;$/gi, '').split(';').map(o => {
+              return {name: o.split(':')[0], value: parseInt(o.split(':')[1])}
+            })
           }
         })
         this.steps = response.data.stepList
@@ -82,7 +107,12 @@ export default {
     },
     handleAccept () {
       this.submitLoading = true
-      axios.put('assessment/' + this.assessId, {...this.assessData, id: this.assessId, pass: 'pass', applicationId: this.applicationId, step: this.step}).then(response => {
+      axios.put('assessment/' + this.assessId, {...this.assessData,
+        id: this.assessId,
+        pass: 'pass',
+        applicationId: this.applicationId,
+        step: this.step,
+        items: this.items}).then(response => {
         this.finished = true
         this.submitLoading = false
       })
@@ -94,7 +124,8 @@ export default {
         id: this.assessId,
         pass: 'fail',
         applicationId: this.applicationId,
-        step: this.step
+        step: this.step,
+        items: this.items
       }).then(response => {
         this.finished = true
         this.submitLoading = false
@@ -103,14 +134,14 @@ export default {
     openDeclineModal () {
       this.typedText = ''
       this.operation = 'decline'
-      this.modalTitle = 'type DECLINE and click OK to proceed decline'
+      this.modalTitle = 'candidate has no score lower than 60, type DECLINE and click OK to proceed decline'
       this.confirmText = 'DECLINE'
       this.modalVisible = true
     },
     openAcceptModal () {
       this.typedText = ''
       this.operation = 'accept'
-      this.modalTitle = 'type ACCEPT and click OK to proceed accept'
+      this.modalTitle = 'candidate has score lower than 60, type ACCEPT and click OK to proceed accept'
       this.confirmText = 'ACCEPT'
       this.modalVisible = true
     },
@@ -126,6 +157,20 @@ export default {
         case 'accept':
           this.handleAccept()
           break
+      }
+    },
+    handleAcceptClick () {
+      if (this.items.findIndex(tr => tr.value < 60) > -1) {
+        this.openAcceptModal()
+      } else {
+        this.handleAccept()
+      }
+    },
+    handleDeclineClick () {
+      if (this.items.findIndex(tr => tr.value < 60) === -1) {
+        this.openDeclineModal()
+      } else {
+        this.handleDecline()
       }
     }
   }

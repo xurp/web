@@ -118,8 +118,10 @@ export default {
             step: tr.step,
             pass: tr.pass,
             reviewTime: tr.interviewTime === null ? '' : moment(new Date(tr.interviewTime).getTime()).format('YYYY-MM-DD HH-mm:ss'),
-            // fixme 这里先mock一份
-            items: [{name: 'skill', value: 80}, {name: 'language', value: 59}]
+            // fixmefixed 这里先mock一份
+            items: tr.score === null ? [] : tr.score.trim().replace(/;$/gi, '').split(';').map(o => {
+              return {name: o.split(':')[0], value: parseInt(o.split(':')[1])}
+            })
           }
           if (newTr.reviewTime === '') {
             newTr.time = 'interview time to be determined'
