@@ -414,6 +414,10 @@ export default {
      * 点邮件的发送按钮
      */
     handleMailSend: function () {
+      if (!this.mail.timerange || this.mail.timerange.length !== 2) {
+        this.$message.warning('Please config time range')
+        return
+      }
       // TODO 重新获取mail页面中的值
       this.mailConfirmLoading = true
       if (this.bBatchNextStep) {
