@@ -65,17 +65,7 @@ export default {
     return {
       alreadyDone: false,
       days: [],
-      timePeriods: [
-        '09:00 ~ 10:00',
-        '10:00 ~ 11:00',
-        '11:00 ~ 12:00',
-        '12:00 ~ 13:00',
-        '13:00 ~ 14:00',
-        '14:00 ~ 15:00',
-        '15:00 ~ 16:00',
-        '16:00 ~ 17:00',
-        '17:00 ~ 18:00'
-      ],
+      timePeriods: [],
       availableTimes: true,
       numberOfTime: 1,
       chosenTimes: []
@@ -119,6 +109,7 @@ export default {
             days.push(day.format('YYYY-MM-DD'))
           }
           this.days = days
+          this.timePeriods = JSON.parse(r.data.periods)
           this.numberOfTime = r.data.number
         }).catch(e => {
           this.alreadyDone = true
