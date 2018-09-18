@@ -1,6 +1,5 @@
 import axios from 'axios'
 import router from './router'
-// import Antd from 'ant-design-vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '/jobhere-api' : '/api'
