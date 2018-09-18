@@ -49,12 +49,21 @@ export default {
         const start = moment(`2018-09-16 ${result[1]}:${result[2]}`)
         const end = moment(`2018-09-16 ${result[3]}:${result[4]}`)
         if (start.isValid() && end.isValid() && start.isBefore(end)) {
-          slots.push(`${start.format('HH:mm')} ~ ${end.format('HH:mm')}`)
+          slots.push({start, end})
         } else {
           this.$message.warning(`${slot} is not a valid time period!`)
         }
       }
-      this.slots = slots
+      slots.sort((a, b) => {
+        if (a.start.isBefore(b.start)) {
+          return -1
+        } else if (a.start.isAfter(b.start)) {
+          return 1
+        } else {
+          return 0
+        }
+      })
+      this.slots = slots.map(o => `${o.start.format('HH:mm')} ~ ${o.end.format('HH:mm')}`)
     },
     restoreToDefaultSlots () {
       const slots = []
