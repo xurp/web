@@ -24,7 +24,7 @@ export const routes = [
     show: ['hr']
   },
   {
-    path: 'position/step',
+    path: 'position/step/:id',
     name: 'Position Step',
     component: () => import('@/components/position/stepConfig')
   },

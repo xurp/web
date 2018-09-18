@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import titledCard from './titledCard'
+import titledCard from '../subComponent/titledCard'
 export default {
   name: 'resume-panel',
   components: {titledCard},

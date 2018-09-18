@@ -53,7 +53,6 @@ export default {
     fetchData () {
       axios.get('dashboard/hr').then(response => {
         const data = response.data
-        console.log(data)
         this.totalCandidateNum = data.candidateCnt
         this.totalHrNum = data.hrCnt
         this.totalPositionNum = data.jobCnt
@@ -64,7 +63,6 @@ export default {
             Offers: parseInt(tr.split('-')[2])
           }
         })
-        console.log(this.dataByDepartment)
       })
     }
   }

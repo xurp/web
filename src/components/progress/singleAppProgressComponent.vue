@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import titledCard from '../application/titledCard'
+import titledCard from '../subComponent/titledCard'
 export default {
   name: 'singleApplicationProgress',
   components: {titledCard},
