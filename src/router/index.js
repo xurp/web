@@ -77,6 +77,12 @@ export const routes = [
     show: ['candidate']
   },
   {
+    path: 'schedule',
+    name: 'My Schedules',
+    component: () => import('@/components/schedule/list'),
+    show: ['candidate']
+  },
+  {
     path: 'offers',
     name: 'My Offers',
     component: () => import('@/components/offer/list-candidate'),
