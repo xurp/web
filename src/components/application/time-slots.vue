@@ -45,7 +45,7 @@ export default {
       const slots = []
       for (const item of e) {
         const slot = item.trim()
-        const result = slot.match(/^(\d{1,2}):(\d{1,2}) *~ *(\d{1,2}):(\d{1,2})$/)
+        const result = slot.match(/^(\d{1,2}):(\d{1,2}) *[~-] *(\d{1,2}):(\d{1,2})$/)
         const start = moment(`2018-09-16 ${result[1]}:${result[2]}`)
         const end = moment(`2018-09-16 ${result[3]}:${result[4]}`)
         if (start.isValid() && end.isValid() && start.isBefore(end)) {
