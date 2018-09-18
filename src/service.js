@@ -9,6 +9,7 @@ axios.interceptors.request.use(config => {
   NProgress.start()
   return config
 }, error => {
+  NProgress.done()
   return Promise.reject(error)
 })
 
