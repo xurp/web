@@ -204,7 +204,8 @@ export default {
             cooperatorId: this.mail.receivers,
             operationId: uuid('http://localhost:4000/assessment/?', uuid.URL),
             startDate: this.mail.timerange[0].format('YYYY-MM-DD HH:mm:ss'),
-            endDate: this.mail.timerange[1].format('YYYY-MM-DD HH:mm:ss')
+            endDate: this.mail.timerange[1].format('YYYY-MM-DD HH:mm:ss'),
+            periods: JSON.stringify(this.mail.times)
           }).then(response => {
             this.mailConfirmLoading = false
             this.popMailVisible = false
@@ -238,6 +239,7 @@ export default {
             ...this.mail,
             startDate: this.mail.timerange[0].format('YYYY-MM-DD HH:mm:ss'),
             endDate: this.mail.timerange[1].format('YYYY-MM-DD HH:mm:ss'),
+            periods: JSON.stringify(this.mail.times),
             cooperatorIds: [this.mail.receivers]
           }).then(response => {
             this.mailConfirmLoading = false
