@@ -19,6 +19,9 @@
           <a-form-item label="Email" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
             <a-input v-model="basicInfomation.email" placeholder="Email"></a-input>
           </a-form-item>
+          <a-form-item label="Phone" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
+            <a-input v-model="basicInfomation.phone" placeholder="Phone"></a-input>
+          </a-form-item>
           <a-form-item label="School" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
             <a-input v-model="basicInfomation.school" placeholder="School"></a-input>
           </a-form-item>
