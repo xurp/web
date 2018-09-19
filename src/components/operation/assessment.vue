@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import resumePanel from '../application/resumePanel'
+import resumePanel from '../subComponent/resumePanel'
 import assessComponent from '../application/assessComponent'
 import axios from '../../service'
 import moment from 'moment'

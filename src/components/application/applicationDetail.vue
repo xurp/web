@@ -36,7 +36,7 @@
 <script>
 import axios from '../../service'
 import moment from 'moment'
-import resumePanel from './resumePanel'
+import resumePanel from '../subComponent/resumePanel'
 import assessComponent from './assessComponent'
 import AModal from 'ant-design-vue/es/modal/Modal'
 import AForm from 'ant-design-vue/es/form/Form'
