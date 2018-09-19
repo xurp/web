@@ -61,7 +61,9 @@
     <a-modal class="mail-modal" :confirmLoading="mailConfirmLoading" width="680px" okText="Send" title="batch assessment arrangement" :visible="popMailVisible" v-on:cancel="handleMailCancel" @ok="handleMailSend" :maskClosable="false" :closable="true">
       <div class="mail-form-container">
         <mail-component :mail="this.mail" :show-date="bBatchNextStep" :is-receiver-list="true" selectMode="tags" :show-add-receiver="this.bBatchNextStep"
-                        :receiver-list="receiverList" @receiverChange="handleReceiverChange" :email-type="emailType"></mail-component>
+                        :receiver-list="receiverList" @receiverChange="handleReceiverChange" :email-type="emailType"
+                        :applicationCount="applicationList.filter(o => o.checkStatus).length"
+        ></mail-component>
       </div>
     </a-modal>
   </div>
