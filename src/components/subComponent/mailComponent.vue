@@ -6,6 +6,15 @@
       </a-select>
       <a-input v-else v-model="mail.receivers"></a-input>
       <a v-if="showAddReceiver" style="position:absolute" @click="handleAddCooperatorClick"><a-icon type="plus-circle-o"></a-icon></a>
+      <div v-if="applicationCount && mail.receivers instanceof Array">
+        <span>{{applicationCount}} candidates</span>
+        <a-divider type="vertical"/>
+        <span>{{mail.receivers.length}} interviewers</span>
+        <a-divider type="vertical"/>
+        <span>{{Math.floor(applicationCount / mail.receivers.length)}}</span>
+        <span v-if="Math.floor(applicationCount / mail.receivers.length) < Math.ceil(applicationCount / mail.receivers.length)">~ {{Math.ceil(applicationCount / mail.receivers.length)}}</span>
+        <span>sessions / interviewer</span>
+      </div>
       <a-modal :confirmLoading="coopConfirmLoading" :visible="coopModalVisible" @ok="coopModalOk" @cancel="coopModalCancel" :maskCancel="true">
         <a-form>
           <a-form-item label="Name">
@@ -84,6 +93,14 @@ export default {
     },
     selectMode: {
       type: String
+    },
+    /**
+     * applicationCount
+     * to estimate number of sessions for each interviewer
+     */
+    applicationCount: {
+      type: Number,
+      default: () => 1
     }
   },
   created () {
