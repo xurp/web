@@ -16,6 +16,20 @@
             <span>{{resume.school}}</span>
             <a-divider type="vertical"/>
             <span>{{resume.major}}</span>
+            <a-divider type="vertical"/>
+            <span>{{resume.degree}}</span>
+            <a-divider type="vertical"/>
+            <span>Salary</span>
+            <span>{{parseInt(resume.salary / 1000)}}</span>
+            <span>~</span>
+            <span>{{resume.salary % 1000}}</span>
+            <span>k</span>
+            <a-divider type="vertical"/>
+            <span>Graduation</span>
+            <span>{{moment(resume.graduation).format('YYYY-MM-DD')}}</span>
+            <a-divider type="vertical"/>
+            <span>{{resume.experience}}</span>
+            <span>Years Work Experience</span>
           </span>
         </a-list-item-meta>
         <div>{{resume.intro}}</div>
@@ -76,6 +90,7 @@ export default {
   components: {ResumeFieldFilter},
   data () {
     return {
+      moment,
       resumes: [],
       invitations: [],
       jobs: [],
