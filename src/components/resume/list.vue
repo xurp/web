@@ -1,6 +1,6 @@
 <template>
   <div>
-    <field-filter :filter-options="filterOptions" @filter="e => filter = e"/>
+    <resume-field-filter @filter="e => filter = e"/>
     <a-input v-model="keyword" placeholder="Search school, major... anything here"></a-input>
     <a-divider/>
     <a-list :dataSource="filteredResumes" itemLayout="vertical">
@@ -16,6 +16,20 @@
             <span>{{resume.school}}</span>
             <a-divider type="vertical"/>
             <span>{{resume.major}}</span>
+            <a-divider type="vertical"/>
+            <span>{{resume.degree}}</span>
+            <a-divider type="vertical"/>
+            <span>Salary</span>
+            <span>{{parseInt(resume.salary / 1000)}}</span>
+            <span>~</span>
+            <span>{{resume.salary % 1000}}</span>
+            <span>k</span>
+            <a-divider type="vertical"/>
+            <span>Graduation</span>
+            <span>{{moment(resume.graduation).format('YYYY-MM-DD')}}</span>
+            <a-divider type="vertical"/>
+            <span>{{resume.experience}}</span>
+            <span>Years Work Experience</span>
           </span>
         </a-list-item-meta>
         <div>{{resume.intro}}</div>
@@ -67,12 +81,16 @@
 
 <script>
 import axios from '../../service'
-import FieldFilter from '../field-filter'
+import moment from 'moment'
+import ResumeFieldFilter from './field-filter'
+const between = (v, range) => v >= range[0] && v <= range[1]
+const cross = (range1, range2) => between(range1[0], range2) || between(range1[1], range2)
 export default {
   name: 'resume-list',
-  components: {FieldFilter},
+  components: {ResumeFieldFilter},
   data () {
     return {
+      moment,
       resumes: [],
       invitations: [],
       jobs: [],
@@ -82,14 +100,7 @@ export default {
       },
       inviting: false,
       keyword: '',
-      filter: {
-        major: [],
-        school: []
-      },
-      filterOptions: {
-        major: [],
-        school: []
-      }
+      filter: {}
     }
   },
   computed: {
@@ -105,27 +116,35 @@ export default {
       }
     },
     filteredResumes () {
-      return this.resumes
-        .filter(o => this.filter.major.length === 0 || this.filter.major.indexOf(o.major) !== -1)
-        .filter(o => this.filter.school.length === 0 || this.filter.school.indexOf(o.school) !== -1)
-        .filter(o => {
-          let flag = false
-          for (const key of ['name', 'school', 'major', 'intro']) {
-            const text = o[key] || ''
-            const result = text.toLowerCase().match(this.keyword.toLowerCase())
-            flag = flag || !!result
-          }
-          return flag
+      let resumes = this.resumes
+      if (this.filter.degree && this.filter.degree.length) {
+        resumes = resumes.filter(resume => this.filter.degree.indexOf(resume.degree) !== -1)
+      }
+      if (this.filter.salary && this.filter.salary.length) {
+        resumes = resumes.filter(resume => {
+          const salary = [parseInt(resume.salary / 1000), resume.salary % 1000]
+          return this.filter.salary.some(s => cross(salary, s))
         })
+      }
+      if (this.filter.graduation && this.filter.graduation.length) {
+        resumes = resumes.filter(resume => {
+          let graduation = moment(resume.graduation)
+          if (!graduation.isValid()) {
+            graduation = moment('1970-01-01 00:00:00')
+          }
+          return this.filter.graduation.some(g => between(+graduation.format('YYYY'), g))
+        })
+      }
+      if (this.filter.experience && this.filter.experience.length) {
+        resumes = resumes.filter(resume => this.filter.experience.some(e => between(resume.experience, e)))
+      }
+      return resumes
     }
   },
   methods: {
     fetchResumes () {
       axios.get('resume', {params: {keyword: ''}}).then(r => {
         this.resumes = r.data.reverse() // make it newest order
-        this.filterOptions.major = r.data.map(o => o.major).unique().sort()
-        this.filterOptions.school = r.data.map(o => o.school).unique().sort()
-        this.filter = this.filterOptions
       })
     },
     fetchInvitations () {

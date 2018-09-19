@@ -19,14 +19,39 @@
           <a-form-item label="Email" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
             <a-input v-model="basicInfomation.email" placeholder="Email"></a-input>
           </a-form-item>
+          <a-form-item label="Phone" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
+            <a-input v-model="basicInfomation.phone" placeholder="Phone"></a-input>
+          </a-form-item>
           <a-form-item label="School" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
             <a-input v-model="basicInfomation.school" placeholder="School"></a-input>
           </a-form-item>
           <a-form-item label="Major" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
             <a-input v-model="basicInfomation.major" placeholder="Major"></a-input>
           </a-form-item>
+          <a-form-item label="Degree" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
+            <a-radio-group v-model="basicInfomation.degree">
+              <a-radio value="Doctor">Doctor</a-radio>
+              <a-radio value="Master">Master</a-radio>
+              <a-radio value="Bachelor">Bachelor</a-radio>
+              <a-radio defaultChecked>None</a-radio>
+            </a-radio-group>
+          </a-form-item>
           <a-form-item label="Introduction" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
             <a-textarea v-model="basicInfomation.intro" :autosize="textAreaStyle" placeholder="Introduction"></a-textarea>
+          </a-form-item>
+          <a-form-item label="Graduated Date" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
+            <a-date-picker v-model="basicInfomation.graduation"/>
+          </a-form-item>
+          <a-form-item label="Work Experience" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
+            <a-input-number v-model="basicInfomation.experience"/>
+            <span>Years</span>
+          </a-form-item>
+          <a-form-item label="Expected Salary" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
+            <a-slider
+              range
+              :marks="salaryRangeMarks"
+              v-model="basicInfomation.salaryRange"
+            />
           </a-form-item>
           <a-form-item label="Open" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
             <a-switch v-model="basicInfomation.open" size="large"/>
@@ -42,11 +67,14 @@
 
 <script>
 import axios from '../../service'
+import moment from 'moment'
 export default{
   name: 'basicpanel',
   data () {
     return {
-      basicInfomation: {},
+      basicInfomation: {
+        salaryRange: []
+      },
       radioStyle: {
         display: 'inline',
         height: '15px',
@@ -65,6 +93,17 @@ export default{
       }
     }
   },
+  computed: {
+    salaryRangeMarks () {
+      const range = this.basicInfomation.salaryRange
+      return {
+        0: '0',
+        [range[0]]: range[0] + 'k',
+        [range[1]]: range[1] + 'k',
+        100: '100k'
+      }
+    }
+  },
   created () {
     this.fetchData()
   },
@@ -80,7 +119,16 @@ export default{
     fetchData () {
       this.infloading = true
       axios.request('resume/' + window.user.id).then(response => {
-        this.basicInfomation = Object.assign({}, response.data)
+        const salary = response.data.salary
+        let salaryRange = [8, 20]
+        if (salary) {
+          salaryRange = [parseInt(salary / 1000), salary % 1000]
+        }
+        this.basicInfomation = {
+          ...response.data,
+          salaryRange,
+          graduation: moment(response.data.graduation)
+        }
         this.infloading = false
       }, error => {
         console.error(error)
@@ -90,7 +138,11 @@ export default{
     handleSubmit (e) {
       this.infloading = true
       e.preventDefault()
-      axios.put('resume/' + window.user.id, this.basicInfomation).then(response => {
+      const data = {
+        ...this.basicInfomation,
+        salary: this.basicInfomation.salaryRange[0] * 1000 + this.basicInfomation.salaryRange[1]
+      }
+      axios.put('resume/' + window.user.id, data).then(response => {
         this.infloading = false
         this.$message.success('update success')
         this.fetchData()
