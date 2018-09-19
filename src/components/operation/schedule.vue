@@ -129,20 +129,19 @@ export default {
           operationId: this.$route.params.operationId
         }
         axios.get('appointedTime/schedule', { params }).then(r => {
-          const days = []
-          r.data.map(o => moment(o.startTime)).forEach(o => {
-            const day = o.format('YYYY-MM-DD')
-            const hour = o.format('HH')
+          const timePeriods = r.data.map(o => `${moment(o.startTime).format('HH:mm')} ~ ${moment(o.endTime).format('HH:mm')}`).unique()
+          const days = r.data.map(o => moment(o.startTime).format('YYYY-MM-DD')).unique().sort()
+          r.data.forEach(o => {
+            const day = moment(o.startTime).format('YYYY-MM-DD')
+            const time = `${moment(o.startTime).format('HH:mm')} ~ ${moment(o.endTime).format('HH:mm')}`
             const daytime = {
               day,
-              time: this.timePeriods.find(o => o.substr(0, 2) === hour)
+              time: timePeriods.find(t => t === time)
             }
             this.availableTimes.push(daytime)
-            if (days.findIndex(o => o === day) === -1) {
-              days.push(day)
-            }
           })
-          this.days = days.sort()
+          this.timePeriods = timePeriods
+          this.days = days
         })
       }
     },
