@@ -406,7 +406,7 @@ export default {
     },
     fetchCooperatorList () {
       return axios.get('review/cooperator').then(response => {
-        this.cooperatorList = response.data
+        this.cooperatorList = response.data.filter(o => this.applicationList[0].job.department === o.department)
       })
     },
     /**

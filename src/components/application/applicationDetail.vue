@@ -93,6 +93,7 @@ export default {
     fetchData () {
       axios.get('application/' + localStorage.getItem('applicationId')).then(response => {
         this.curApplication = response.data
+        this.fetchCooperatorList()
         this.curApplication.createTime = moment(new Date(response.data.createTime).getTime()).format('YYYY-MM-DD HH:mm:ss')
         this.curApplication.updateTime = moment(new Date(response.data.updateTime).getTime()).format('YYYY-MM-DD HH:mm:ss')
         this.step = this.curApplication.step
@@ -131,11 +132,10 @@ export default {
           return newTr
         })
       })
-      this.fetchCooperatorList()
     },
     fetchCooperatorList () {
       return axios.get('review/cooperator').then(response => {
-        this.cooperatorList = response.data
+        this.cooperatorList = response.data.filter(tr => tr.department === this.curApplication.job.department)
       })
     },
     getStepStatus (curStep) {
