@@ -65,17 +65,7 @@ export default {
     return {
       alreadyDone: false,
       days: [],
-      timePeriods: [
-        '09:00 ~ 10:00',
-        '10:00 ~ 11:00',
-        '11:00 ~ 12:00',
-        '12:00 ~ 13:00',
-        '13:00 ~ 14:00',
-        '14:00 ~ 15:00',
-        '15:00 ~ 16:00',
-        '16:00 ~ 17:00',
-        '17:00 ~ 18:00'
-      ],
+      timePeriods: [],
       availableTimes: true,
       numberOfTime: 1,
       chosenTimes: []
@@ -119,6 +109,7 @@ export default {
             days.push(day.format('YYYY-MM-DD'))
           }
           this.days = days
+          this.timePeriods = JSON.parse(r.data.periods)
           this.numberOfTime = r.data.number
         }).catch(e => {
           this.alreadyDone = true
@@ -138,20 +129,19 @@ export default {
           operationId: this.$route.params.operationId
         }
         axios.get('appointedTime/schedule', { params }).then(r => {
-          const days = []
-          r.data.map(o => moment(o.startTime)).forEach(o => {
-            const day = o.format('YYYY-MM-DD')
-            const hour = o.format('HH')
+          const timePeriods = r.data.map(o => `${moment(o.startTime).format('HH:mm')} ~ ${moment(o.endTime).format('HH:mm')}`).unique()
+          const days = r.data.map(o => moment(o.startTime).format('YYYY-MM-DD')).unique().sort()
+          r.data.forEach(o => {
+            const day = moment(o.startTime).format('YYYY-MM-DD')
+            const time = `${moment(o.startTime).format('HH:mm')} ~ ${moment(o.endTime).format('HH:mm')}`
             const daytime = {
               day,
-              time: this.timePeriods.find(o => o.substr(0, 2) === hour)
+              time: timePeriods.find(t => t === time)
             }
             this.availableTimes.push(daytime)
-            if (days.findIndex(o => o === day) === -1) {
-              days.push(day)
-            }
           })
-          this.days = days.sort()
+          this.timePeriods = timePeriods
+          this.days = days
         })
       }
     },
@@ -177,7 +167,8 @@ export default {
       }
       const data = {
         ...this.$route.params,
-        startTimes: this.chosenTimes.map(o => moment(`${o.day} ${o.time.substr(0, 5)}`).format())
+        startTimes: this.chosenTimes.map(o => moment(`${o.day} ${o.time.substr(0, 5)}`).format()),
+        endTimes: this.chosenTimes.map(o => moment(`${o.day} ${o.time.substr(-5)}`).format())
       }
       this.$confirm({
         title: 'Confirm your interview time',

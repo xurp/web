@@ -17,6 +17,7 @@ axios.interceptors.response.use(response => {
   NProgress.done()
   return response
 }, error => {
+  NProgress.done()
   const code = error.response.status
   const message = error.response.data.message
   if (code === 401) {
@@ -31,7 +32,6 @@ axios.interceptors.response.use(response => {
   } else {
     router.app.$message.error(message)
   }
-  NProgress.done()
   return Promise.reject(error)
 })
 
