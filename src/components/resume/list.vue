@@ -1,6 +1,6 @@
 <template>
   <div>
-    <field-filter :filter-options="filterOptions" @filter="e => filter = e"/>
+    <resume-field-filter :filter-options="filterOptions" @filter="e => filter = e"/>
     <a-input v-model="keyword" placeholder="Search school, major... anything here"></a-input>
     <a-divider/>
     <a-list :dataSource="filteredResumes" itemLayout="vertical">
@@ -67,10 +67,10 @@
 
 <script>
 import axios from '../../service'
-import FieldFilter from '../field-filter'
+import ResumeFieldFilter from './field-filter'
 export default {
   name: 'resume-list',
-  components: {FieldFilter},
+  components: {ResumeFieldFilter},
   data () {
     return {
       resumes: [],
