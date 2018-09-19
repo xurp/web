@@ -70,9 +70,7 @@ import axios from '../../service'
 import moment from 'moment'
 import ResumeFieldFilter from './field-filter'
 const between = (v, range) => v >= range[0] && v <= range[1]
-const cross = (range1, range2) => {
-  return between(range1[0], range2) || between(range1[1], range2)
-}
+const cross = (range1, range2) => between(range1[0], range2) || between(range1[1], range2)
 export default {
   name: 'resume-list',
   components: {ResumeFieldFilter},
@@ -119,7 +117,7 @@ export default {
           if (!graduation.isValid()) {
             graduation = moment('1970-01-01 00:00:00')
           }
-          return this.filter.graduation.some(g => cross(g, graduation.getFullYear))
+          return this.filter.graduation.some(g => between(+graduation.format('YYYY'), g))
         })
       }
       if (this.filter.experience && this.filter.experience.length) {
