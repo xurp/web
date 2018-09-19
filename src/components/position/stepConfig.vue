@@ -32,7 +32,17 @@
     </titled-panel>
     <titled-panel title="Assessment item config">
       <a-steps class="bottom-step-cotainer">
-        <a-step v-for="step in dbSteps" @click="stepClick(step)" :key="step.index" :title="step.name" :description="step.description" :status="getStepStatus(step)"></a-step>
+        <a-step v-for="step in dbSteps" :key="step.index" :title="step.name" :status="getStepStatus(step)">
+          <a-timeline slot="description" style="margin-top:10px;">
+            <a-timeline-item v-for="item in step.items" :key="item.id">
+              <a-tag v-if="!item.editing" closable @close="removeItem(step, item)">{{item.name}}</a-tag>
+              <a-input v-else v-model="item.name" @pressEnter="item.editing=false" placeholder="press enter to confirm"></a-input>
+            </a-timeline-item>
+            <a-button class="additem-button" type="dashed" @click="addItem(step)">
+              <a-icon type="plus"></a-icon>Add
+            </a-button>
+          </a-timeline>
+        </a-step>
       </a-steps>
       <div class="itemform-container">
         <a-form>
@@ -45,9 +55,7 @@
             <a-icon type="minus-circle-o" class='dynamic-delete-button' @click="removeItem(idx)"></a-icon>
           </a-form-item>
           <a-form-item>
-            <a-button class="additem-button" type="dashed" @click="addItem">
-              <a-icon type="plus"></a-icon>Add Assessment Item
-            </a-button>
+
           </a-form-item>
         </a-form>
       </div>
@@ -89,8 +97,21 @@ export default {
         this.dbSteps = response.data.map(tr => {
           return Object.assign({}, tr)
         })
-        this.stepClick(this.dbSteps[0])
+        this.fetchItems()
       })
+    },
+    fetchItems () {
+      for (const step of this.dbSteps) {
+        axios.get('job/items', {params: {stepId: step.id}}).then(response => {
+          step.items = response.data.map(tr => {
+            return {
+              id: tr.id,
+              name: tr.name,
+              editing: false
+            }
+          })
+        })
+      }
     },
     deleteCurrent (index) {
       this.steps.splice(index, 1)
@@ -129,17 +150,21 @@ export default {
       })
       return this.clickIndex === curIndex ? 'process' : 'wait'
     },
-    stepClick (step) {
-      const curIndex = this.dbSteps.findIndex(tr => {
-        return tr.index === step.index
-      })
-      this.clickIndex = curIndex
-      this.fetchCurItem()
-    },
     submitItemChange () {
-      axios.put('/job/items', {itemList: this.curItems.map(o => { return {id: o.id, name: o.name} }),
-        stepId: this.dbSteps[this.clickIndex].id,
-        jobId: this.$route.params['id']})
+      this.submitLoading = true
+      let totalCount = this.dbSteps.length
+      for (const step of this.dbSteps) {
+        axios.put('/job/items', {itemList: step.items.map(o => { return {id: o.id, name: o.name} }),
+          stepId: step.id,
+          jobId: this.$route.params['id']
+        }).then(response => {
+          totalCount--
+          if (totalCount === 0) {
+            this.submitLoading = false
+            this.$message.success('saved successfully')
+          }
+        })
+      }
     },
     fetchCurItem () {
       axios.get('job/items', {params: {stepId: this.dbSteps[this.clickIndex].id}}).then(response => {
@@ -152,14 +177,15 @@ export default {
         })
       })
     },
-    addItem () {
-      if (this.curItems.find(o => o.editing) !== undefined) {
+    addItem (step) {
+      if (step.items.find(o => o.editing) !== undefined) {
         return
       }
-      this.curItems.push({name: '', editing: true, id: uuid('http://localhost:4000/assessment/?', uuid.URL)})
+      step.items.push({name: '', editing: true, id: uuid('http://localhost:4000/assessment/?', uuid.URL)})
     },
-    removeItem (idx) {
-      this.curItems.splice(idx, 1)
+    removeItem (step, item) {
+      const idx = step.items.findIndex(o => o.id === item.id)
+      step.items.splice(idx, 1)
     },
     okItem (idx) {
       const oldItem = this.curItems[idx]
@@ -200,6 +226,7 @@ export default {
     .additem-button{
       width: 40vh;
     }
+    size: 18px;
   }
   .dynamic-delete-button {
     cursor: pointer;
