@@ -28,6 +28,14 @@
           <a-form-item label="Major" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
             <a-input v-model="basicInfomation.major" placeholder="Major"></a-input>
           </a-form-item>
+          <a-form-item label="Degree" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
+            <a-radio-group v-model="basicInfomation.degree">
+              <a-radio value="Doctor">Doctor</a-radio>
+              <a-radio value="Master">Master</a-radio>
+              <a-radio value="Bachelor">Bachelor</a-radio>
+              <a-radio defaultChecked>None</a-radio>
+            </a-radio-group>
+          </a-form-item>
           <a-form-item label="Introduction" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
             <a-textarea v-model="basicInfomation.intro" :autosize="textAreaStyle" placeholder="Introduction"></a-textarea>
           </a-form-item>
