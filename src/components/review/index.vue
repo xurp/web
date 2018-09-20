@@ -34,8 +34,18 @@
         </a-form-item>
       </a-form>
       <template slot="footer">
-        <a-button  v-on:click="acceptHR">Accept</a-button>
-        <a-button v-on:click="declineHR">Decline</a-button>
+        <a-button
+          type="primary"
+          :disabled="declining"
+          :loading="accepting"
+          v-on:click="acceptHR"
+        >Accept</a-button>
+        <a-button
+          type="danger"
+          :disabled="accepting"
+          :loading="declining"
+          v-on:click="declineHR"
+        >Decline</a-button>
       </template>
     </a-modal>
   </div>
@@ -58,6 +68,8 @@ export default {
       editVal: {},
       listLoading: false,
       modalVisible: false,
+      accepting: false,
+      declining: false,
       list: []
     }
   },
@@ -79,15 +91,21 @@ export default {
       this.modalVisible = true
     },
     acceptHR (e) {
+      this.accepting = true
       axios.post('review/' + this.editVal.id, 'true').then(response => {
         this.modalVisible = false
         this.fetchData()
+      }).finally(() => {
+        this.accepting = false
       })
     },
     declineHR () {
+      this.declining = true
       axios.post('review/' + this.editVal.id, 'false').then(response => {
         this.modalVisible = false
         this.fetchData()
+      }).finally(() => {
+        this.declining = false
       })
     }
   }
