@@ -106,6 +106,11 @@ export default {
   created () {
     this.fetchMailTemplate()
   },
+  watch: {
+    emailType (newVal, oldVal) {
+      this.fetchMailTemplate()
+    }
+  },
   methods: {
     fetchMailTemplate () {
       axios.get('email/' + this.emailType).then(response => {

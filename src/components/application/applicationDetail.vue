@@ -332,7 +332,7 @@ export default {
      */
     reArrange () {
       const lastAssess = this.assesses[this.assesses.length - 1]
-      if (this.step.indexOf('++') === -1 && this.step.indexOf('+') > -1) {
+      if ((this.step.indexOf('++') === -1 && this.step.indexOf('+') > -1) || this.step.indexOf('-') > -1) {
         this.$message.warn('already assessed, no need to rearrange', 1)
         return
       }
