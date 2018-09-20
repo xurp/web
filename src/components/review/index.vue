@@ -34,8 +34,8 @@
         </a-form-item>
       </a-form>
       <template slot="footer">
-        <a-button v-on:click="acceptHR" :loading="operating">Accept</a-button>
-        <a-button v-on:click="declineHR" :loading="operating">Decline</a-button>
+        <a-button type="primary" v-on:click="acceptHR" :loading="operating">Accept</a-button>
+        <a-button type="danger" v-on:click="declineHR" :loading="operating">Decline</a-button>
       </template>
     </a-modal>
   </div>
