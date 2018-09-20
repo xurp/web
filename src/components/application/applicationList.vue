@@ -25,6 +25,9 @@
           </a>
           <a-menu slot="overlay">
             <a-menu-item>
+              <a @click="selectAllNotArranged">all not arranged</a>
+            </a-menu-item>
+            <a-menu-item>
               <a @click="selectAllPassed">all passed</a>
             </a-menu-item>
             <a-menu-item>
@@ -193,6 +196,19 @@ export default {
         case 'not arranged':
           return '#0f3050'
       }
+    },
+    /**
+     *  choose all not ranged rows
+     */
+    selectAllNotArranged () {
+      this.selectedRows.splice(0, this.selectedRows.length)
+      this.applicationList = this.applicationList.map(tr => {
+        return {
+          ...tr,
+          checkStatus: ['+', '-'].every(o => tr.step.indexOf(o) === -1)
+        }
+      })
+      this.selectedRows = this.getSelectedRows()
     },
     /**
      * 选择所有通过的行
