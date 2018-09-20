@@ -138,6 +138,15 @@ export default {
       if (this.filter.experience && this.filter.experience.length) {
         resumes = resumes.filter(resume => this.filter.experience.some(e => between(resume.experience, e)))
       }
+      if (this.keyword) {
+        resumes = resumes.filter(resume => {
+          let flag = false
+          for (const key of ['name', 'school', 'major', 'intro']) {
+            flag |= !!(resume[key] || '').toLowerCase().match(this.keyword)
+          }
+          return flag
+        })
+      }
       return resumes
     }
   },
