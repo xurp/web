@@ -43,7 +43,10 @@
               <a-divider type="vertical"></a-divider>
               <a @click="openDeclineModal(record)">Decline Offer</a>
             </span>
-            <span v-else>Offer Sent!</span>
+            <span v-else slot-scope="text,record" style="text-align:center;">
+              <span v-if="record.result==='accept'">Offer Sent!</span>
+              <span v-else>Rejection Sent!</span>
+            </span>
           </span>
         </a-table-column>
       </a-table>
@@ -70,7 +73,7 @@
       </a-modal>
 
       <a-modal
-        title="Sending Offers ..."
+        :title="curBatchTitle"
         :visible="batch.dialog"
         @cancel="clearBatch"
         :closable="!batch.sending"
@@ -129,7 +132,8 @@ export default {
       detailModalVisible: false,
       curDetailRecord: {},
       offerType: '', // offer 或 rejectoffer
-      curRemark: ''
+      curRemark: '',
+      curBatchTitle: 'Sending Offers ...'
     }
   },
   computed: {
@@ -145,7 +149,6 @@ export default {
     fetchList () {
       this.listLoading = true
       axios.get('offer').then(response => {
-        console.log(response.data)
         this.list = response.data.map(tr => {
           return {
             id: tr.id,
@@ -162,12 +165,9 @@ export default {
             remark: tr.remark
           }
         })
-        this.receiverList = this.list.map(tr => {
-          return {
-            id: tr.id,
-            name: tr.name
-          }
-        })
+        this.receiverList = this.list.filter(tr => {
+          return tr.result !== 'accept' && tr.result !== 'reject'
+        }).map(tr => tr)
         this.listLoading = false
       }, error => {
         console.error(error)
@@ -175,17 +175,14 @@ export default {
       })
     },
     handleReceiverChange (value) {
-      for (const val of value) {
-        const idx = this.batch.offers.findIndex(tr => tr.id === val)
-        if (idx === -1) {
-          this.batch.offers.push(this.list.find(tr => tr.id === val))
-        } else {
-          this.batch.offers.splice(idx, 1)
-        }
-      }
+      this.batch.offers = this.list.filter(tr => value.indexOf(tr.id) !== -1)
       this.receiverList = this.receiverList.map(tr => { return tr })
     },
     openSendOfferModal (record) {
+      this.receiverList = this.list.filter(tr => {
+        return tr.result !== 'accept' && tr.result !== 'reject'
+      }).map(tr => tr)
+      this.curBatchTitle = 'Sending Offers ...'
       this.curRemark = ''
       this.offerType = 'offer'
       this.mail.subject = 'Offer accept information'
@@ -195,6 +192,7 @@ export default {
       this.mailModalVisible = true
     },
     openMultiSendModal () {
+      this.curBatchTitle = 'Sending Offers ...'
       this.curRemark = ''
       this.offerType = 'offer'
       this.mail.subject = 'Offer accept information'
@@ -263,7 +261,11 @@ export default {
       this.mailModalVisible = false
     },
     openDeclineModal (record) {
-      // TODO 这里和上面的函数一起修改
+      this.receiverList = this.list.filter(tr => {
+        return tr.result !== 'accept' && tr.result !== 'reject'
+      }).map(tr => tr)
+      // TODOdone 这里和上面的函数一起修改
+      this.curBatchTitle = 'Sending rejections ...'
       this.curRemark = ''
       this.offerType = 'rejectoffer'
       this.mail.subject = 'Offer reject information'

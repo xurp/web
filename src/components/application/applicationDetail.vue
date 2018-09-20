@@ -321,7 +321,7 @@ export default {
         return tr.department === lastAssess.department && tr.name === lastAssess.name
       })
       this.mail.receivers = curCooperator.id
-      this.mail.subject = 're-assess response'
+      this.mail.subject = 'reset assessment result'
       this.bResetAsessResult = true
       this.bReArrange = false
       this.bSendToAssess = true
@@ -344,7 +344,7 @@ export default {
       if (curCooperator) {
         this.mail.receivers = curCooperator.id
       }
-      this.mail.subject = 're-picking time response'
+      this.mail.subject = 'repick assessment time'
       this.bResetAsessResult = true
       this.bReArrange = true
       this.bSendToAssess = true
