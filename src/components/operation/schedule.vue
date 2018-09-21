@@ -155,7 +155,7 @@ export default {
             }
             this.availableTimes.push(daytime)
           })
-          this.timePeriods = timePeriods
+          this.timePeriods = timePeriods.sort()
           this.days = days
         })
       }
@@ -194,6 +194,7 @@ export default {
       })
     },
     occupy (day, time) {
+      this.chosenTimes = [{day, time}]
       const data = {
         interviewTime: moment(`${day} ${time.substr(0, 5)}`).format(),
         id: this.$route.params.assessmentId,
