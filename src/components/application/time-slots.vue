@@ -64,6 +64,9 @@ export default {
     }
   },
   watch: {
+    value (val) {
+      this.slots = val
+    },
     slots (val) {
       this.$emit('input', val)
     }
