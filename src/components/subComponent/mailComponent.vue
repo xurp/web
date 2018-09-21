@@ -6,7 +6,7 @@
       </a-select>
       <a-input v-else v-model="mail.receivers"></a-input>
       <a v-if="showAddReceiver" style="position:absolute" @click="handleAddCooperatorClick"><a-icon type="plus-circle-o"></a-icon></a>
-      <div v-if="applicationCount && mail.receivers instanceof Array">
+      <div v-if="applicationCount && mail.receivers instanceof Array && showDate">
         <span>{{applicationCount}} candidates</span>
         <a-divider type="vertical"/>
         <span>{{mail.receivers.length}} interviewers</span>
