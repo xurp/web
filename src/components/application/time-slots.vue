@@ -64,6 +64,9 @@ export default {
     }
   },
   watch: {
+    value (val) {
+      this.slots = val
+    },
     slots (val) {
       this.$emit('input', val)
     }
@@ -96,8 +99,8 @@ export default {
     openGenerator () {
       this.generator = {
         visible: true,
-        from: moment('2018-09-19 08:00'),
-        to: moment('2018-09-19 22:00'),
+        from: moment('2018-09-19 09:00'),
+        to: moment('2018-09-19 19:00'),
         duration: 45,
         gap: 15,
         clear: true
