@@ -8,6 +8,19 @@
         message="Operation Done"
         description="You have already done the schedule arrange"
       />
+      <a-alert
+        v-if="alreadyDone"
+        type="info" show-icon
+        message="Interview Info"
+        style="margin-top: 16px"
+      >
+        <template slot="description">
+          <div style="margin-top: 16px"><strong>Time</strong></div>
+          <div v-for="(c, idx) in chosenTimes" :key="idx">{{c.day}} {{c.time}}</div>
+          <div style="margin-top: 16px"><strong>Address</strong></div>
+          <div>Westgate Mall 9F, No.1038 West Nanjing Road, Jing An District, Shanghai</div>
+        </template>
+      </a-alert>
     </template>
     <template v-else>
       <a-table
@@ -120,6 +133,8 @@ export default {
           if (r.data.interviewTime) {
             this.alreadyDone = true
           }
+        }).catch(e => {
+          this.alreadyDone = true
         })
 
         // fetch available times
