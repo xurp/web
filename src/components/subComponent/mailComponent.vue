@@ -39,6 +39,7 @@
       <time-slots v-model="mail.times"/>
       <div>{{(mail.times || []).length}} Sessions Per day</div>
     </a-form-item>
+    <slot name="place"></slot>
     <a-form-item label="Template" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
       <a-select @change="handleTemplateChange" v-model="curTemplateName">
         <a-select-option v-for="template in templates" :key="Math.random()+template.name" :value="template.name">{{template.name}}</a-select-option>

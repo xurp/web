@@ -66,7 +66,11 @@
         <mail-component :mail="this.mail" :show-date="bBatchNextStep" :is-receiver-list="true" selectMode="tags" :show-add-receiver="this.bBatchNextStep"
                         :receiver-list="receiverList" @receiverChange="handleReceiverChange" :email-type="emailType"
                         :applicationCount="applicationList.filter(o => o.checkStatus).length"
-        ></mail-component>
+        >
+          <a-form-item slot="place" :labelCol="formLabelCol" :wrapperCol="formWrapperCol" label="Place">
+            <a-input readonly="true" value="Westgate Mall 9F, No.1038 West Nanjing Road, Jing An District, Shanghai"></a-input>
+          </a-form-item>
+        </mail-component>
       </div>
     </a-modal>
   </div>
@@ -389,39 +393,6 @@ export default {
         return 'clock-circle-o'
       }
     },
-    handleNextStep: function () {
-      this.emailType = 'interviewerDate' // 方便设置邮件模板的获取地址
-      let selectCount = this.selectedRows.length
-      if (this.steps.findIndex(tr => {
-        return parseFloat(tr.index) === this.step
-      }) === this.steps.length - 2) { // 最后一步
-        this.nextButtonConfirmLoading = true
-        this.selectedRows.forEach(tr => {
-          axios.put('application/' + tr.id + '/step').then(response => {
-            selectCount--
-            if (selectCount === 0) {
-              this.nextButtonConfirmLoading = false
-              this.fetchApplicationList()
-              this.$message.success('Job seeker moved to offer list.')
-            }
-          })
-        })
-        return
-      }
-      this.fetchCooperatorList().then(response => {
-        this.popMailVisible = true
-        this.bBatchNextStep = true
-        this.mail = {
-          content: 'Dear [assessor_name]\r\n\tPlease select the time during which you will be available for the interview. ' +
-            'Attention please, once selected, the time table can not be changed! The time selection link is below: \r\n\t\t' +
-            (location.origin + '/' + location.pathname + '/#/schedule/interview/[operation_id]/[cooperation_id]').replace(/([^(http:)])\/{2,}/gi, '$1/') +
-            '\r\n\tBest Regards\r\n[company_name]',
-          subject: 'select interview time as an interviewer',
-          receivers: []
-        }
-        this.receiverList = this.cooperatorList
-      })
-    },
     fetchCooperatorList () {
       return axios.get('review/cooperator').then(response => {
         this.cooperatorList = response.data.filter(o => this.applicationList[0].job.department === o.department)
@@ -488,12 +459,48 @@ export default {
     handleMailCancel () {
       this.popMailVisible = false
     },
+    handleNextStep: function () {
+      this.emailType = 'interviewerDate' // 方便设置邮件模板的获取地址
+      let selectCount = this.selectedRows.length
+      if (this.steps.findIndex(tr => {
+        return parseFloat(tr.index) === this.step
+      }) === this.steps.length - 2) { // 最后一步
+        this.nextButtonConfirmLoading = true
+        this.selectedRows.forEach(tr => {
+          axios.put('application/' + tr.id + '/step').then(response => {
+            selectCount--
+            if (selectCount === 0) {
+              this.nextButtonConfirmLoading = false
+              this.fetchApplicationList()
+              this.$message.success('Job seeker moved to offer list.')
+            }
+          })
+        })
+        return
+      }
+      this.fetchCooperatorList().then(response => {
+        this.popMailVisible = true
+        this.bBatchNextStep = true
+        this.mail = {
+          content: 'Dear [assessor_name]\r\n\tPlease select the time during which you will be available for the interview. ' +
+            'Attention please, once selected, the time table can not be changed! The time selection link is below: \r\n\t\t' +
+            (location.origin + '/' + location.pathname + '/#/schedule/interview/[operation_id]/[cooperation_id]').replace(/([^(http:)])\/{2,}/gi, '$1/') +
+            '\r\n\tBest Regards\r\n[company_name]',
+          subject: 'select interview time as an interviewer',
+          receivers: []
+        }
+        this.receiverList = this.cooperatorList
+      })
+    },
     handleDecline () {
       this.bBatchNextStep = false
-      this.mail.receivers = this.selectedRows.map(tr => {
-        return tr.id
-      })
-      this.mail.subject = 'Fail asessment notification.'
+      this.mail = {
+        receivers: this.selectedRows.map(tr => {
+          return tr.id
+        }),
+        subject: 'Fail asessment notification.',
+        content: ''
+      }
       this.receiverList = this.selectedRows
       this.popMailVisible = true
       this.emailType = 'decline'
