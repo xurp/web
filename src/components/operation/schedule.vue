@@ -194,6 +194,7 @@ export default {
       })
     },
     occupy (day, time) {
+      this.chosenTimes = [{day, time}]
       const data = {
         interviewTime: moment(`${day} ${time.substr(0, 5)}`).format(),
         id: this.$route.params.assessmentId,
