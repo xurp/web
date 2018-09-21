@@ -155,7 +155,7 @@ export default {
             }
             this.availableTimes.push(daytime)
           })
-          this.timePeriods = timePeriods
+          this.timePeriods = timePeriods.sort()
           this.days = days
         })
       }
