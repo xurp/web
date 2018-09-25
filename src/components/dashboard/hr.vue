@@ -21,7 +21,7 @@
     </a-row>
     <a-row>
       <a-col :span="24" style="text-align:center;">
-        <a-button class="statics-export" v-on:click="handleExportExcel" :loading="btnLoading">Export all position statics</a-button>
+        <a-button class="statics-export" v-on:click="handleExportExcel" :loading="btnLoading">Export all recruitment statics</a-button>
       </a-col>
     </a-row>
   </div>
