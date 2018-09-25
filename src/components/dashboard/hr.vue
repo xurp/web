@@ -19,6 +19,11 @@
         <offer-chart-statistics :dataByDepartment="dataByDepartment"/>
       </a-col>
     </a-row>
+    <a-row>
+      <a-col :span="24" style="text-align:center;">
+        <a-button class="statics-export" v-on:click="handleExportExcel" :loading="btnLoading">Export all position statics</a-button>
+      </a-col>
+    </a-row>
   </div>
 </template>
 
@@ -36,7 +41,8 @@ export default {
       totalPositionNum: 0,
       totalCandidateNum: 0,
       totalHrNum: 0,
-      dataByDepartment: []
+      dataByDepartment: [],
+      btnLoading: false
     }
   },
   components: {
@@ -63,6 +69,23 @@ export default {
             Offers: parseInt(tr.split('-')[2])
           }
         })
+      })
+    },
+    handleExportExcel () {
+      this.btnLoading = true
+      // tododone 待测
+      axios.get('/dashboard/export', {responseType: 'blob'}).then(response => {
+        this.btnLoading = false
+        let url = window.URL.createObjectURL(response.data)
+        let link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = url
+        link.setAttribute('download', 'positionApplicationStatics.xlsx')
+        document.body.appendChild(link)
+        link.click()
+      }, error => {
+        this.btnLoading = false
+        console.error(error)
       })
     }
   }

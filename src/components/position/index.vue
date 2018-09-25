@@ -56,7 +56,7 @@
       </template>
     </a-modal>
     <div class="down-button-container">
-      <a-button class="statics-export" v-on:click="handleExportExcel" :loading="btnLoading">Export all position statics</a-button>
+      <!--<a-button class="statics-export" v-on:click="handleExportExcel" :loading="btnLoading">Export all position statics</a-button>-->
       <a-button class="position-create" v-on:click="handleCreate">Create New Position</a-button>
     </div>
   </div>
