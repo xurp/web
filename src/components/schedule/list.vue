@@ -21,8 +21,10 @@
           <template v-if="item.assessment" slot="content">
             <div><strong>Interview Time</strong></div>
             <div>{{moment(item.assessment.interviewTime).format('YYYY-MM-DD HH:mm:ss')}}</div>
-            <div><strong>Assessment Time</strong></div>
-            <div>{{moment(item.assessment.assessmentTime).format('YYYY-MM-DD HH:mm:ss')}}</div>
+            <template v-if="item.assessment.assessmentTime">
+              <div><strong>Assessment Time</strong></div>
+              <div>{{moment(item.assessment.assessmentTime).format('YYYY-MM-DD HH:mm:ss')}}</div>
+            </template>
           </template>
           <template v-if="item.appointment" slot="title">appointment</template>
           <template v-if="item.appointment" slot="content">appointment
