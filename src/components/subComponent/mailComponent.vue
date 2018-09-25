@@ -35,7 +35,7 @@
     <a-form-item v-if="showDate" label="AssessDate" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
       <a-range-picker v-model="mail.timerange"></a-range-picker>
     </a-form-item>
-    <a-form-item v-if="showDate" label="TimeSlots" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
+    <a-form-item v-if="showDate" label="AssessTime" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
       <time-slots v-model="mail.times"/>
       <div>{{(mail.times || []).length}} Sessions Per day</div>
     </a-form-item>
