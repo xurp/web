@@ -4,7 +4,10 @@
 
 <script>
 export default {
-  name: 'candidate-dashboard'
+  name: 'candidate-dashboard',
+  created () {
+    this.$router.push({name: 'Resume Edit'})
+  }
 }
 </script>
 

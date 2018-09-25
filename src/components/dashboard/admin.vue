@@ -4,7 +4,10 @@
 
 <script>
 export default {
-  name: 'admin-dashboard'
+  name: 'admin-dashboard',
+  created () {
+    this.$router.push({name: 'HR Audit'})
+  }
 }
 </script>
 

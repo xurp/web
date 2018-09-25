@@ -9,7 +9,7 @@ export const routes = [
     path: '',
     name: 'Dashboard',
     component: () => import('@/components/dashboard/dashboard'),
-    show: true
+    show: ['hr']
   },
   {
     path: 'audit',
