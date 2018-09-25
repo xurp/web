@@ -31,8 +31,28 @@
           <a-input :disabled="true" v-model="resumeData.major"></a-input>
         </a-form-item>
       </a-col>
-      <a-col :span="20">
-        <a-form-item label="Introduction" :labelCol="{span: 2}" :wrapperCol="{span: 22}">
+      <a-col :span="8">
+        <a-form-item label="Phone" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
+          <a-input :disabled="true" v-model="resumeData.phone"></a-input>
+        </a-form-item>
+      </a-col>
+      <a-col :span="8">
+        <a-form-item label="Degree" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
+          <a-input :disabled="true" v-model="resumeData.degree"></a-input>
+        </a-form-item>
+      </a-col>
+      <a-col :span="8">
+        <a-form-item label="Graduate" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
+          <a-input :disabled="true" v-model="resumeData.graduation"></a-input>
+        </a-form-item>
+      </a-col>
+      <a-col :span="8">
+        <a-form-item label="Experience" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
+          <a-input :disabled="true" v-model="resumeData.experience"></a-input>
+        </a-form-item>
+      </a-col>
+      <a-col :span="16">
+        <a-form-item label="Introduction" :labelCol="{span: 3}" :wrapperCol="{span: 20}">
           <a-textarea :disabled="true" v-model="resumeData.intro" :autosize="textAreaStyle"></a-textarea>
         </a-form-item>
       </a-col>
@@ -42,6 +62,7 @@
 
 <script>
 import titledCard from './titledCard'
+import moment from 'moment'
 export default {
   name: 'resume-panel',
   components: {titledCard},
@@ -67,6 +88,11 @@ export default {
     resumeData: {
       name: '',
       gender: ''
+    }
+  },
+  watch: {
+    resumeData (oldVal, newVal){
+      this.resumeData.graduation = moment(this.resumeData.graduation).format('YYYY-MM-DD')
     }
   }
 }
