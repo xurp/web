@@ -17,7 +17,7 @@
           </div>
         </div>
         <div class="item-container">
-          <a-form>
+          <a-form v-if="assessData.pass!=='assessing'">
             <a-form-item v-for="item in assessData.items" :key="item.name+item.value" :label="item.name" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-progress :percent="item.value" size="small" :format="percent=>percent" :status="item.value>=60?'success':'exception'"></a-progress>
             </a-form-item>

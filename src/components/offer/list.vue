@@ -101,7 +101,7 @@ import mailComponent from '../subComponent/mailComponent'
 import titledCard from '../subComponent/titledCard'
 import resumePanel from '../subComponent/resumePanel'
 import moment from 'moment'
-import AssessComponent from '../application/assessComponent'
+import AssessComponent from '../subComponent/assessComponent'
 export default {
   name: 'offer-list',
   components: {AssessComponent, mailComponent, titledCard, resumePanel},

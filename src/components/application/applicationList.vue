@@ -67,7 +67,7 @@
                         :receiver-list="receiverList" @receiverChange="handleReceiverChange" :email-type="emailType"
                         :applicationCount="applicationList.filter(o => o.checkStatus).length"
         >
-          <a-form-item slot="place" :labelCol="formLabelCol" :wrapperCol="formWrapperCol" label="Place">
+          <a-form-item v-if="bBatchNextStep" slot="place" :labelCol="formLabelCol" :wrapperCol="formWrapperCol" label="Place">
             <a-input readOnly="true" value="Westgate Mall 9F, No.1038 West Nanjing Road, Jing An District, Shanghai"></a-input>
           </a-form-item>
         </mail-component>

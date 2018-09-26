@@ -37,7 +37,7 @@
 import axios from '../../service'
 import moment from 'moment'
 import resumePanel from '../subComponent/resumePanel'
-import assessComponent from './assessComponent'
+import assessComponent from '../subComponent/assessComponent'
 import AModal from 'ant-design-vue/es/modal/Modal'
 import AForm from 'ant-design-vue/es/form/Form'
 import AFormItem from 'ant-design-vue/es/form/FormItem'
@@ -110,7 +110,7 @@ export default {
         })
       })
       axios.get('assessment?applicationId=' + localStorage.getItem('applicationId')).then(response => {
-        this.assesses = response.data.map(tr => { // TODO 这里不管有没有正在进行的任务，都需要新加重新发送链接（如果未分配，禁用）
+        this.assesses = response.data.map(tr => { // TODOdone 这里不管有没有正在进行的任务，都需要新加重新发送链接（如果未分配，禁用）
           const newTr = {id: tr.id,
             department: tr.cooperator === null ? '' : tr.cooperator.department,
             name: tr.cooperator === null ? 'To be arranged' : tr.cooperator.name,
