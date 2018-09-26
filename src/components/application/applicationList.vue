@@ -68,7 +68,7 @@
                         :applicationCount="applicationList.filter(o => o.checkStatus).length"
         >
           <a-form-item slot="place" :labelCol="formLabelCol" :wrapperCol="formWrapperCol" label="Place">
-            <a-input readonly="true" value="Westgate Mall 9F, No.1038 West Nanjing Road, Jing An District, Shanghai"></a-input>
+            <a-input readOnly="true" value="Westgate Mall 9F, No.1038 West Nanjing Road, Jing An District, Shanghai"></a-input>
           </a-form-item>
         </mail-component>
       </div>

@@ -91,7 +91,7 @@ export default {
     }
   },
   watch: {
-    resumeData (oldVal, newVal){
+    resumeData (oldVal, newVal) {
       this.resumeData.graduation = moment(this.resumeData.graduation).format('YYYY-MM-DD')
     }
   }
