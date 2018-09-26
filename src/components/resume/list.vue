@@ -123,7 +123,7 @@ export default {
       if (this.filter.salary && this.filter.salary.length) {
         resumes = resumes.filter(resume => {
           const salary = [parseInt(resume.salary / 1000), resume.salary % 1000]
-          return this.filter.salary.some(s => cross(salary, s))
+          return this.filter.salary.some(s => cross(salary, s) || cross(s, salary))
         })
       }
       if (this.filter.graduation && this.filter.graduation.length) {
