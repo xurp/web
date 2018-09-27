@@ -24,10 +24,11 @@
       <a-button :disabled="!(assesses.length > 0 && assesses[assesses.length - 1].pass==='fail' || stepIndex ==0) || step.indexOf('--')>-1" class="fail-btn" type="danger" v-on:click="handleDecline">Decline</a-button>
       <a-button :disabled="!(assesses.length > 0 && assesses[assesses.length - 1].pass==='pass' || stepIndex ==0 && step.indexOf('-')===-1) || stepIndex===steps.length-1" :loading="nextBtnConfirmLoading" class="next-btn" type="primary" v-on:click="handleNextStep">Next</a-button>
     </div>
-    <a-modal class="mail-modal" :confirmLoading="mailConfirmLoading" width="680px" okText="Send" :title="'operation for ' + resume.name" :visible="popMailVisible" v-on:cancel="handleMailCancel" @ok="handleMailSend" :maskClosable="false" :closable="true">
+    <a-modal class="mail-modal" :confirmLoading="mailConfirmLoading" width="680px" okText="Send" :title="getTitle()" :visible="popMailVisible" v-on:cancel="handleMailCancel" @ok="handleMailSend" :maskClosable="false" :closable="true">
       <div class="mail-form-container">
         <mail-component :mail="mail" :is-receiver-list="bSendToAssess||bReArrange||bResetAsessResult" :receiver-list="cooperatorList" :show-add-receiver="!bResetAsessResult||bDecline" select-mode="default"
-                        :show-date="bReArrange||(bSendToAssess&&!bResetAsessResult)" :email-type="emailType" @receiverChange="handleReceiverChange"></mail-component>
+                        :show-date="bReArrange||(bSendToAssess&&!bResetAsessResult)" :email-type="emailType" @receiverChange="handleReceiverChange"
+                        :receiver-label="bSendToAssess||bReArrange||bResetAsessResult?'Interviewer':'Receiver'"></mail-component>
       </div>
     </a-modal>
   </div>
@@ -90,6 +91,16 @@ export default {
     this.fetchData()
   },
   methods: {
+    getTitle () {
+      if (this.bReArrange) {
+        return 'rearrange ' + this.resume.name
+      }
+      if (this.bResetAsessResult && !this.bReArrange) {
+        return 'reset ' + this.resume.name
+      } else {
+        return 'arrange ' + this.resume.name
+      }
+    },
     fetchData () {
       axios.get('application/' + localStorage.getItem('applicationId')).then(response => {
         this.curApplication = response.data
@@ -171,7 +182,7 @@ export default {
       this.bResetAsessResult = false
       this.bSendToAssess = true
       this.bReArrange = false
-      this.mail.subject = 'select interview time as an interviewer'
+      this.mail.subject = 'Interviewer select available time'
       this.emailType = 'interviewerDate'
       // TODOdone 最后一步offer不进入邮件列表，邮件单独提成新功能（保留进度条上的Offer字样，只更新进度）
       if (this.stepIndex === this.steps.length - 2) { // 最后一步
@@ -321,7 +332,7 @@ export default {
         return tr.department === lastAssess.department && tr.name === lastAssess.name
       })
       this.mail.receivers = curCooperator.id
-      this.mail.subject = 'reset assessment result'
+      this.mail.subject = 'Reset assessment'
       this.bResetAsessResult = true
       this.bReArrange = false
       this.bSendToAssess = true
@@ -344,7 +355,7 @@ export default {
       if (curCooperator) {
         this.mail.receivers = curCooperator.id
       }
-      this.mail.subject = 'repick assessment time'
+      this.mail.subject = 'Interviewer select available time'
       this.bResetAsessResult = true
       this.bReArrange = true
       this.bSendToAssess = true

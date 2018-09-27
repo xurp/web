@@ -1,6 +1,6 @@
 <template>
   <a-form>
-    <a-form-item label="Receiver" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
+    <a-form-item :label="receiverLabel === undefined || receiverLabel === null ? 'Receiver' : receiverLabel" :labelCol="formLabelCol" :wrapperCol="formWrapperCol">
       <a-select v-if="isReceiverList" v-model="mail.receivers" :mode="selectMode" :tokenSeparators="[',']" @change="handleReceiverChange">
         <a-select-option v-for="re in receiverList" :key="re.id">{{re.name}}</a-select-option>
       </a-select>
@@ -102,6 +102,9 @@ export default {
     applicationCount: {
       type: Number,
       default: () => 0
+    },
+    receiverLabel: {
+      type: String
     }
   },
   created () {

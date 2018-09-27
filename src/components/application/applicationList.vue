@@ -65,10 +65,10 @@
       <div class="mail-form-container">
         <mail-component :mail="this.mail" :show-date="bBatchNextStep" :is-receiver-list="true" selectMode="tags" :show-add-receiver="this.bBatchNextStep"
                         :receiver-list="receiverList" @receiverChange="handleReceiverChange" :email-type="emailType"
-                        :applicationCount="applicationList.filter(o => o.checkStatus).length"
+                        :applicationCount="applicationList.filter(o => o.checkStatus).length" :receiver-label="bBatchNextStep?'Interviewer':'Receiver'"
         >
           <a-form-item v-if="bBatchNextStep" slot="place" :labelCol="formLabelCol" :wrapperCol="formWrapperCol" label="Place">
-            <a-input readOnly="true" value="Westgate Mall 9F, No.1038 West Nanjing Road, Jing An District, Shanghai"></a-input>
+            <a-input value="Westgate Mall 9F, No.1038 West Nanjing Road, Jing An District, Shanghai"></a-input>
           </a-form-item>
         </mail-component>
       </div>
@@ -486,7 +486,7 @@ export default {
             'Attention please, once selected, the time table can not be changed! The time selection link is below: \r\n\t\t' +
             (location.origin + '/' + location.pathname + '/#/schedule/interview/[operation_id]/[cooperation_id]').replace(/([^(http:)])\/{2,}/gi, '$1/') +
             '\r\n\tBest Regards\r\n[company_name]',
-          subject: 'select interview time as an interviewer',
+          subject: 'Interviewer select available time',
           receivers: []
         }
         this.receiverList = this.cooperatorList
