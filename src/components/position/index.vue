@@ -26,7 +26,7 @@
     <a-modal v-model="popVisible" :title="popTitle" onOk="handleOk" class="pop-model" :maskClosable="false">
       <a-form>
         <a-form-item label="Name" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
-          <a-input v-model="tmpData.name" v-bind:disabled="viewMode" placeholder="Position name"></a-input>
+          <a-input @click.ctrl="fillForm"  v-model="tmpData.name" v-bind:disabled="viewMode" placeholder="Position name"></a-input>
         </a-form-item>
         <a-form-item label="Detail" :labelCol="formLabelCol" :wrapperCol="formWrapCol">
           <a-textarea v-model="tmpData.detail" v-bind:disabled="viewMode" placeholder="Position detail"></a-textarea>
@@ -125,6 +125,14 @@ export default {
     this.fetchData()
   },
   methods: {
+    fillForm () {
+      this.tmpData.name = 'Software'
+      this.tmpData.detail = 'Research & Development'
+      this.tmpData.department = 'development'
+      this.tmpData.remark = 'important'
+      this.tmpData.count = 10
+      this.tmpData = Object.assign({}, this.tmpData)
+    },
     fetchData () {
       this.listLoading = true
       axios.request('job').then(response => {
