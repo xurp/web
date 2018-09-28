@@ -1,6 +1,5 @@
 <template>
     <div class="offer-form">
-      <a v-if="batch.offers.length" @click="openMultiSendModal">Send Offer to Selected</a>
       <a-table :loading="listLoading" :dataSource="list">
         <a-table-column>
           <a-checkbox
@@ -50,6 +49,14 @@
           </span>
         </a-table-column>
       </a-table>
+      <div style="text-align:center;">
+        <a-button type="primary" @click="openMultiSendModal">
+          Send Offer to Selected
+        </a-button>
+        <a-button type="danger" style="margin-left:10vh;" @click="openDeclineModal">
+          Send Decline to Selected
+        </a-button>
+      </div>
 
       <a-modal width="680px" :visible="mailModalVisible" :confirmLoading="mailSendLoading" :maskClosable="false" :closable="false" @ok="batchSend" @cancel="closeSendOfferModal" cancleText="Cancel" okText="Send">
         <div class="mail-form-container">
@@ -270,8 +277,16 @@ export default {
       this.offerType = 'rejectoffer'
       this.mail.subject = 'Offer reject information'
       this.curData = Object.assign({}, record)
-      this.mail.receivers = record.id
-      this.batch.offers = [this.list.find(tr => tr.id === record.id)]
+      // this.mail.receivers = record.id
+      // this.batch.offers = [this.list.find(tr => tr.id === record.id)]
+
+
+      this.receiverList = this.batch.offers.map(tr => {
+        return {id: tr.id, name: tr.name}
+      })
+      this.mail.receivers = this.batch.offers.map(tr => {
+        return tr.id
+      })
       this.mailModalVisible = true
     },
     chooseOffer (offer) {

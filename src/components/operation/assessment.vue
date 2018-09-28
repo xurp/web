@@ -20,7 +20,8 @@
           </a-col>
         </a-form-item>
         <a-form-item>
-          <a-textarea v-model="assessData.comment" :autosize="{minRows: 3, maxRows: 12}" placeholder="please input your assessment about the job seeker."></a-textarea>
+          <a-textarea @keyup.alt.81="fillFormQ" @keyup.alt.65="fillFormA" @keyup.alt.90="fillFormZ"
+                      @keyup.alt.87="fillFormW" @keyup.alt.83="fillFormS" @keyup.alt.88="fillFormX" v-model="assessData.comment" :autosize="{minRows: 3, maxRows: 12}" placeholder="please input your assessment about the job seeker."></a-textarea>
         </a-form-item>
         <a-form-item class="btn-container">
           <a-modal :visible="modalVisible" :closable="false" @cancel="modalVisible=false" :maskClosable="true" @ok="handleOperationOK" okText="OK" :confirmLoading="submitLoading">
@@ -74,6 +75,66 @@ export default {
     this.getData()
   },
   methods: {
+    fillFormQ () {
+      this.assessData.comment = 'just so so'
+      this.assessData = Object.assign({}, this.assessData)
+      const valArr = [55, 70, 75]
+      let idx = 0
+      this.items.forEach(tr => {
+        tr.value = valArr[idx++]
+      })
+      this.items = this.items.map(o => Object.assign({}, o))
+    },
+    fillFormA () {
+      this.assessData.comment = 'good worker'
+      this.assessData = Object.assign({}, this.assessData)
+      const valArr = [85, 90, 90]
+      let idx = 0
+      this.items.forEach(tr => {
+        tr.value = valArr[idx++]
+      })
+      this.items = this.items.map(o => Object.assign({}, o))
+    },
+    fillFormZ () {
+      this.assessData.comment = 'ordinary'
+      this.assessData = Object.assign({}, this.assessData)
+      const valArr = [90, 50, 85]
+      let idx = 0
+      this.items.forEach(tr => {
+        tr.value = valArr[idx++]
+      })
+      this.items = this.items.map(o => Object.assign({}, o))
+    },
+    fillFormW () {
+      this.assessData.comment = 'very good in every aspect'
+      this.assessData = Object.assign({}, this.assessData)
+      const valArr = [85, 85, 90]
+      let idx = 0
+      this.items.forEach(tr => {
+        tr.value = valArr[idx++]
+      })
+      this.items = this.items.map(o => Object.assign({}, o))
+    },
+    fillFormS() {
+      this.assessData.comment = 'not so fantanstic'
+      this.assessData = Object.assign({}, this.assessData)
+      const valArr = [60, 60, 65]
+      let idx = 0
+      this.items.forEach(tr => {
+        tr.value = valArr[idx++]
+      })
+      this.items = this.items.map(o => Object.assign({}, o))
+    },
+    fillFormX () {
+      this.assessData.comment = 'perfect'
+      this.assessData = Object.assign({}, this.assessData)
+      const valArr = [90, 90, 95]
+      let idx = 0
+      this.items.forEach(tr => {
+        tr.value = valArr[idx++]
+      })
+      this.items = this.items.map(o => Object.assign({}, o))
+    },
     getData () {
       // todo 这里需要获取item列表
       axios.get('assessment/' + this.assessId).then(response => {
