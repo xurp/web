@@ -56,7 +56,7 @@ export default {
       step: '',
       declineVisible: false,
       typedText: '',
-      modalTitle: 'type DECLINE and click OK to proceed decline',
+      modalTitle: 'explain why he/she FAIL',
       modalVisible: false,
       operation: 'decline',
       confirmText: 'DECLINE',
@@ -195,20 +195,20 @@ export default {
     openDeclineModal () {
       this.typedText = ''
       this.operation = 'decline'
-      this.modalTitle = 'candidate has no score lower than 60, type DECLINE and click OK to proceed decline'
+      this.modalTitle = 'there\'s no score lower than 60, explain why he/she FAIL'
       this.confirmText = 'DECLINE'
       this.modalVisible = true
     },
     openAcceptModal () {
       this.typedText = ''
       this.operation = 'accept'
-      this.modalTitle = 'candidate has score lower than 60, type ACCEPT and click OK to proceed accept'
+      this.modalTitle = 'there\'s score lower than 60, explain why he/she PASS'
       this.confirmText = 'ACCEPT'
       this.modalVisible = true
     },
     handleOperationOK () {
-      if (this.confirmText !== this.typedText) {
-        this.$message.error('wrong input')
+      if (this.typedText.trim().length === 0) {
+        this.$message.error('Please Input Reason!')
         return
       }
       switch (this.operation) {
