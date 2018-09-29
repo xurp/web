@@ -25,7 +25,8 @@
         </a-form-item>
         <a-form-item class="btn-container">
           <a-modal :visible="modalVisible" :closable="false" @cancel="modalVisible=false" :maskClosable="true" @ok="handleOperationOK" okText="OK" :confirmLoading="submitLoading">
-            <span slot="title" style="color:lightskyblue"><a-icon type="question-circle-o" slot="title"></a-icon>  {{modalTitle}}</span>
+            <span slot="title"><a-icon type="question-circle-o" slot="title"></a-icon>  Confirmation</span>
+            <div style="margin-bottom: 32px; font-size: 1.3em;">{{modalTitle}}</div>
             <a-input v-model="typedText"></a-input>
           </a-modal>
           <a-button class="submit-btn cancel-btn" :loading="submitLoading" @click="handleDeclineClick" type="danger" htmlType="submit">Decline</a-button>
@@ -56,7 +57,7 @@ export default {
       step: '',
       declineVisible: false,
       typedText: '',
-      modalTitle: 'explain why he/she FAIL',
+      modalTitle: 'Explain why he/she FAIL',
       modalVisible: false,
       operation: 'decline',
       confirmText: 'DECLINE',
@@ -195,14 +196,14 @@ export default {
     openDeclineModal () {
       this.typedText = ''
       this.operation = 'decline'
-      this.modalTitle = 'there\'s no score lower than 60, explain why he/she FAIL'
+      this.modalTitle = 'There\'s no score lower than 60, explain why he/she FAIL'
       this.confirmText = 'DECLINE'
       this.modalVisible = true
     },
     openAcceptModal () {
       this.typedText = ''
       this.operation = 'accept'
-      this.modalTitle = 'there\'s score lower than 60, explain why he/she PASS'
+      this.modalTitle = 'There\'s score lower than 60, explain why he/she PASS'
       this.confirmText = 'ACCEPT'
       this.modalVisible = true
     },
