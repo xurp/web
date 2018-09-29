@@ -12,6 +12,8 @@
         <a-divider type="vertical" />
         <a v-on:click="modifyPosition(record)">Modify</a>
         <a-divider type="vertical" />
+        <router-link :to="{name: 'Interviewers'}">Interviewers</router-link>
+        <a-divider type="vertical" />
         <a v-on:click="setStep(record)">Step Setting</a>
         <!--<a-divider type="vertical" />-->
         <!--<a-popconfirm-->
