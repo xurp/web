@@ -13,7 +13,7 @@ export const routes = [
   },
   {
     path: 'audit',
-    name: 'HR Audit',
+    name: 'HR Verify',
     component: () => import('@/components/review/index'),
     show: ['admin', 'hr']
   },
