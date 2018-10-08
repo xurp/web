@@ -6,7 +6,7 @@
 export default {
   name: 'admin-dashboard',
   created () {
-    this.$router.push({name: 'HR Audit'})
+    this.$router.push({name: 'HR Verify'})
   }
 }
 </script>

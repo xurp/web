@@ -313,6 +313,9 @@ export default {
      * @param index
      */
     handleStepClick (index) {
+      if (index === this.steps.length - 1) {
+        this.$router.push({name: 'Offer List'})
+      }
       this.selectedRowKeys = []
       this.statuses = this.statuses.map((tr, ind) => {
         if (index === ind) {
